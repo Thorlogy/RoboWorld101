@@ -1,6 +1,6 @@
 # Werk 101
 
-Ein animierter Querschnitt durch eine kleine Welt voller echter Roboter, nach dem Vorbild von floor796. 41 Felder in drei Gebäuden und im Außengelände, 169 Figuren. Jede Figur hat eine Karte: was der Roboter wirklich kann, was nur ein Spaß ist, und eine Quelle.
+Ein animierter Querschnitt durch eine kleine Welt voller echter Roboter, nach dem Vorbild von floor796. 45 Felder in drei Gebäuden, im Außengelände und unter der Erde, dazu ein geheimer Raum, 188 Figuren. Jede Figur hat eine Karte: was der Roboter wirklich kann, was nur ein Spaß ist, und eine Quelle.
 
 Live: https://thorlogy.github.io/RoboWorld101/
 
@@ -11,7 +11,7 @@ Im Repo-Ordner `python3 -m http.server` starten und `http://localhost:8000/werk1
 - `kit.js` – Welt, Koordinaten, Zeichenhilfen, Liste aller Felder (`ROOMS`), Zustand (`state`), Schutzfeld
 - `rooms/*.js` – ein Feld pro Datei (`campus.js` enthält alle Räume der Schule 102)
 - `runners.js` – Figuren, die durch mehrere Räume unterwegs sind (Lieferroboter, Paketreise, Rohrpost …)
-- `himmel.js` – Flugtaxis und Lieferdrohnen
+- `himmel.js` – Flugtaxis, Lieferdrohnen, Satellitenkette, Raumstation und Raketenstart
 - `engine.js` – Zeichnen, Häuser, Wetter, Ansicht, Bedienung, Panel
 - `kinder.js` – Kartentexte für „Einfach erklärt“
 - `game.js` – Suchspiel, `tour.js` – geführte Tour

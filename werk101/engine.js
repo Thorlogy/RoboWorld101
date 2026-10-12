@@ -209,7 +209,7 @@ function draw() {
   }
   // Außengelände: Räume links neben dem Haus, ohne Wände und Decke
   for (const room of ROOMS) {
-    if (!room.outdoor) continue;
+    if (!room.outdoor || !isOpen(room)) continue;
     const x = rx(room.c), y = ry(room.r), def = BUILT.find(d => d.key === room.built);
     if (!def || !visible(x, y, RW, RH)) continue;
     ctx.save(); ctx.beginPath(); ctx.rect(x, y, RW, RH + 8); ctx.clip(); ctx.translate(x, y); def.draw(f); ctx.restore();
@@ -244,7 +244,7 @@ function draw() {
     shadeOutside(vx0, vy0, vx1, vy1, 'rgba(12,18,48,0.45)');
     // Lichter der Außenfelder nach dem Abdunkeln, damit sie leuchten
     for (const room of ROOMS) {
-      const def = room.outdoor && BUILT.find(d => d.key === room.built);
+      const def = room.outdoor && isOpen(room) && BUILT.find(d => d.key === room.built);
       if (!def || !def.glow || !visible(rx(room.c), ry(room.r), RW, RH)) continue;
       ctx.save(); ctx.translate(rx(room.c), ry(room.r)); def.glow(f); ctx.restore();
     }
@@ -291,7 +291,7 @@ function resize() {
 /* ---------- Treffer ---------- */
 function hitAt(sx, sy) {
   const wx = (sx - state.ox) / state.z, wy = (sy - state.oy) / state.z;
-  const order = BUILT.flatMap(d => d.hitOrder).concat(RUNNERS.map(r => r.robot.id));
+  const order = BUILT.filter(d => isOpen(roomOf(d.key))).flatMap(d => d.hitOrder).concat(RUNNERS.map(r => r.robot.id));
   for (const id of order) {
     const [x, y, w, h] = byId[id].box(state.f);
     if (wx >= x - 4 && wx <= x + w + 4 && wy >= y - 4 && wy <= y + h + 4) return id;
@@ -333,7 +333,7 @@ function endPointer(e) {
   pointers.delete(e.pointerId);
   if (pointers.size < 2) pinch = null;
   if (drag && pointers.size === 0) {
-    if (drag.moved <= 4) { const id = hitAt(e.clientX, e.clientY); if (id === 'lichtschalter') state.licht = !state.licht; select(id, false); }
+    if (drag.moved <= 4) { const id = hitAt(e.clientX, e.clientY); if (id === 'lichtschalter') state.licht = !state.licht; if (id === 'notausgang') knock(); select(id, false); }
     drag = null; canvas.classList.remove('dragging');
   }
 }
@@ -364,11 +364,13 @@ const FILTERS = ['Alle', 'Industrie', 'Service', 'Haushalt', 'Logistik', 'Medizi
 const roomsEl = document.getElementById('rooms');
 BUILT.forEach(o => {
   const b = document.createElement('button'); b.type = 'button'; b.textContent = o.name; b.dataset.key = o.key;
+  if (!isOpen(roomOf(o.key))) b.hidden = true;
   b.addEventListener('click', () => { state.room = o.key; state.sel = null; renderPanel(); state.dirty = true; fitRoom(o.key, true); });
   roomsEl.appendChild(b);
 });
-document.querySelector('.bar i').style.width = (BUILT.length / ROOMS.length * 100).toFixed(1) + '%';
-document.getElementById('progressText').textContent = BUILT.length === ROOMS.length ? `Alle ${ROOMS.length} Räume gebaut. Unterwegs sind außerdem Lieferroboter, Fassadendrohne, Rohrpost und ein Paket vom Hafen bis in den Wohnbereich. Draußen: Straße, Park, Feld, Energiepark, Solarpark, Schulweg und U-Bahnhof. Rechts stehen die Schule 102 und die Halle 103, eine Fabrik, in der das Licht aus ist. Am Himmel fliegen Flugtaxis und Lieferdrohnen.` : `${BUILT.length} von ${ROOMS.length} Räumen gebaut. Der Rest ist Baustelle.`;
+const OPEN_ROOMS = ROOMS.filter(o => !o.secret), OPEN_BUILT = BUILT.filter(d => !roomOf(d.key) || !roomOf(d.key).secret);
+document.querySelector('.bar i').style.width = (OPEN_BUILT.length / OPEN_ROOMS.length * 100).toFixed(1) + '%';
+document.getElementById('progressText').textContent = OPEN_BUILT.length === OPEN_ROOMS.length ? `Alle ${OPEN_ROOMS.length} Räume gebaut. Unterwegs sind außerdem Lieferroboter, Fassadendrohne, Rohrpost und ein Paket vom Hafen bis in den Wohnbereich. Draußen: Straße, Park, Feld, Energiepark, Solarpark, Schulweg, U-Bahn mit Tunnel und eine Tunnelbaustelle. Rechts stehen die Schule 102 und die Halle 103, eine Fabrik, in der das Licht aus ist. Am Himmel fliegen Flugtaxis und Lieferdrohnen.` : `${OPEN_BUILT.length} von ${OPEN_ROOMS.length} Räumen gebaut. Der Rest ist Baustelle.`;
 FILTERS.forEach(name => {
   const b = document.createElement('button'); b.type = 'button'; b.textContent = name;
   b.setAttribute('aria-pressed', String(name === 'Alle'));
@@ -504,3 +506,22 @@ fitRoom(state.room, false);
 if (location.hash === '#haus') fitAll(false);
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { state.dirty = true; });
 requestAnimationFrame(tick);
+
+/* ---------- Geheimer Raum: dreimal am Notausgang im Tunnel anklopfen ---------- */
+window.secretKnocks = 0;
+try { state.secret = localStorage.getItem('werk101-geheim') === '1'; } catch (e) {}
+function unlockSecret() {
+  state.secret = true; state.dirty = true;
+  try { localStorage.setItem('werk101-geheim', '1'); } catch (e) {}
+  const key = (ROOMS.find(o => o.secret) || {}).built;
+  const b = key && document.querySelector(`#rooms button[data-key="${key}"]`); if (b) b.hidden = false;
+  const t = document.querySelector('.toast');
+  if (t) { t.textContent = 'Geheimer Raum entdeckt!'; t.classList.add('on'); setTimeout(() => t.classList.remove('on'), 2600); }
+  if (key) setTimeout(() => { state.room = key; state.sel = null; renderPanel(); fitRoom(key, true); }, 700);
+}
+function knock() {
+  if (state.secret) return;
+  window.secretKnocks = (window.secretKnocks || 0) + 1; state.dirty = true;
+  if (window.secretKnocks >= 3) unlockSecret();
+}
+if (state.secret) document.querySelectorAll('#rooms button').forEach(b => { b.hidden = false; });

@@ -2,7 +2,7 @@
 (() => {
   const STEPS = [
     { all: true, title: 'Willkommen',
-      text: 'RoboWorld 101 zeigt echte Roboter in gezeichneten Szenen. Alles bewegt sich, und jede Figur lässt sich anklicken. Die Tour zeigt vierzehn Stellen, an denen besonders viel passiert.',
+      text: 'RoboWorld 101 zeigt echte Roboter in gezeichneten Szenen. Alles bewegt sich, und jede Figur lässt sich anklicken. Die Tour zeigt fünfzehn Stellen, an denen besonders viel passiert.',
       kid: 'Hier wohnen ganz viele Roboter, und alle gibt es wirklich. Komm mit, ich zeige dir die besten Stellen!' },
     { id: 'saug', title: 'Kantine',
       text: 'Ein Wok-Roboter kocht, ein Kellnerroboter bringt das Essen. Der Saugroboter kämpft mit einer Socke: Socken und Kabel sind für echte Saugroboter bis heute ein Problem.',
@@ -22,7 +22,7 @@
     { id: 'schach', title: 'Museum',
       text: 'Der Schachautomat von 1770 sah aus wie ein Roboter. In Wahrheit saß ein Mensch im Kasten und spielte. Daneben stehen echte Meilensteine wie Shakey und Unimate.',
       kid: 'Dieser Schachspieler war gar kein Roboter. Im Kasten hat sich ein Mensch versteckt!' },
-    { id: 'rover', title: 'Mars-Testgelände',
+    { id: 'marsrover', title: 'Mars-Testgelände',
       text: 'Der Rover macht ein Selfie, so wie Curiosity und Perseverance auf dem Mars. Die Kamera am Arm nimmt viele Bilder auf, die zusammengesetzt werden.',
       kid: 'Auch Roboter machen Selfies. Auf dem Mars machen sie das wirklich!' },
     { id: 'ubahn', g: 70, title: 'U-Bahn ohne Fahrer',
@@ -43,6 +43,9 @@
     { id: 'wing', g: 240, title: 'Lieferdrohne',
       text: 'Vom Dach von Werk 101 startet eine Lieferdrohne. Am Feld bleibt sie in der Luft stehen und lässt der Landwirtin ein Paket an einer Leine hinab. Hoch darüber fliegen Flugtaxis ohne Pilot.',
       kid: 'Die Drohne landet nicht, sie lässt das Paket an einer Leine herunter.' },
+    { id: 'tbm', g: 200, title: 'Tunnelbau',
+      text: 'Unter der Schule bohrt eine Tunnelbohrmaschine die U-Bahn weiter. Ein Greifarm setzt Betonteile zu Ringen zusammen, auf dem Förderband fährt der Aushub zurück. Die Geologin hat gerade etwas gefunden.',
+      kid: 'Diese Riesenmaschine bohrt einen Tunnel. Schau mal, was auf dem Förderband liegt!' },
     { id: 'lichtschalter', title: 'Dunkle Fabrik',
       text: 'In der Halle 103 arbeiten die Roboter im Dunkeln, denn Licht brauchen nur Menschen. Ein Klick auf den Schalter neben der Tür macht das Licht an. Achte auf die Anzeige an der Wand.',
       kid: 'Hier ist es dunkel, und die Roboter arbeiten trotzdem. Klick auf den Schalter neben der Tür!' },
