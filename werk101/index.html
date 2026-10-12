@@ -5,9 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="RoboWorld 101: eine animierte Welt voller echter Roboter. Erstes Gebäude: Werk 101.">
 <title>RoboWorld 101</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500;600&family=Saira+Condensed:wght@600;700&display=swap">
+<link rel="stylesheet" href="fonts/fonts.css?v=20261012b">
 <style>
 /* Layout: Vollbild-Leinwand mit dem Gebäudequerschnitt, schwebende Werkzeugleiste oben, Raum-Panel rechts (mobil: unten). Bewusst nur ein Look, weil die Zeichnung selbst die Farben vorgibt. */
 :root {
@@ -88,6 +86,15 @@ body { background: #a9c3cb; color: var(--ink); font-family: var(--font-body); ov
 .card .src { margin: 8px 0 0; font-size: 12px; }
 .card .src a { color: var(--display); }
 .card .note { color: var(--ink-soft); font-size: 12.5px; margin: 0; }
+.about { border-top: 1px solid var(--line); padding-top: 10px; font-size: 12.5px; line-height: 1.5; color: var(--ink-soft); }
+.about summary { cursor: pointer; font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink); }
+.about summary:focus-visible { outline: 3px solid var(--signal); outline-offset: 2px; }
+.about p { margin: 8px 0 0; }
+.about a { color: var(--display); }
+.simple { align-self: flex-start; font: 600 13px var(--font-body); color: var(--ink); background: var(--chip); border: 2px solid var(--ink); padding: 6px 12px; cursor: pointer; min-height: 34px; }
+.simple::before { content: "☐ "; }
+.simple[aria-pressed="true"]::before { content: "☑ "; }
+.simple:focus-visible { outline: 3px solid var(--signal); outline-offset: 2px; }
 .hint { font-size: 12px; color: var(--ink-soft); line-height: 1.45; margin: 0; }
 
 .panel.collapsed { bottom: auto; }
@@ -145,6 +152,7 @@ body { background: #a9c3cb; color: var(--ink); font-family: var(--font-body); ov
       <div class="eyebrow" style="margin-bottom:6px">Bereich hervorheben</div>
       <div class="chips" id="chips"></div>
     </div>
+    <button type="button" class="simple" id="simple" aria-pressed="false">Einfach erklärt</button>
     <ul class="list" id="list"></ul>
     <article class="card" id="card" hidden>
       <h3 id="cardName"></h3>
@@ -154,42 +162,51 @@ body { background: #a9c3cb; color: var(--ink); font-family: var(--font-body); ov
       <p class="real" id="cardReal" hidden></p>
       <p class="src" id="cardSrc" hidden></p>
     </article>
+    <details class="about">
+      <summary>Über diese Seite</summary>
+      <p>RoboWorld 101 ist ein Projekt von <a href="https://github.com/Thorlogy/RoboWorld101">Thorlogy</a>. Das erste Gebäude, Werk 101, zeigt echte Robotertypen in gezeichneten Szenen.</p>
+      <p>Alle Zeichnungen sind eigene, vereinfachte Darstellungen. Firmen und Produkte stehen nur in den Fakten; die Seite ist mit keiner davon verbunden.</p>
+      <p>Fast jede Karte nennt eine Quelle. Stand der Fakten: Oktober 2026. Einen Fehler gefunden? Gern als <a href="https://github.com/Thorlogy/RoboWorld101/issues">Hinweis auf GitHub</a>.</p>
+      <p>Keine Cookies, kein Tracking. Die Seite liegt bei GitHub Pages und lädt sonst nichts von fremden Servern; Quellenlinks öffnen sich erst beim Anklicken. Den Stand des Suchspiels speichert nur dein Browser.</p>
+      <p>Schriften: IBM Plex und Saira Condensed, SIL Open Font License, lokal eingebunden (<a href="fonts/OFL.txt">Lizenz</a>).</p>
+    </details>
     <p class="hint" id="hint">Tipp: Jede Szene läuft in 60 Bildern und fängt nach 5 Sekunden von vorn an. Mit „Einzelbild“ lässt sie sich Schritt für Schritt ansehen.</p>
   </div>
 </aside>
 
-<script src="kit.js"></script>
-<script src="rooms/kantine.js"></script>
-<script src="rooms/fertigung.js"></script>
-<script src="rooms/lager.js"></script>
-<script src="rooms/kranken.js"></script>
-<script src="rooms/wohnen.js"></script>
-<script src="rooms/sport.js"></script>
-<script src="rooms/museum.js"></script>
-<script src="rooms/drohnen.js"></script>
-<script src="rooms/bergwerk.js"></script>
-<script src="rooms/satellit.js"></script>
-<script src="rooms/labor.js"></script>
-<script src="rooms/schule.js"></script>
-<script src="rooms/pruef.js"></script>
-<script src="rooms/garage.js"></script>
-<script src="rooms/eingang.js"></script>
-<script src="rooms/stall.js"></script>
-<script src="rooms/kat.js"></script>
-<script src="rooms/tiefsee.js"></script>
-<script src="rooms/mars.js"></script>
-<script src="rooms/apotheke.js"></script>
-<script src="rooms/supermarkt.js"></script>
-<script src="rooms/film.js"></script>
-<script src="rooms/recycling.js"></script>
-<script src="rooms/hafen.js"></script>
-<script src="rooms/iss.js"></script>
-<script src="rooms/buecher.js"></script>
-<script src="rooms/baustelle.js"></script>
-<script src="rooms/aussen.js"></script>
-<script src="runners.js"></script>
-<script src="engine.js"></script>
-<script src="game.js"></script>
+<script src="kit.js?v=20261012b"></script>
+<script src="rooms/kantine.js?v=20261012b"></script>
+<script src="rooms/fertigung.js?v=20261012b"></script>
+<script src="rooms/lager.js?v=20261012b"></script>
+<script src="rooms/kranken.js?v=20261012b"></script>
+<script src="rooms/wohnen.js?v=20261012b"></script>
+<script src="rooms/sport.js?v=20261012b"></script>
+<script src="rooms/museum.js?v=20261012b"></script>
+<script src="rooms/drohnen.js?v=20261012b"></script>
+<script src="rooms/bergwerk.js?v=20261012b"></script>
+<script src="rooms/satellit.js?v=20261012b"></script>
+<script src="rooms/labor.js?v=20261012b"></script>
+<script src="rooms/schule.js?v=20261012b"></script>
+<script src="rooms/pruef.js?v=20261012b"></script>
+<script src="rooms/garage.js?v=20261012b"></script>
+<script src="rooms/eingang.js?v=20261012b"></script>
+<script src="rooms/stall.js?v=20261012b"></script>
+<script src="rooms/kat.js?v=20261012b"></script>
+<script src="rooms/tiefsee.js?v=20261012b"></script>
+<script src="rooms/mars.js?v=20261012b"></script>
+<script src="rooms/apotheke.js?v=20261012b"></script>
+<script src="rooms/supermarkt.js?v=20261012b"></script>
+<script src="rooms/film.js?v=20261012b"></script>
+<script src="rooms/recycling.js?v=20261012b"></script>
+<script src="rooms/hafen.js?v=20261012b"></script>
+<script src="rooms/iss.js?v=20261012b"></script>
+<script src="rooms/buecher.js?v=20261012b"></script>
+<script src="rooms/baustelle.js?v=20261012b"></script>
+<script src="rooms/aussen.js?v=20261012b"></script>
+<script src="kinder.js?v=20261012b"></script>
+<script src="runners.js?v=20261012b"></script>
+<script src="engine.js?v=20261012b"></script>
+<script src="game.js?v=20261012b"></script>
 
 </body>
 </html>

@@ -285,12 +285,25 @@ function renderPanel() {
     document.getElementById('cardName').textContent = r.name;
     const meta = document.getElementById('cardMeta'); meta.innerHTML = '';
     [r.bereich, r.typ, r.aera].forEach(t => { const s = document.createElement('span'); s.textContent = t; meta.appendChild(s); });
-    document.getElementById('cardFact').textContent = r.fakt;
+    const kid = simpleMode && typeof KINDER !== 'undefined' && KINDER[r.id];
+    document.getElementById('cardFact').textContent = kid || r.fakt;
     document.getElementById('cardNote').textContent = r.note;
     const src = document.getElementById('cardSrc'); src.hidden = !r.quelle; src.textContent = '';
     if (r.quelle) { const a = document.createElement('a'); a.href = r.quelle; a.target = '_blank'; a.rel = 'noopener'; a.textContent = 'Quelle: ' + new URL(r.quelle).hostname.replace(/^www\./, ''); src.append(a); }
     const real = document.getElementById('cardReal'); real.hidden = !r.echt; real.innerHTML = r.echt ? '<b>In echt:</b> ' : ''; if (r.echt) real.append(r.echt);
   }
+}
+// Schalter „Einfach erklärt“: Kinderfassung der Karten (Text in kinder.js), Wahl bleibt im Browser
+let simpleMode = false;
+try { simpleMode = localStorage.getItem('werk101-einfach') === '1'; } catch (e) {}
+const simpleBtn = document.getElementById('simple');
+if (simpleBtn) {
+  simpleBtn.setAttribute('aria-pressed', String(simpleMode));
+  simpleBtn.addEventListener('click', () => {
+    simpleMode = !simpleMode; simpleBtn.setAttribute('aria-pressed', String(simpleMode));
+    try { localStorage.setItem('werk101-einfach', simpleMode ? '1' : '0'); } catch (e) {}
+    renderPanel();
+  });
 }
 function select(id, fly) {
   state.sel = id;
