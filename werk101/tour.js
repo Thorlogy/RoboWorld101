@@ -2,7 +2,7 @@
 (() => {
   const STEPS = [
     { all: true, title: 'Willkommen',
-      text: 'RoboWorld 101 zeigt echte Roboter in gezeichneten Szenen. Alles bewegt sich, und jede Figur lässt sich anklicken. Die Tour zeigt zwölf Stellen, an denen besonders viel passiert.',
+      text: 'RoboWorld 101 zeigt echte Roboter in gezeichneten Szenen. Alles bewegt sich, und jede Figur lässt sich anklicken. Die Tour zeigt vierzehn Stellen, an denen besonders viel passiert.',
       kid: 'Hier wohnen ganz viele Roboter, und alle gibt es wirklich. Komm mit, ich zeige dir die besten Stellen!' },
     { id: 'saug', title: 'Kantine',
       text: 'Ein Wok-Roboter kocht, ein Kellnerroboter bringt das Essen. Der Saugroboter kämpft mit einer Socke: Socken und Kabel sind für echte Saugroboter bis heute ein Problem.',
@@ -40,6 +40,12 @@
     { id: 'av1', title: 'Schule 102',
       text: 'Im zweiten Gebäude kommt die Schulklasse an. Im Klassenzimmer sitzt ein kleiner Avatar-Roboter für ein Kind, das lange krank ist. Wenn das Kind die Antwort weiß, blinkt sein Kopf grün.',
       kid: 'Dieser kleine Roboter geht für ein krankes Kind zur Schule. Das Kind sieht und hört von zu Hause aus alles mit.' },
+    { id: 'wing', g: 240, title: 'Lieferdrohne',
+      text: 'Vom Dach von Werk 101 startet eine Lieferdrohne. Am Feld bleibt sie in der Luft stehen und lässt der Landwirtin ein Paket an einer Leine hinab. Hoch darüber fliegen Flugtaxis ohne Pilot.',
+      kid: 'Die Drohne landet nicht, sie lässt das Paket an einer Leine herunter.' },
+    { id: 'lichtschalter', title: 'Dunkle Fabrik',
+      text: 'In der Halle 103 arbeiten die Roboter im Dunkeln, denn Licht brauchen nur Menschen. Ein Klick auf den Schalter neben der Tür macht das Licht an. Achte auf die Anzeige an der Wand.',
+      kid: 'Hier ist es dunkel, und die Roboter arbeiten trotzdem. Klick auf den Schalter neben der Tür!' },
     { all: true, wetter: 'sonne', title: 'Jetzt du',
       text: 'Das war die Tour. Rechts im Suchspiel warten Aufgaben, und „Einfach erklärt“ macht alle Karten kindgerecht. Viel Spaß beim Entdecken!',
       kid: 'Jetzt bist du dran! Rechts im Suchspiel stehen Aufgaben für dich.' },

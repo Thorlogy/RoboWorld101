@@ -106,4 +106,13 @@ const KINDER = {
   calliope: 'Mit diesem kleinen Computer lernen Kinder programmieren. Er hat 25 Lämpchen und merkt, wenn man ihn schüttelt.',
   nao: 'Dieser kleine Roboter turnt vor, und die Kinder machen mit. Er ist nur etwas über einen halben Meter groß.',
   barista: 'Dieser Roboterarm macht Kaffee. Man bestellt am Bildschirm, und er stellt den Becher zum Abholen hin.',
+  wing: 'Diese Drohne fliegt wie ein kleines Flugzeug. Am Ziel bleibt sie in der Luft stehen und lässt das Paket an einer Leine herunter.',
+  stationsdrohne: 'Diese Drohne bringt ein Paket zur Schule. Oben auf dem Dach steht ein Kasten, der das Paket annimmt.',
+  flugtaxi: 'Das ist ein Flugtaxi ohne Pilot. Zwei Menschen können damit fliegen, und einer macht gerade ein Foto von oben.',
+  flugtaxi2: 'Noch ein Flugtaxi, ganz weit weg. Deshalb sieht es so klein aus.',
+  lichtschalter: 'Klick auf den Schalter, dann geht das Licht an. Die Roboter brauchen kein Licht, sie arbeiten auch im Dunkeln.',
+  zelle: 'Dieser Roboterarm legt Metallteile in eine Maschine, die sie zurechtfräst. Das macht er Tag und Nacht, auch wenn das Licht aus ist.',
+  baut: 'Hier baut ein Roboter an einem neuen Roboter. Er dreht Schrauben in ein Gelenk.',
+  dunkelamr: 'Dieser Roboter fährt Teile durch die Halle. Er sieht mit einem Laser und findet sich auch im Dunkeln zurecht.',
+  motte: 'Eine Motte! Sie fliegt immer zum hellsten Licht in der Halle.',
 };

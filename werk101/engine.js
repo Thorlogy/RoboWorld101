@@ -29,7 +29,17 @@ function drawHolds() {
 /* ---------- Häuser ---------- */
 // Haus 1: Werk 101. Haus 2: Schule 102 rechts neben dem Schulweg (Spalten 4 und 5, Reihen 4 bis 6)
 const H2 = { x: rx(4) - WALL, y: ry(4) - WALL, w: 2 * (RW + WALL) + WALL, h: 3 * (RH + WALL) + WALL };
-const HOUSES = [{ x: 0, y: TOP - 140, w: BW, h: GROUND - TOP + 140 }, { x: H2.x, y: H2.y - 120, w: H2.w, h: GROUND - H2.y + 120 }];
+// Haus 3: Halle 103, eine fensterlose Fabrikhalle mit einem Raum
+const H3 = { x: rx(6.5) - WALL, y: ry(6) - WALL, w: RW + 2 * WALL, h: RH + 2 * WALL };
+const HOUSES = [{ x: 0, y: TOP - 140, w: BW, h: GROUND - TOP + 140 }, { x: H2.x, y: H2.y - 120, w: H2.w, h: GROUND - H2.y + 120 }, { x: H3.x - 12, y: H3.y - 60, w: H3.w + 24, h: GROUND - H3.y + 60 }];
+function drawHalle() {
+  ctx.fillStyle = '#7f8a8f'; ctx.fillRect(H3.x, H3.y, H3.w, H3.h);
+  ctx.strokeStyle = INK; ctx.lineWidth = 3; ctx.strokeRect(H3.x, H3.y, H3.w, H3.h);
+  ctx.fillStyle = '#5f5b55'; ctx.fillRect(H3.x - 12, H3.y - 10, H3.w + 24, 14);
+  for (let i = 0; i < 3; i++) box(H3.x + 60 + i * 120, H3.y - 26, 80, 16, '#8a8f94', 2, 1.5);
+  box(H3.x + H3.w - 230, H3.y - 58, 200, 40, '#2a2723');
+  text('HALLE 103', H3.x + H3.w - 130, H3.y - 28, 30, { family: '"Saira Condensed", sans-serif', weight: 700, align: 'center', color: '#f3efe4' });
+}
 function drawSchool(f) {
   ctx.fillStyle = '#9a6a52'; ctx.fillRect(H2.x, H2.y, H2.w, H2.h);
   ctx.strokeStyle = INK; ctx.lineWidth = 3; ctx.strokeRect(H2.x, H2.y, H2.w, H2.h);
@@ -215,6 +225,17 @@ function draw() {
       ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.strokeRect(x, y, RW, RH);
     }
   }
+  // Haus 3: Halle 103
+  if (visible(H3.x, H3.y - 60, H3.w, H3.h + 60)) {
+    drawHalle();
+    for (const room of ROOMS) {
+      if (room.haus !== 3) continue;
+      const x = rx(room.c), y = ry(room.r), def = BUILT.find(d => d.key === room.built);
+      if (!def) continue;
+      ctx.save(); ctx.beginPath(); ctx.rect(x, y, RW, RH); ctx.clip(); ctx.translate(x, y); def.draw(f); ctx.restore();
+      ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.strokeRect(x, y, RW, RH);
+    }
+  }
   if (visible(SHAFT_X, ry(0), SHAFT, BOTTOM)) drawShaft(f);
   RUNNERS.forEach(r => r.draw(state.g));
   drawHolds();
@@ -227,6 +248,7 @@ function draw() {
       if (!def || !def.glow || !visible(rx(room.c), ry(room.r), RW, RH)) continue;
       ctx.save(); ctx.translate(rx(room.c), ry(room.r)); def.glow(f); ctx.restore();
     }
+    RUNNERS.forEach(r => r.glow && r.glow(state.g));
   }
 
   const sel = state.sel && byId[state.sel];
@@ -254,7 +276,7 @@ function fit(x, y, w, h, animate = true) {
   requestAnimationFrame(step);
 }
 const fitRoom = (key, a) => { const o = roomOf(key); fit(rx(o.c) - 30, ry(o.r) - 40, RW + 60, RH + 80, a); };
-const fitAll = a => { const c0 = Math.min(...ROOMS.map(o => o.c)), c1 = Math.max(...ROOMS.map(o => o.c)), xr = c1 >= 3 ? rx(c1) + RW + 40 : BW + 60; fit(rx(c0) - 40, TOP - 340, xr - rx(c0) + 40, BOTTOM - TOP + 360, a); };
+const fitAll = a => { const c0 = Math.min(...ROOMS.map(o => o.c)), c1 = Math.max(...ROOMS.map(o => o.c)), xr = c1 >= 3 ? rx(c1) + RW + 40 : BW + 60; fit(rx(c0) - 40, TOP - 560, xr - rx(c0) + 40, BOTTOM - TOP + 580, a); };
 function zoomAt(factor, sx, sy) {
   const nz = clamp(state.z * factor, 0.06, 5);
   const wx = (sx - state.ox) / state.z, wy = (sy - state.oy) / state.z;
@@ -311,7 +333,7 @@ function endPointer(e) {
   pointers.delete(e.pointerId);
   if (pointers.size < 2) pinch = null;
   if (drag && pointers.size === 0) {
-    if (drag.moved <= 4) select(hitAt(e.clientX, e.clientY), false);
+    if (drag.moved <= 4) { const id = hitAt(e.clientX, e.clientY); if (id === 'lichtschalter') state.licht = !state.licht; select(id, false); }
     drag = null; canvas.classList.remove('dragging');
   }
 }
@@ -346,7 +368,7 @@ BUILT.forEach(o => {
   roomsEl.appendChild(b);
 });
 document.querySelector('.bar i').style.width = (BUILT.length / ROOMS.length * 100).toFixed(1) + '%';
-document.getElementById('progressText').textContent = BUILT.length === ROOMS.length ? `Alle ${ROOMS.length} Räume gebaut. Unterwegs sind außerdem Lieferroboter, Fassadendrohne, Rohrpost und ein Paket vom Hafen bis in den Wohnbereich. Draußen: Straße, Park, Feld, Energiepark, Schulweg und U-Bahnhof. Rechts steht das zweite Gebäude, die Schule 102.` : `${BUILT.length} von ${ROOMS.length} Räumen gebaut. Der Rest ist Baustelle.`;
+document.getElementById('progressText').textContent = BUILT.length === ROOMS.length ? `Alle ${ROOMS.length} Räume gebaut. Unterwegs sind außerdem Lieferroboter, Fassadendrohne, Rohrpost und ein Paket vom Hafen bis in den Wohnbereich. Draußen: Straße, Park, Feld, Energiepark, Schulweg und U-Bahnhof. Rechts stehen die Schule 102 und die Halle 103, eine Fabrik, in der das Licht aus ist. Am Himmel fliegen Flugtaxis und Lieferdrohnen.` : `${BUILT.length} von ${ROOMS.length} Räumen gebaut. Der Rest ist Baustelle.`;
 FILTERS.forEach(name => {
   const b = document.createElement('button'); b.type = 'button'; b.textContent = name;
   b.setAttribute('aria-pressed', String(name === 'Alle'));
