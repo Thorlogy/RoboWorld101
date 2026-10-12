@@ -134,4 +134,9 @@ registerRoom({
       box: () => [ENX + 196, ENY + 276, 30, 60] },
   ],
   draw: drawEnergie,
+  glow(f) {
+    // Nachtkennzeichnung: rote Blinklichter auf den Gondeln, wie bei echten Windrädern
+    if (state.g % 24 < 12) for (const [x, y] of [[EN_HUB.x + 14, EN_HUB.y - 12], [470 + 7, 143], [580 + 6, 164]]) glow(x, y, 14, 'rgba(255,60,50,0.95)');
+    const u = putzU(state.g), t = enLerp(EN_TL, EN_TR, u); glow(t.x + 4, t.y - 10, 10, 'rgba(127,224,138,0.9)');
+  },
 });

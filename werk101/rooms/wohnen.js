@@ -1,7 +1,10 @@
 /* Raum: Wohnbereich (Ebene 4) */
 const WX = rx(roomOf('wohnen').c), WY = ry(roomOf('wohnen').r);
 
+// Bei Regen und abends bleibt der Mähroboter in seiner Station (abends wegen der Igel)
+const mowerParked = () => state.wetter !== 'sonne';
 function mowerX(f) {
+  if (mowerParked()) return 40;
   if (f < 22) return lerp(50, 176, ease(seg(f, 0, 22)));
   if (f < 30) return 176 - 3 * Math.sin(Math.PI * seg(f, 22, 30));
   if (f < 54) return lerp(176, 50, ease(seg(f, 30, 54)));
@@ -48,19 +51,30 @@ function drawWohnen(f) {
   ctx.fillStyle = '#5f5b55'; ctx.fillRect(0, 0, RW, 8);
   text('WOHNEN', 440, 120, 40, { family: '"Saira Condensed", sans-serif', weight: 700, color: 'rgba(42,39,35,0.13)' });
   ctx.fillStyle = '#a07a58'; ctx.fillRect(280, 360, 360, 40);
-  // Terrasse mit Kunstrasen hinter Glastür
-  ctx.fillStyle = '#c8dde3'; ctx.fillRect(0, 8, 280, 352);
-  ctx.fillStyle = '#b8cfd6'; for (const [x, h] of [[10, 120], [80, 180], [170, 90]]) ctx.fillRect(x, 300 - h, 60, h);
+  // Terrasse mit Rasen hinter Glastür
+  ctx.fillStyle = state.wetter === 'abend' ? '#2c3458' : state.wetter === 'regen' ? '#9aa8ad' : '#c8dde3'; ctx.fillRect(0, 8, 280, 352);
+  ctx.fillStyle = state.wetter === 'abend' ? '#3b4566' : '#b8cfd6'; for (const [x, h] of [[10, 120], [80, 180], [170, 90]]) ctx.fillRect(x, 300 - h, 60, h);
   ctx.fillStyle = '#5f9a4a'; ctx.fillRect(0, 344, 280, 56);
   ctx.strokeStyle = '#4e8a3c'; ctx.lineWidth = 1.5; ctx.beginPath();
   for (let x = 2; x < 280; x += 5) { ctx.moveTo(x, 346); ctx.lineTo(x + 2, 340); }
   ctx.stroke();
+  // Ladestation des Mähroboters
+  box(4, 318, 18, 28, '#3b3d40', 2, 1.2); ctx.beginPath(); ctx.moveTo(2, 320); ctx.lineTo(70, 312); ctx.lineTo(70, 318); ctx.lineTo(2, 326); ctx.closePath(); paint('#8a8f94', INK, 1.2);
+  if (state.wetter === 'regen') { ctx.strokeStyle = 'rgba(230,240,245,0.7)'; ctx.lineWidth = 1.4; ctx.beginPath(); for (let i = 0; i < 40; i++) { const x = (i * 53) % 280, y = 10 + ((i * 89 + state.g * 9) % 330); ctx.moveTo(x, y); ctx.lineTo(x - 4, y + 14); } ctx.stroke(); }
+  if (state.wetter === 'abend') withAlpha('igel', () => {
+    const x = 90 + 120 * (0.5 - 0.5 * Math.cos(TAU * f / 60)), dir = Math.sin(TAU * f / 60) >= 0 ? 1 : -1;
+    ctx.save(); ctx.translate(x, 346); ctx.scale(dir, 1);
+    ctx.beginPath(); ctx.ellipse(0, -8, 16, 9, 0, Math.PI, 0); paint('#6b4a2a', INK, 1.2);
+    for (let i = -12; i <= 12; i += 4) line(i, -12, i - 3, -18, '#4a3420', 2);
+    ctx.beginPath(); ctx.moveTo(14, -8); ctx.lineTo(24, -4); ctx.lineTo(14, -1); ctx.closePath(); paint('#a07a58', INK, 1); circle(23, -4, 1.4, INK, null);
+    ctx.restore();
+  });
   box(278, 8, 10, 352, '#8e6233', 0, 2);
   line(0, 360, RW, 360, INK, 2);
 
   // Gartenzwerg und Mähroboter
   withAlpha('zwerg', () => {
-    const hit = f >= 22 && f < 32, w = hit ? Math.sin(TAU * (f - 22) / 5) * 0.12 : 0;
+    const hit = !mowerParked() && f >= 22 && f < 32, w = hit ? Math.sin(TAU * (f - 22) / 5) * 0.12 : 0;
     ctx.save(); ctx.translate(232, 346); ctx.rotate(w);
     box(-10, -28, 20, 28, '#3e6f9e', 4); circle(0, -34, 8, '#e2b48f');
     ctx.beginPath(); ctx.moveTo(-9, -38); ctx.lineTo(0, -62); ctx.lineTo(9, -38); ctx.closePath(); paint('#d9542b');
@@ -148,13 +162,18 @@ function drawWohnen(f) {
 
 registerRoom({
   key: 'wohnen', offset: 22, name: 'Wohnbereich', level: 'Ebene 4',
-  hitOrder: ['zwerg', 'hund2', 'opa', 'maeher', 'fenster', 'waesche'],
+  hitOrder: ['igel', 'zwerg', 'hund2', 'opa', 'maeher', 'fenster', 'waesche'],
   robots: [
     { id: 'maeher', echt: 'Viele Mähroboter stoßen Hindernisse tatsächlich erst an und drehen dann um. Neuere erkennen sie vorher mit einer Kamera.', name: 'Mähroboter', bereich: 'Haushalt', aera: 'seit 1995', typ: 'Rasenmäher-Roboter',
-      fakt: 'Husqvarna brachte 1995 einen solarbetriebenen Mähroboter auf den Markt. Heute halten die meisten Geräte über einen Begrenzungsdraht oder per Satellitenortung ihre Fläche ein.',
-      note: 'Mäht Kunstrasen. Stößt jede Runde mit dem Gartenzwerg zusammen und entschuldigt sich nicht.', color: '#e6e3da',
+      fakt: 'Husqvarna brachte 1995 einen solarbetriebenen Mähroboter auf den Markt. Heute halten die meisten Geräte über einen Begrenzungsdraht oder per Satellitenortung ihre Fläche ein. Viele haben einen Regensensor und fahren bei Regen zurück in die Station.',
+      note: 'Stößt jede Runde mit dem Gartenzwerg zusammen. Bei Regen und abends bleibt er in der Station (oben „Wetter“ umschalten).', color: '#e6e3da',
       quelle: 'https://en.wikipedia.org/wiki/Robotic_lawn_mower',
       box: f => [WX + mowerX(f) - 32, WY + 318, 64, 36] },
+    { id: 'igel', name: 'Igel', bereich: 'Tier', aera: 'kein Roboter', typ: 'Nachtaktiver Gartenbesucher',
+      fakt: 'Igel sind nachts unterwegs und rollen sich bei Gefahr zusammen, statt wegzulaufen. Naturschützer raten deshalb, Mähroboter nachts nicht fahren zu lassen.',
+      echt: 'Stimmt so. Erscheint nur, wenn oben „Wetter: Abend“ eingestellt ist.',
+      note: 'Spaziert über den Rasen, solange der Mähroboter in seiner Station steht.', color: '#6b4a2a',
+      box: f => state.wetter === 'abend' ? [WX + 90 + 120 * (0.5 - 0.5 * Math.cos(TAU * f / 60)) - 26, WY + 326, 52, 24] : [-9999, 0, 0, 0] },
     { id: 'zwerg', echt: 'Gartenzwerge sind tatsächlich ein bekanntes Hindernis für Mähroboter. Wackeln tun sie meist nicht, sie fallen um.', name: 'Gartenzwerg', bereich: 'Spielzeug', aera: 'kein Roboter', typ: 'Hindernis',
       fakt: 'Ein klassisches Hindernis für Mähroboter. Viele Geräte erkennen es per Stoßsensor, also erst nach dem Zusammenstoß.',
       note: 'Wackelt. Hält aber durch.', color: '#d9542b',

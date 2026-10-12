@@ -87,4 +87,5 @@ registerRoom({
       box: () => [FDX + 24, FDY + 264, 50, 124] },
   ],
   draw: drawFeld,
+  glow(f) { const x = fdBotX(state.g); glow(x + 8, 312, 10, 'rgba(127,224,138,0.9)'); glow(x + 92, 340, 22, 'rgba(255,243,196,0.7)'); },
 });
