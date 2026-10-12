@@ -84,7 +84,7 @@ registerRoom({
   key: 'schule', name: 'Schule und Werkstatt', level: 'Ebene 3',
   hitOrder: ['lernbot', 'kinder', 'lehrerin', 'drucker'],
   robots: [
-    { id: 'lernbot', name: 'Lernroboter', bereich: 'Bildung', aera: 'seit den 1980ern', typ: 'Kleiner Fahrroboter mit Lichtsensoren',
+    { id: 'lernbot', quelle: 'https://en.wikipedia.org/wiki/Educational_robotics', name: 'Lernroboter', bereich: 'Bildung', aera: 'seit den 1980ern', typ: 'Kleiner Fahrroboter mit Lichtsensoren',
       fakt: 'Ein Linienfolger hat unten Lichtsensoren, die hell und dunkel unterscheiden. Ein kurzes Programm sagt ihm, wann er nach links oder rechts lenken soll. Mit solchen Robotern lernen Kinder Programmieren in vielen Schulen.',
       echt: 'Genau so: Schwarze Gegenstände auf dem Tisch hält ein Linienfolger für seine Linie. Deshalb räumt man vor dem Test die Fahrbahn frei.',
       note: 'Folgt brav der Linie, bis das schwarze Mäppchen kommt.', color: '#2f6db3',

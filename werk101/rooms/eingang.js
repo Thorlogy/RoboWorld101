@@ -99,7 +99,7 @@ registerRoom({
       fakt: 'Mit einem Telepräsenzroboter kann jemand aus der Ferne durch ein Gebäude fahren und mit Menschen sprechen. Bild und Ton kommen per Internet, gesteuert wird am eigenen Computer.',
       echt: 'Realistisch. Das Gesicht auf dem Bildschirm gehört einem echten Menschen, der woanders sitzt.',
       note: 'Die Kollegin ist heute im Homeoffice. Und trotzdem am Empfang.', color: '#2a2723',
-      quelle: 'https://en.wikipedia.org/wiki/Telepresence_robot',
+      quelle: 'https://en.wikipedia.org/wiki/Telerobotics',
       box: () => [EX + 358, EY + 234, 44, 126] },
     { id: 'besuch', name: 'Besucher', bereich: 'Mensch', aera: 'Maßstab', typ: 'Mensch mit Tasche',
       fakt: 'Kommt durch die Drehtür, meldet sich am Empfang an und geht weiter zu den Aufzügen.',

@@ -58,7 +58,7 @@ registerRoom({
   key: 'apotheke', name: 'Apotheke', level: 'Ebene 5',
   hitOrder: ['kundin', 'apothekerin', 'automat'],
   robots: [
-    { id: 'automat', name: 'Kommissionierautomat', bereich: 'Medizin', aera: 'seit den 1990ern', typ: 'Lagerroboter für Medikamente',
+    { id: 'automat', quelle: 'https://en.wikipedia.org/wiki/Pharmacy_automation', name: 'Kommissionierautomat', bereich: 'Medizin', aera: 'seit den 1990ern', typ: 'Lagerroboter für Medikamente',
       fakt: 'In vielen Apotheken steht hinter der Theke ein Automat, der Tausende Medikamentenpackungen dicht an dicht lagert. Ein Greifer holt die gewünschte Packung in wenigen Sekunden und schickt sie über eine Rutsche nach vorn.',
       echt: 'Realistisch. Die Beratung macht weiter ein Mensch, der Automat holt nur die Packung.',
       note: 'Holt eine Packung, bevor die Kundin fertig gefragt hat.', color: '#d6d9dc',

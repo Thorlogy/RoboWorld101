@@ -178,7 +178,7 @@ registerRoom({
       note: 'Hält vor der Katze, piept und fährt rückwärts. Jedes Mal.', color: '#e6e3da',
       quelle: 'https://en.wikipedia.org/wiki/Automated_guided_vehicle',
       box: f => [LX + agvX(f) - 64, LY + 284, 108, 76] },
-    { id: 'sortier', echt: 'Echte Anlagen schieben Pakete meist seitlich auf eine von vielen Rutschen. Der Scanner liest dabei den Code.', name: 'Sortieranlage', bereich: 'Logistik', aera: 'Fördertechnik', typ: 'Förderband mit Scanner und Rutsche',
+    { id: 'sortier', quelle: 'https://en.wikipedia.org/wiki/Sorter_(logistics)', echt: 'Echte Anlagen schieben Pakete meist seitlich auf eine von vielen Rutschen. Der Scanner liest dabei den Code.', name: 'Sortieranlage', bereich: 'Logistik', aera: 'Fördertechnik', typ: 'Förderband mit Scanner und Rutsche',
       fakt: 'In großen Paketzentren laufen Zehntausende Sendungen pro Stunde über die Bänder. Ein Scanner liest den Code auf dem Paket, dann wird es auf die passende Rutsche geleitet.',
       note: 'Jede Runde rutscht ein Paket in den Rollwagen. Der Lieferroboter holt es ab.', color: '#3b3d40',
       box: () => [LX, LY + 106, 340, 60] },

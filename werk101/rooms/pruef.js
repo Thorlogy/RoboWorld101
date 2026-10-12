@@ -75,7 +75,7 @@ registerRoom({
       fakt: 'Boston Dynamics zeigte 2018 einen vierbeinigen Laufroboter, der mit einem Greifarm auf dem Rücken eine Tür öffnet und hindurchgeht. Solche Roboter machen heute Kontrollgänge in Industrieanlagen.',
       echt: 'Realistisch. Türklinken sind für Roboter trotzdem schwierig, weil jede Tür etwas anders aufgeht.',
       note: 'Öffnet die Tür und hält sie auf. Geht aber nie hindurch.', color: '#4a4d52',
-      quelle: 'https://en.wikipedia.org/wiki/Spot_(robot)',
+      quelle: 'https://en.wikipedia.org/wiki/Boston_Dynamics',
       box: () => [PX + 396, PY + 250, 110, 110] },
     { id: 'ingenieur', name: 'Testingenieur', bereich: 'Mensch', aera: 'Maßstab', typ: 'Mensch mit Prüfstock',
       fakt: 'Prüft, wie der Roboter auf Stöße reagiert, und notiert die Messwerte auf dem Tablet.',

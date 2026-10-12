@@ -135,7 +135,7 @@ registerRoom({
   key: 'bergwerk', name: 'Bergwerk und Rohre', level: 'UG 1',
   hitOrder: ['ratte', 'kanarie', 'kanal', 'krabbler', 'schlange', 'bohr'],
   robots: [
-    { id: 'bohr', echt: 'Realistisch. Beim Bohren wird meist Wasser durch den Bohrer gespült, damit weniger Staub entsteht.', name: 'Bohrroboter', bereich: 'Rohstoffe', aera: 'seit den 1980ern', typ: 'Bohrwagen mit Bohrarm',
+    { id: 'bohr', quelle: 'https://en.wikipedia.org/wiki/Drilling_jumbo', echt: 'Realistisch. Beim Bohren wird meist Wasser durch den Bohrer gespült, damit weniger Staub entsteht.', name: 'Bohrroboter', bereich: 'Rohstoffe', aera: 'seit den 1980ern', typ: 'Bohrwagen mit Bohrarm',
       fakt: 'Im Tunnel- und Bergbau bohren Bohrwagen mit mehreren Armen die Löcher für Sprengladungen. Moderne Geräte arbeiten einen digitalen Bohrplan Loch für Loch selbst ab.',
       note: 'Bohrt eine halbe Runde lang. Der Fahrer schaut nur zu, den Bohrplan arbeitet die Maschine selbst ab.', color: '#f0b429',
       box: () => [BX + 44, BY + 228, 254, 132] },

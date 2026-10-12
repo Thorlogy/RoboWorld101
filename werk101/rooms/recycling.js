@@ -59,7 +59,7 @@ registerRoom({
       note: 'Findet in jeder großen Runde eine rote Socke. Die kennt man aus der Kantine.', color: '#f0b429',
       quelle: 'https://en.wikipedia.org/wiki/Materials_recovery_facility',
       box: () => [RCX + 200, RCY + 60, 120, 210] },
-    { id: 'magnet', name: 'Magnetabscheider', bereich: 'Umwelt', aera: 'seit Jahrzehnten', typ: 'Elektromagnet über dem Band',
+    { id: 'magnet', quelle: 'https://en.wikipedia.org/wiki/Magnetic_separation', name: 'Magnetabscheider', bereich: 'Umwelt', aera: 'seit Jahrzehnten', typ: 'Elektromagnet über dem Band',
       fakt: 'Ein starker Magnet über dem Förderband zieht Dosen aus Stahlblech nach oben aus dem Abfallstrom. Das ist kein Roboter, aber ein wichtiger Helfer in jeder Sortieranlage.',
       echt: 'Realistisch. Aluminiumdosen sind nicht magnetisch und werden anders aussortiert.',
       note: 'Holt die Dosen. Ganz ohne Kamera.', color: '#3b3d40',

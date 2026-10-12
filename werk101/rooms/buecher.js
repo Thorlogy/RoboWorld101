@@ -52,7 +52,7 @@ registerRoom({
       note: 'Holt einen Behälter mit einem Buch, das eine Klasse in der Schule bestellt hat.', color: '#f0b429',
       quelle: 'https://en.wikipedia.org/wiki/Joe_and_Rika_Mansueto_Library',
       box: f => [BUX + stacker(f).p.x - 26, BUY + 20, 52, 340] },
-    { id: 'lift', name: 'Bücherlift', bereich: 'Logistik', aera: 'seit Jahrzehnten', typ: 'Senkrechter Förderer',
+    { id: 'lift', quelle: 'https://en.wikipedia.org/wiki/Dumbwaiter', name: 'Bücherlift', bereich: 'Logistik', aera: 'seit Jahrzehnten', typ: 'Senkrechter Förderer',
       fakt: 'Ein kleiner Lift bringt den Behälter vom Speicher nach oben. Ist das Buch gelesen, fährt es denselben Weg zurück.',
       echt: 'Realistisch. Zeichnerisch ist der Lift hier nur angedeutet, in echt führt er durch alle Stockwerke.',
       note: 'Schickt das Buch hinauf zur Schule auf Ebene 3.', color: '#8a8f94',

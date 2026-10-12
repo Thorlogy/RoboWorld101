@@ -92,7 +92,7 @@ registerRoom({
       fakt: 'Nach dem Einsturz des World Trade Centers 2001 durchsuchten erstmals kleine Roboter die Trümmer. Heute tragen sie Wärmebildkameras, die einen Menschen auch im Staub erkennen.',
       echt: 'Realistisch. In der Übung liegt eine Puppe im Schutt, damit niemand in Gefahr ist.',
       note: 'Findet die Übungspuppe jede Runde. Der Monitor wird dann warm.', color: '#5f6b3a',
-      quelle: 'https://en.wikipedia.org/wiki/Rescue_robot',
+      quelle: 'https://en.wikipedia.org/wiki/Search_and_rescue_robot',
       box: f => [KTX + searchX(f) - 30, KTY + 254, 60, 56] },
     { id: 'loeschrob', name: 'Löschroboter', bereich: 'Rettung', aera: 'seit den 2000ern', typ: 'Kettenfahrzeug mit Großgebläse',
       fakt: 'Löschroboter mit großem Gebläse sprühen feinen Wassernebel weit in brennende Hallen oder Tunnel, in die Einsatzkräfte nicht hineinkönnen. Gesteuert werden sie per Funk aus sicherer Entfernung.',

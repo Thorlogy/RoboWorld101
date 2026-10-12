@@ -50,7 +50,6 @@ registerRoom({
       fakt: 'Regal-Scanroboter fahren durch die Gänge und fotografieren die Regale von oben bis unten. Eine Software findet leere Fächer, falsch einsortierte Ware und falsche Preisschilder und schickt eine Liste an das Personal.',
       echt: 'Realistisch. Auffüllen muss weiterhin ein Mensch, der Roboter meldet nur.',
       note: 'Findet die Lücke, die der Lieferroboter beim Einkaufen gerissen hat.', color: '#f3f1ea',
-      quelle: 'https://en.wikipedia.org/wiki/Shelf_scanning_robot',
       box: f => [SMX + scanX(f) - 20, SMY + 146, 40, 214] },
     { id: 'kunde', name: 'Kunde an der Kasse', bereich: 'Mensch', aera: 'Maßstab', typ: 'Mensch',
       fakt: 'Scannt seinen Einkauf an der Selbstbedienungskasse selbst. Die Kasse ist kein Roboter, aber ein Automat.',

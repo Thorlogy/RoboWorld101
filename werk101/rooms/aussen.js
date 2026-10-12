@@ -121,7 +121,7 @@ registerRoom({
       note: 'Sieht den Nachzügler kommen und öffnet die Tür noch einmal.', color: '#3e6f9e',
       quelle: 'https://www.deutschebahn.com/de/Digitalisierung/Smart-Mobility/Erstes-autonomes-Fahrzeug-auf-oeffentlichen-Strassen-3244104',
       box: f => [PKX + shuttleX(f) - 82, PKY + 258, 164, 112] },
-    { id: 'kehr', name: 'Autonome Kehrmaschine', bereich: 'Umwelt', aera: 'Erprobung', typ: 'Kleine Kehrmaschine ohne Fahrer',
+    { id: 'kehr', quelle: 'https://en.wikipedia.org/wiki/Street_sweeper', name: 'Autonome Kehrmaschine', bereich: 'Umwelt', aera: 'Erprobung', typ: 'Kleine Kehrmaschine ohne Fahrer',
       fakt: 'Kleine autonome Kehrmaschinen werden in mehreren Städten erprobt. Sie fahren früh am Morgen über Wege und Plätze und kehren mit rotierenden Bürsten Laub und Müll zusammen.',
       echt: 'Bisher meist Pilotprojekte. Große Straßen kehren weiterhin Menschen mit Kehrfahrzeugen.',
       note: 'Fährt den Parkweg auf und ab.', color: '#e6e3da',

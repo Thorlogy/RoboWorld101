@@ -96,7 +96,7 @@ registerRoom({
       note: 'Bringt das Auto zum Laden und holt es wieder ab. Den ganzen Tag.', color: '#f0b429',
       quelle: 'https://en.newsroom.vinci-concessions.com/news/world-first-lyon-saint-exupery-airport-and-valet-parking-robot-stan-reinvent-car-parks-9f96-55ff8.html',
       box: f => [GX + parkCar(f).x - 76, GY + 296, 152, 64] },
-    { id: 'lader', name: 'Laderoboter', bereich: 'Mobilität', aera: 'Erprobung', typ: 'Fahrbarer Akku mit Ladekabel',
+    { id: 'lader', quelle: 'https://en.wikipedia.org/wiki/Electric_vehicle_charging_infrastructure', name: 'Laderoboter', bereich: 'Mobilität', aera: 'Erprobung', typ: 'Fahrbarer Akku mit Ladekabel',
       fakt: 'Mobile Laderoboter sind fahrbare Akkus, die zu parkenden Elektroautos kommen und sie aufladen. Mehrere Autohersteller haben solche Prototypen gezeigt.',
       echt: 'Bisher meist Prototypen. In echt dauert das Laden deutlich länger als hier.', note: 'Lädt das Auto im Zeitraffer voll.', color: '#e6e3da',
       box: f => [GX + chargerX(f) - 16, GY + 296, 32, 64] },
