@@ -2,7 +2,7 @@
 (() => {
   const STEPS = [
     { all: true, title: 'Willkommen',
-      text: 'RoboWorld 101 zeigt echte Roboter in gezeichneten Szenen. Alles bewegt sich, und jede Figur lässt sich anklicken. Die Tour zeigt elf Stellen, an denen besonders viel passiert.',
+      text: 'RoboWorld 101 zeigt echte Roboter in gezeichneten Szenen. Alles bewegt sich, und jede Figur lässt sich anklicken. Die Tour zeigt zwölf Stellen, an denen besonders viel passiert.',
       kid: 'Hier wohnen ganz viele Roboter, und alle gibt es wirklich. Komm mit, ich zeige dir die besten Stellen!' },
     { id: 'saug', title: 'Kantine',
       text: 'Ein Wok-Roboter kocht, ein Kellnerroboter bringt das Essen. Der Saugroboter kämpft mit einer Socke: Socken und Kabel sind für echte Saugroboter bis heute ein Problem.',
@@ -37,6 +37,9 @@
     { id: 'igel', wetter: 'abend', title: 'Abends im Garten',
       text: 'Abends bleibt der Mähroboter in seiner Station, denn nachts sind Igel unterwegs. Oben bei „Wetter“ lassen sich Sonne, Regen und Abend selbst umschalten.',
       kid: 'Nachts schläft der Mähroboter, damit dem Igel nichts passiert.' },
+    { id: 'av1', title: 'Schule 102',
+      text: 'Im zweiten Gebäude kommt die Schulklasse an. Im Klassenzimmer sitzt ein kleiner Avatar-Roboter für ein Kind, das lange krank ist. Wenn das Kind die Antwort weiß, blinkt sein Kopf grün.',
+      kid: 'Dieser kleine Roboter geht für ein krankes Kind zur Schule. Das Kind sieht und hört von zu Hause aus alles mit.' },
     { all: true, wetter: 'sonne', title: 'Jetzt du',
       text: 'Das war die Tour. Rechts im Suchspiel warten Aufgaben, und „Einfach erklärt“ macht alle Karten kindgerecht. Viel Spaß beim Entdecken!',
       kid: 'Jetzt bist du dran! Rechts im Suchspiel stehen Aufgaben für dich.' },

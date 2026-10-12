@@ -100,4 +100,10 @@ const KINDER = {
   blatt: 'Dieser Roboter repariert die Flügel von Windrädern. Er hängt an Seilen und schleift die Kante glatt, damit kein Mensch dort hochklettern muss.',
   gartenbot: 'Dieser Roboter fährt über ein Hochbeet und gießt jede Pflanze einzeln. Unkraut drückt er einfach zurück in die Erde.',
   ubahn: 'Diese U-Bahn fährt ganz ohne Fahrer. Deshalb kann man vorne aus dem Fenster in den Tunnel schauen.',
+  schrubber: 'Dieser Roboter wischt den Boden ganz allein. Er kennt den Weg durch die Halle und fährt um Menschen herum.',
+  robocup: 'Diesen Roboter haben Kinder selbst gebaut. Er folgt einer schwarzen Linie, auch wenn sie mal eine Lücke hat.',
+  av1: 'Dieser kleine Roboter sitzt für ein krankes Kind in der Klasse. Wenn das Kind etwas sagen will, blinkt sein Kopf grün.',
+  calliope: 'Mit diesem kleinen Computer lernen Kinder programmieren. Er hat 25 Lämpchen und merkt, wenn man ihn schüttelt.',
+  nao: 'Dieser kleine Roboter turnt vor, und die Kinder machen mit. Er ist nur etwas über einen halben Meter groß.',
+  barista: 'Dieser Roboterarm macht Kaffee. Man bestellt am Bildschirm, und er stellt den Becher zum Abholen hin.',
 };

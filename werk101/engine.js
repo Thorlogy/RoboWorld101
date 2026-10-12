@@ -26,13 +26,31 @@ function drawHolds() {
   }
 }
 
+/* ---------- Häuser ---------- */
+// Haus 1: Werk 101. Haus 2: Schule 102 rechts neben dem Schulweg (Spalten 4 und 5, Reihen 4 bis 6)
+const H2 = { x: rx(4) - WALL, y: ry(4) - WALL, w: 2 * (RW + WALL) + WALL, h: 3 * (RH + WALL) + WALL };
+const HOUSES = [{ x: 0, y: TOP - 140, w: BW, h: GROUND - TOP + 140 }, { x: H2.x, y: H2.y - 120, w: H2.w, h: GROUND - H2.y + 120 }];
+function drawSchool(f) {
+  ctx.fillStyle = '#9a6a52'; ctx.fillRect(H2.x, H2.y, H2.w, H2.h);
+  ctx.strokeStyle = INK; ctx.lineWidth = 3; ctx.strokeRect(H2.x, H2.y, H2.w, H2.h);
+  ctx.fillStyle = '#5f5b55'; ctx.fillRect(H2.x - 12, H2.y - 10, H2.w + 24, 14);
+  // Dach: Solarmodule, Wetterstation und Schild
+  for (let i = 0; i < 6; i++) { ctx.beginPath(); const x = H2.x + 520 + i * 70; ctx.moveTo(x, H2.y - 10); ctx.lineTo(x + 56, H2.y - 10); ctx.lineTo(x + 46, H2.y - 40); ctx.lineTo(x - 4, H2.y - 40); ctx.closePath(); paint('#23384d', INK, 1.5); }
+  line(H2.x + H2.w - 80, H2.y - 10, H2.x + H2.w - 80, H2.y - 110, INK, 3);
+  const spin = TAU * state.g / 40; for (let i = 0; i < 3; i++) { const a = spin + i * TAU / 3; line(H2.x + H2.w - 80, H2.y - 110, H2.x + H2.w - 80 + Math.cos(a) * 16, H2.y - 110 + Math.sin(a) * 5, INK, 2); circle(H2.x + H2.w - 80 + Math.cos(a) * 16, H2.y - 110 + Math.sin(a) * 5, 4, '#f3f1ea', INK, 1); }
+  for (const x of [H2.x + 60, H2.x + 330]) line(x, H2.y - 10, x, H2.y - 70, INK, 4);
+  box(H2.x + 30, H2.y - 128, 340, 66, '#2a2723');
+  text('SCHULE 102', H2.x + 200, H2.y - 78, 52, { family: '"Saira Condensed", sans-serif', weight: 700, align: 'center', color: '#f3efe4' });
+  ctx.fillStyle = '#3e6f9e'; ctx.fillRect(H2.x + 30, H2.y - 128, 14, 66);
+}
+
 /* ---------- Wetter und Tageszeit ---------- */
 const SKY = { sonne: ['#8fb1bd', '#bfd2d4', '#e3dccb'], regen: ['#6f7f86', '#8f9ca0', '#b3b1a8'], abend: ['#131b36', '#3a3d63', '#b8705a'] };
 const WETTER = ['sonne', 'regen', 'abend'], WETTER_NAME = { sonne: 'Sonne', regen: 'Regen', abend: 'Abend' };
 // Regen: schräge Striche überall draußen oberhalb des Bodens; Dichte folgt dem Bildschirm, nicht der Welt
 function drawRain(x0, y0, x1, y1) {
   const step = 46 / Math.min(1, state.z), len = 18, t = state.g * 9;
-  ctx.save(); ctx.beginPath(); ctx.rect(x0, y0, x1 - x0, y1 - y0); ctx.rect(0, TOP - 140, BW, GROUND - TOP + 140); ctx.clip('evenodd');
+  ctx.save(); ctx.beginPath(); ctx.rect(x0, y0, x1 - x0, y1 - y0); for (const h of HOUSES) ctx.rect(h.x, h.y, h.w, h.h); ctx.clip('evenodd');
   ctx.strokeStyle = 'rgba(220,232,240,0.55)'; ctx.lineWidth = 1.4 / Math.min(1, state.z); ctx.beginPath();
   const ya = Math.max(y0, -4000), yb = Math.min(y1, GROUND);
   for (let x = Math.floor(x0 / step) * step; x < x1; x += step) for (let y = Math.floor(ya / step) * step; y < yb; y += step) {
@@ -44,7 +62,7 @@ function drawRain(x0, y0, x1, y1) {
 }
 // Abend und Regen: draußen abdunkeln, das Haus und alles unter der Erde bleibt hell
 function shadeOutside(x0, y0, x1, y1, color) {
-  ctx.save(); ctx.beginPath(); ctx.rect(x0, y0, x1 - x0, Math.max(0, GROUND - y0)); ctx.rect(0, TOP - 140, BW, GROUND - TOP + 140);
+  ctx.save(); ctx.beginPath(); ctx.rect(x0, y0, x1 - x0, Math.max(0, GROUND - y0)); for (const h of HOUSES) ctx.rect(h.x, h.y, h.w, h.h);
   ctx.fillStyle = color; ctx.fill('evenodd'); ctx.restore();
 }
 function glow(x, y, r, color) {
@@ -186,6 +204,17 @@ function draw() {
     if (!def || !visible(x, y, RW, RH)) continue;
     ctx.save(); ctx.beginPath(); ctx.rect(x, y, RW, RH + 8); ctx.clip(); ctx.translate(x, y); def.draw(f); ctx.restore();
   }
+  // Haus 2: Schule
+  if (visible(H2.x, H2.y - 140, H2.w, H2.h + 140)) {
+    drawSchool(f);
+    for (const room of ROOMS) {
+      if (room.haus !== 2) continue;
+      const x = rx(room.c), y = ry(room.r), def = BUILT.find(d => d.key === room.built);
+      if (!def || !visible(x, y, RW, RH)) continue;
+      ctx.save(); ctx.beginPath(); ctx.rect(x, y, RW, RH); ctx.clip(); ctx.translate(x, y); def.draw(f); ctx.restore();
+      ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.strokeRect(x, y, RW, RH);
+    }
+  }
   if (visible(SHAFT_X, ry(0), SHAFT, BOTTOM)) drawShaft(f);
   RUNNERS.forEach(r => r.draw(state.g));
   drawHolds();
@@ -317,7 +346,7 @@ BUILT.forEach(o => {
   roomsEl.appendChild(b);
 });
 document.querySelector('.bar i').style.width = (BUILT.length / ROOMS.length * 100).toFixed(1) + '%';
-document.getElementById('progressText').textContent = BUILT.length === ROOMS.length ? `Alle ${ROOMS.length} Räume gebaut. Unterwegs sind außerdem Lieferroboter, Fassadendrohne, Rohrpost und ein Paket vom Hafen bis in den Wohnbereich. Draußen: Straße, Park, Feld, Energiepark, Schulweg und U-Bahnhof.` : `${BUILT.length} von ${ROOMS.length} Räumen gebaut. Der Rest ist Baustelle.`;
+document.getElementById('progressText').textContent = BUILT.length === ROOMS.length ? `Alle ${ROOMS.length} Räume gebaut. Unterwegs sind außerdem Lieferroboter, Fassadendrohne, Rohrpost und ein Paket vom Hafen bis in den Wohnbereich. Draußen: Straße, Park, Feld, Energiepark, Schulweg und U-Bahnhof. Rechts steht das zweite Gebäude, die Schule 102.` : `${BUILT.length} von ${ROOMS.length} Räumen gebaut. Der Rest ist Baustelle.`;
 FILTERS.forEach(name => {
   const b = document.createElement('button'); b.type = 'button'; b.textContent = name;
   b.setAttribute('aria-pressed', String(name === 'Alle'));

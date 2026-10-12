@@ -7,6 +7,7 @@
     { text: 'Finde vier Tiere', ids: ['katze', 'moewe', 'hafenmoewe', 'kanarie', 'ratte', 'hummel', 'kuh', 'fisch', 'kraehe', 'schaf', 'igel'], need: 4 },
     { text: 'Finde zwei Fahrzeuge, die Menschen ohne Fahrer befördern', ids: ['shuttle', 'robotaxi', 'taxi2', 'ubahn'], need: 2 },
     { text: 'Finde die Schulklasse', ids: ['klasse'], need: 1 },
+    { text: 'Finde drei Roboter in der Schule 102', ids: ['schrubber', 'robocup', 'av1', 'calliope', 'nao', 'barista'], need: 3 },
     { text: 'Finde drei Roboter, die draußen für Essen oder Strom arbeiten', ids: ['jaeter', 'putz', 'blatt', 'ernte', 'schieber', 'gartenbot'], need: 3 },
     { text: 'Finde den Roboter, der ein Selfie macht', ids: ['rover'], need: 1 },
     { text: 'Finde beide Stellen mit der roten Socke', ids: ['saug', 'sortierer'], need: 2 },

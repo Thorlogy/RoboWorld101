@@ -48,6 +48,12 @@ const ROOMS = [
   { r: 6, c: -4, name: 'Energiepark', built: 'energie', outdoor: true },
   { r: 6, c: 3, name: 'Schulweg', built: 'schulweg', outdoor: true },
   { r: 7, c: 3, name: 'U-Bahnhof', built: 'ubahn', outdoor: true },
+  { r: 6, c: 4, name: 'Schule: Eingangshalle', built: 'halle2', haus: 2 },
+  { r: 6, c: 5, name: 'Schule: Robotik-AG', built: 'robotik', haus: 2 },
+  { r: 5, c: 4, name: 'Schule: Klassenzimmer', built: 'klasse2', haus: 2 },
+  { r: 5, c: 5, name: 'Schule: Informatikraum', built: 'info', haus: 2 },
+  { r: 4, c: 4, name: 'Schule: Bewegungsraum', built: 'bewegung', haus: 2 },
+  { r: 4, c: 5, name: 'Schule: Lehrerzimmer', built: 'lehrer', haus: 2 },
 ];
 const roomOf = key => ROOMS.find(x => x.built === key);
 
@@ -180,7 +186,7 @@ const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: 
 const state = { f: 0, g: 0, room: 'kantine', playing: !reduce, filter: 'Alle', sel: null, hover: null, wetter: 'sonne', z: 1, ox: 0, oy: 0, dirty: true };
 // Schutzfeld: Roboter mit Sicherheitssensoren halten an, wenn der Mauszeiger (oder Finger) zu nah kommt.
 // Jeder hält seine eigene Uhr an; danach läuft er von dort weiter.
-const SAFETY = { stapler: 60, kellner: 50, gehweg: 50, kehr: 50, jaeter: 70, cobot: 40 };
+const SAFETY = { stapler: 60, kellner: 50, gehweg: 50, kehr: 50, jaeter: 70, cobot: 40, schrubber: 50 };
 const HOLD = {};
 const heldF = (id, f) => { const o = HOLD[id] ? HOLD[id].off : 0; return (((f - o) % 60) + 60) % 60; };
 const heldG = (id, g) => { const o = HOLD[id] ? HOLD[id].off : 0; return (((g - o) % 480) + 480) % 480; };
