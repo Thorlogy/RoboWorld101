@@ -20,10 +20,11 @@ Lies vor jeder Änderung `werk101/STIL.md`. Dort stehen die Stilregeln und am En
 - Jede Figur zeichnen mit `withAlpha('<id>', () => …)`, damit Filter und Prüflauf funktionieren. Schutzfeld (Maus hält Roboter an): ID in `SAFETY` eintragen und `heldDraw`/`heldG` verwenden.
 - Wetter `state.wetter` ('sonne', 'regen', 'abend'); Licht der Dunklen Fabrik `state.licht`.
 - Geheime Felder: `secret: true` in `ROOMS`; sie sind erst nach `unlockSecret()` (dreimal am Notausgang im U-Bahn-Tunnel klopfen) sichtbar. Nicht in Tour oder Raumliste verraten.
+- Karten können `onSelect()` haben (z. B. ELIZA öffnet ein Chatfenster). Der ELIZA-Chat ist regelbasiert wie 1966 und muss kindgerecht bleiben.
 - Nach jeder Änderung die Version `?v=YYYYMMDDx` an allen Skripten in `index.html` hochzählen (Cache).
 
 ## Prüfen
-`python3 werk101/tools/check.py [raum …]` (Python mit Playwright und Pillow). Meldet JavaScript-Fehler, Sprünge an der Schleifennaht, Text über dem Rand, leere Klickflächen und Karten ohne `echt`. Die Meldungen zu „energie“ und „lehrer“ an der Naht sind bekannt und harmlos.
+`python3 werk101/tools/check.py [raum …]` (Python mit Playwright und Pillow). Meldet JavaScript-Fehler, Sprünge an der Schleifennaht, Text über dem Rand, leere Klickflächen und Karten ohne `echt`. Die Meldung zu „energie“ an der Naht ist bekannt und harmlos. Geheime Räume prüft das Skript nur nach `state.secret = true`.
 
 ## Veröffentlichen
 Push auf `main`. GitHub Pages baut die Seite in ein bis zwei Minuten neu.
