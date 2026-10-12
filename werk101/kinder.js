@@ -95,4 +95,7 @@ const KINDER = {
   rohrpost2: 'Auch Medikamente reisen per Rohrpost. Das Rohr führt durch Wände und Decken.',
   entlader: 'Dieser Roboter hebt Pakete mit einem Saugnapf. Er räumt Container und Lastwagen aus.',
   paketbote: 'Dieser kleine Roboter bringt Pakete im Haus bis vor die Tür. Er fährt allein mit dem Aufzug.',
+  jaeter: 'Dieser Roboter sät Rüben und hackt danach das Unkraut weg, ganz ohne Gift. Er merkt sich, wo jedes Samenkorn liegt, und weiß so, was stehen bleiben darf.',
+  putz: 'Dieser Roboter putzt Solarmodule ohne Wasser. Saubere Module machen mehr Strom, aber der Wind bringt schnell neuen Staub.',
+  blatt: 'Dieser Roboter repariert die Flügel von Windrädern. Er hängt an Seilen und schleift die Kante glatt, damit kein Mensch dort hochklettern muss.',
 };

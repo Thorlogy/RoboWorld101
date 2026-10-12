@@ -163,7 +163,7 @@ function fit(x, y, w, h, animate = true) {
   requestAnimationFrame(step);
 }
 const fitRoom = (key, a) => { const o = roomOf(key); fit(rx(o.c) - 30, ry(o.r) - 40, RW + 60, RH + 80, a); };
-const fitAll = a => fit(rx(-2) - 40, TOP - 340, BW - rx(-2) + 100, BOTTOM - TOP + 360, a);
+const fitAll = a => { const c0 = Math.min(...ROOMS.map(o => o.c)); fit(rx(c0) - 40, TOP - 340, BW - rx(c0) + 100, BOTTOM - TOP + 360, a); };
 function zoomAt(factor, sx, sy) {
   const nz = clamp(state.z * factor, 0.06, 5);
   const wx = (sx - state.ox) / state.z, wy = (sy - state.oy) / state.z;
@@ -243,7 +243,7 @@ window.addEventListener('keydown', e => {
 
 /* ---------- Panel ---------- */
 const chipsEl = document.getElementById('chips'), listEl = document.getElementById('list');
-const FILTERS = ['Alle', 'Industrie', 'Service', 'Haushalt', 'Logistik', 'Medizin', 'Forschung', 'Inspektion', 'Geschichte', 'Raumfahrt', 'Mobilität', 'Landwirtschaft', 'Rettung', 'Unterwasser', 'Bildung', 'Medien', 'Umwelt', 'Bau'];
+const FILTERS = ['Alle', 'Industrie', 'Service', 'Haushalt', 'Logistik', 'Medizin', 'Forschung', 'Inspektion', 'Geschichte', 'Raumfahrt', 'Mobilität', 'Landwirtschaft', 'Rettung', 'Unterwasser', 'Bildung', 'Medien', 'Umwelt', 'Energie', 'Bau'];
 const roomsEl = document.getElementById('rooms');
 BUILT.forEach(o => {
   const b = document.createElement('button'); b.type = 'button'; b.textContent = o.name; b.dataset.key = o.key;
@@ -251,7 +251,7 @@ BUILT.forEach(o => {
   roomsEl.appendChild(b);
 });
 document.querySelector('.bar i').style.width = (BUILT.length / ROOMS.length * 100).toFixed(1) + '%';
-document.getElementById('progressText').textContent = BUILT.length === ROOMS.length ? `Alle ${ROOMS.length} Räume gebaut. Unterwegs sind außerdem Lieferroboter, Fassadendrohne, Rohrpost und ein Paket vom Hafen bis in den Wohnbereich.` : `${BUILT.length} von ${ROOMS.length} Räumen gebaut. Der Rest ist Baustelle.`;
+document.getElementById('progressText').textContent = BUILT.length === ROOMS.length ? `Alle ${ROOMS.length} Räume gebaut. Unterwegs sind außerdem Lieferroboter, Fassadendrohne, Rohrpost und ein Paket vom Hafen bis in den Wohnbereich. Draußen: Straße, Park, Feld und Energiepark.` : `${BUILT.length} von ${ROOMS.length} Räumen gebaut. Der Rest ist Baustelle.`;
 FILTERS.forEach(name => {
   const b = document.createElement('button'); b.type = 'button'; b.textContent = name;
   b.setAttribute('aria-pressed', String(name === 'Alle'));

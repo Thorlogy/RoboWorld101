@@ -44,6 +44,8 @@ const ROOMS = [
   { r: 8, c: 2, name: 'Kellerbaustelle', built: 'baustelle' },
   { r: 6, c: -1, name: 'Straße', built: 'strasse', outdoor: true },
   { r: 6, c: -2, name: 'Park', built: 'park', outdoor: true },
+  { r: 6, c: -3, name: 'Feld', built: 'feld', outdoor: true },
+  { r: 6, c: -4, name: 'Energiepark', built: 'energie', outdoor: true },
 ];
 const roomOf = key => ROOMS.find(x => x.built === key);
 
