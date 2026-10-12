@@ -19,6 +19,7 @@ Lies vor jeder Änderung `werk101/STIL.md`. Dort stehen die Stilregeln und am En
 - Figuren über mehrere Räume: `registerRunner({ room, draw(g), glow?(g), robot })` in `runners.js` oder `himmel.js`.
 - Jede Figur zeichnen mit `withAlpha('<id>', () => …)`, damit Filter und Prüflauf funktionieren. Schutzfeld (Maus hält Roboter an): ID in `SAFETY` eintragen und `heldDraw`/`heldG` verwenden.
 - Wetter `state.wetter` ('sonne', 'regen', 'abend'); Licht der Dunklen Fabrik `state.licht`.
+- Geheime Felder: `secret: true` in `ROOMS`; sie sind erst nach `unlockSecret()` (dreimal am Notausgang im U-Bahn-Tunnel klopfen) sichtbar. Nicht in Tour oder Raumliste verraten.
 - Nach jeder Änderung die Version `?v=YYYYMMDDx` an allen Skripten in `index.html` hochzählen (Cache).
 
 ## Prüfen
@@ -28,4 +29,4 @@ Lies vor jeder Änderung `werk101/STIL.md`. Dort stehen die Stilregeln und am En
 Push auf `main`. GitHub Pages baut die Seite in ein bis zwei Minuten neu.
 
 ## Offene Ideen
-Tunnelbohrmaschine unter dem U-Bahnhof, Kapselkamera in der Krankenstation, Roboter-Bienenstock am Feld, Wetterlage „Schnee“ mit Schneeräumroboter, Poolroboter, Messroboter im Teilchenbeschleuniger, Eis- oder Burgerroboter am Park.
+Kapselkamera in der Krankenstation, Roboter-Bienenstock am Feld, Wetterlage „Schnee“ mit Schneeräumroboter, Poolroboter, Messroboter im Teilchenbeschleuniger, Eis- oder Burgerroboter am Park.
