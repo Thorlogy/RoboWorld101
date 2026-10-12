@@ -151,7 +151,7 @@ function drawKantine(f) {
   if (bs) { ctx.save(); ctx.globalAlpha = alphaOf('kellner'); bowl(bs.p.x, bs.p.y, bs.full, bs.eat == null ? 1 : Math.max(0.2, bs.eat)); ctx.restore(); }
 
   // Kellnerroboter
-  withAlpha('kellner', () => {
+  heldDraw('kellner', f, f => {
     const wx = waiterX(f);
     circle(wx - 14, 356, 4, '#2d2f33'); circle(wx + 14, 356, 4, '#2d2f33');
     box(wx - 24, 328, 48, 26, '#f1efe9', 8);

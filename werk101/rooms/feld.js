@@ -17,7 +17,7 @@ function fdCrow(g) {
   return { dx: -40 + 30 * seg(g, 200, 230), lift: hop * 22, flap: hop > 0.05 };
 }
 function drawFeld(f) {
-  const g = state.g;
+  const g = heldG('jaeter', state.g);
   // ferne Hügel, an beiden Rändern flach auslaufend
   ctx.beginPath(); ctx.moveTo(0, 322);
   for (let x = 0; x <= RW; x += 20) ctx.lineTo(x, 322 - Math.sin(Math.PI * x / RW) * (36 + 14 * Math.sin(x / 70)));
@@ -76,16 +76,16 @@ registerRoom({
       echt: 'Realistisch, auch das Tempo: Er fährt langsamer als ein Mensch geht und schafft trotzdem einige Hektar am Tag, weil er Tag und Nacht arbeiten kann.',
       note: 'Hackt das Unkraut zwischen den Rüben und lässt die Rüben stehen. Eine Runde über das Feld dauert 40 Sekunden.', color: '#23384d',
       quelle: 'https://agritechobservatory.review.fao.org/en/farmdroid-fd20',
-      box: () => { const x = fdBotX(state.g); return [FDX + x - 98, FDY + 262, 196, 130]; } },
+      box: () => { const x = fdBotX(heldG('jaeter', state.g)); return [FDX + x - 98, FDY + 262, 196, 130]; } },
     { id: 'kraehe', name: 'Krähe', bereich: 'Tier', aera: 'kein Roboter', typ: 'Mitfahrerin',
       fakt: 'Krähen folgen gern Maschinen auf dem Acker, weil dabei Würmer und Käfer ans Licht kommen. Ein langsamer Roboter mit flachem Dach ist für sie ein Aussichtsplatz.',
       echt: 'Dass Vögel auf Feldrobotern sitzen, kommt tatsächlich vor. Der Roboter stört sich nicht daran.',
       note: 'Fährt mit und flattert kurz auf, wenn die Hacke zu laut wird.', color: '#2a2723',
-      box: () => { const x = fdBotX(state.g), c = fdCrow(state.g); return [FDX + x + c.dx - 20, FDY + 262 - c.lift, 44, 30]; } },
+      box: () => { const hg = heldG('jaeter', state.g), x = fdBotX(hg), c = fdCrow(hg); return [FDX + x + c.dx - 20, FDY + 262 - c.lift, 44, 30]; } },
     { id: 'landwirtin', name: 'Landwirtin', bereich: 'Mensch', aera: 'Maßstab', typ: 'Mensch',
       fakt: 'Plant die Aussaat am Handy und schaut, wo der Roboter gerade fährt.', note: 'Den Rest der Arbeit macht der Roboter allein.', color: '#5f7d3a',
       box: () => [FDX + 24, FDY + 264, 50, 124] },
   ],
   draw: drawFeld,
-  glow(f) { const x = fdBotX(state.g); glow(x + 8, 312, 10, 'rgba(127,224,138,0.9)'); glow(x + 92, 340, 22, 'rgba(255,243,196,0.7)'); },
+  glow(f) { const x = fdBotX(heldG('jaeter', state.g)); glow(x + 8, 312, 10, 'rgba(127,224,138,0.9)'); glow(x + 92, 340, 22, 'rgba(255,243,196,0.7)'); },
 });

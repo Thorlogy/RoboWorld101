@@ -40,7 +40,7 @@ function drawStrasse(f) {
     person({ x: w.x, foot: w.foot, s: w.s, face: w.x < 340 || f < 22 ? 1 : 1, shirt: '#3d7f8f', pants: '#3b3d40', hair: '#2a1f18', hand: { x: w.x + 8 + st, y: w.foot - 60 } });
     if (state.wetter === 'regen') schirm(w.x + 4, w.foot - 150 * w.s, '#d9542b');
   });
-  withAlpha('gehweg', () => {
+  heldDraw('gehweg', f, f => {
     const x = walkBotX(f);
     for (let i = 0; i < 3; i++) circle(x - 18 + i * 18, 383, 5, '#2d2f33');
     box(x - 28, 354, 56, 26, '#f2f0ea', 6);
@@ -100,7 +100,7 @@ function drawPark(f) {
     if (gardenWater(f)) for (let i = 0; i < 6; i++) { const yy = 278 + z + ((f * 3 + i * 5) % 14); circle(x - 4 + (i % 3) * 4, yy, 1.6, '#7fd3ff', null); }
   });
 
-  withAlpha('kehr', () => {
+  heldDraw('kehr', f, f => {
     const x = sweeperX(f);
     box(x - 22, 330, 44, 18, '#e6e3da', 5);
     circle(x - 14, 350, 4, '#2d2f33'); circle(x + 14, 350, 4, '#2d2f33');

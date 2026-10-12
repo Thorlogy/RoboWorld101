@@ -146,7 +146,7 @@ function drawLager(f) {
   });
 
   // Fahrerloser Stapler
-  withAlpha('stapler', () => {
+  heldDraw('stapler', f, f => {
     const gx = agvX(f), alarm = f >= 20 && f < 30;
     ctx.fillStyle = alarm ? 'rgba(255,59,48,0.22)' : 'rgba(127,224,138,0.18)';
     ctx.beginPath(); ctx.moveTo(gx - 62, 358); ctx.lineTo(gx - 112, 358); ctx.lineTo(gx - 98, 346); ctx.lineTo(gx - 62, 346); ctx.closePath(); ctx.fill();

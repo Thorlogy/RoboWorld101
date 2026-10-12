@@ -168,7 +168,7 @@ function drawFertigung(f) {
   box(488, 308, 6, 52, '#8e6233'); box(618, 308, 6, 52, '#8e6233');
 
   // Cobot
-  withAlpha('cobot', () => {
+  heldDraw('cobot', f, f => {
     box(490, 284, 24, 16, '#b9d0dc', 3);
     const warn = f >= 19 && f < 34;
     circle(502, 292, 3, warn ? '#f0b429' : '#7fe08a', INK, 1);
