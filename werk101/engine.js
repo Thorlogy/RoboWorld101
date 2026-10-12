@@ -190,6 +190,7 @@ function hitAt(sx, sy) {
 const pointers = new Map();
 let drag = null, pinch = null;
 canvas.addEventListener('pointerdown', e => {
+  setFollow(false);
   canvas.setPointerCapture(e.pointerId);
   pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
   if (pointers.size === 1) drag = { x: e.clientX, y: e.clientY, ox: state.ox, oy: state.oy, moved: 0 };
@@ -250,7 +251,7 @@ BUILT.forEach(o => {
   roomsEl.appendChild(b);
 });
 document.querySelector('.bar i').style.width = (BUILT.length / ROOMS.length * 100).toFixed(1) + '%';
-document.getElementById('progressText').textContent = BUILT.length === ROOMS.length ? `Alle ${ROOMS.length} Räume gebaut. Unterwegs sind außerdem Lieferroboter, Fassadendrohne und Rohrpost.` : `${BUILT.length} von ${ROOMS.length} Räumen gebaut. Der Rest ist Baustelle.`;
+document.getElementById('progressText').textContent = BUILT.length === ROOMS.length ? `Alle ${ROOMS.length} Räume gebaut. Unterwegs sind außerdem Lieferroboter, Fassadendrohne, Rohrpost und ein Paket vom Hafen bis in den Wohnbereich.` : `${BUILT.length} von ${ROOMS.length} Räumen gebaut. Der Rest ist Baustelle.`;
 FILTERS.forEach(name => {
   const b = document.createElement('button'); b.type = 'button'; b.textContent = name;
   b.setAttribute('aria-pressed', String(name === 'Alle'));
@@ -323,8 +324,23 @@ playBtn.addEventListener('click', () => setPlaying(!state.playing));
 document.getElementById('step').addEventListener('click', () => { setPlaying(false); state.g = (state.g + 1) % 480; state.f = state.g % 60; acc = state.g / 12; state.dirty = true; });
 document.getElementById('zoomIn').addEventListener('click', () => zoomAt(1.3, (canvas.clientWidth - panelWidth()) / 2, canvas.clientHeight / 2));
 document.getElementById('zoomOut').addEventListener('click', () => zoomAt(1 / 1.3, (canvas.clientWidth - panelWidth()) / 2, canvas.clientHeight / 2));
-document.getElementById('goRoom').addEventListener('click', () => fitRoom(state.room, true));
-document.getElementById('goAll').addEventListener('click', () => fitAll(true));
+document.getElementById('goRoom').addEventListener('click', () => { setFollow(false); fitRoom(state.room, true); });
+document.getElementById('goAll').addEventListener('click', () => { setFollow(false); fitAll(true); });
+// Paket verfolgen: Ansicht fährt der Paketreise hinterher (weich, damit Sprünge zwischen Hafen und Wohnbereich gleiten)
+const followBtn = document.getElementById('follow');
+function setFollow(on) {
+  if (!followBtn || state.follow === on) return;
+  state.follow = on;
+  followBtn.textContent = on ? 'Verfolgen beenden' : 'Paket verfolgen';
+  followBtn.setAttribute('aria-pressed', String(on));
+  if (on) { const aw = canvas.clientWidth - panelWidth(), ah = canvas.clientHeight - panelBottom() - 140; state.z = clamp(Math.min((aw - 32) / 760, ah / 520), 0.3, 2.5); followView(1); }
+}
+function followView(k) {
+  const p = paketFokus(state.g), aw = canvas.clientWidth - panelWidth();
+  const cy = (window.innerWidth > 760 ? 150 : 120) + (canvas.clientHeight - (window.innerWidth > 760 ? 150 : 120) - panelBottom()) / 2;
+  state.ox += (aw / 2 - p.x * state.z - state.ox) * k; state.oy += (cy - p.y * state.z - state.oy) * k; state.dirty = true;
+}
+if (followBtn) followBtn.addEventListener('click', () => setFollow(!state.follow));
 if (reduce) document.getElementById('hint').textContent = 'Die Bewegung ist angehalten, weil dein System reduzierte Bewegung wünscht. Mit „Abspielen“ läuft sie trotzdem.';
 
 let acc = 0, last = null, shownF = -1;
@@ -337,6 +353,7 @@ function tick(ts) {
     if (ng !== state.g) { state.g = ng; state.f = ng % 60; state.dirty = true; }
   }
   if (state.f !== shownF) { frameEl.textContent = `Bild ${String(state.f + 1).padStart(2, '0')} / 60`; shownF = state.f; }
+  if (state.follow) followView(reduce ? 1 : 0.12);
   if (state.dirty) { state.dirty = false; draw(); }
   requestAnimationFrame(tick);
 }
