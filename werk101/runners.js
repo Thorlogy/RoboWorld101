@@ -6,15 +6,20 @@ const SHAFT_C = SHAFT_X + SHAFT / 2;
 const XL = rx(0) + 500, XK = rx(0) + 520;
 const CAB_H = 112;
 
-// Aufzugskabine (wird im Gerüst gezeichnet): Ebene 1 → Ebene 4 → Ebene 1
+// Aufzugskabine (wird im Gerüst gezeichnet): EG (Steg im Hafen) → Ebene 1 → Ebene 4 → Ebene 1 → EG
+const PIER = ry(6) + 330;
 function cabinY(g) {
   g %= RUN_P;
-  const a = FLOOR1 - CAB_H, b = FLOOR4 - CAB_H;
+  const e = PIER - CAB_H, a = FLOOR1 - CAB_H, b = FLOOR4 - CAB_H;
+  if (g < 80) return e;
+  if (g < 100) return lerp(e, a, ease(seg(g, 80, 100)));
   if (g < 120) return a;
   if (g < 150) return lerp(a, b, ease(seg(g, 120, 150)));
   if (g < 360) return b;
   if (g < 390) return lerp(b, a, ease(seg(g, 360, 390)));
-  return a;
+  if (g < 416) return a;
+  if (g < 440) return lerp(a, e, ease(seg(g, 416, 440)));
+  return e;
 }
 const XS = rx(2) + 330, XR = rx(2) + 300;
 function lieferPos(g) {
@@ -133,4 +138,111 @@ registerRunner({
     note: 'Schickt jede Runde ein Medikament zur Krankenstation, versetzt zur Laborprobe in der anderen Richtung.', color: '#5f9a4a',
     quelle: 'https://de.wikipedia.org/wiki/Rohrpost',
     box: () => [capsule2X(state.g) - 14, TUBE2_Y - 10, 28, 20] },
+});
+
+// Paketreise: Hafen (EG) → Aufzug → Ebene 4 → Wohnbereich. Entlader auf dem Steg, Hausroboter fährt mit.
+const PR_HX = rx(2), PR_P = rx(2) + 600, PR_C = SHAFT_X + 122, PR_W = rx(1) + 596;
+const PR_PAL = { x: rx(2) + 508, y: PIER - 46 };
+function drawParcel(x, bottom, open = 0, s = 1) {
+  ctx.save(); ctx.translate(x, bottom); ctx.scale(s, s);
+  box(-12, -18, 24, 18, '#c9a46a', 1, 1.5);
+  line(-12, -10, 12, -10, '#a8763f', 2);
+  box(2, -8, 8, 5, '#d9542b', 0, 1);
+  if (open > 0) for (const d of [-1, 1]) { ctx.save(); ctx.translate(12 * d, -18); ctx.rotate(-d * 2.2 * open); box(d > 0 ? -12 : 0, -2, 12, 3, '#d8b77f', 0, 1.2); ctx.restore(); }
+  ctx.restore();
+}
+function boteY(x, floor, g) { return x > SHAFT_X ? cabinY(g) + CAB_H - 8 : floor; }
+function botePos(g) {
+  g %= RUN_P;
+  if (g < 30) return { x: PR_P, y: PIER, dir: -1 };
+  if (g < 72) { const x = lerp(PR_P, PR_C, ease(seg(g, 30, 72))); return { x, y: boteY(x, PIER, g), dir: 1 }; }
+  if (g < 165) return { x: PR_C, y: cabinY(g) + CAB_H - 8, dir: -1 };
+  if (g < 235) { const x = lerp(PR_C, PR_W, ease(seg(g, 165, 235))); return { x, y: boteY(x, FLOOR4, g), dir: -1 }; }
+  if (g < 282) return { x: PR_W, y: FLOOR4, dir: -1 };
+  if (g < 352) { const x = lerp(PR_W, PR_C, ease(seg(g, 282, 352))); return { x, y: boteY(x, FLOOR4, g), dir: 1 }; }
+  if (g < 440) return { x: PR_C, y: cabinY(g) + CAB_H - 8, dir: 1 };
+  if (g < 460) { const x = lerp(PR_C, PR_P, ease(seg(g, 440, 460))); return { x, y: boteY(x, PIER, g), dir: -1 }; }
+  return { x: PR_P, y: PIER, dir: -1 };
+}
+// Greifer des Entladers (u = Zeit ab Bild 460 der Runde)
+function greifer(g) {
+  const u = (g % RUN_P + 20) % RUN_P;
+  const palUp = { x: PR_PAL.x, y: PIER - 62 }, pal = PR_PAL, amrUp = { x: PR_P, y: PIER - 66 }, amr = { x: PR_P, y: PIER - 44 },
+    idle = { x: PR_HX + 556, y: PIER - 74 }, ship = { x: PR_HX + 528, y: PIER - 66 };
+  const keys = [[0, palUp], [6, pal], [10, pal], [16, palUp], [28, amrUp], [36, amr], [40, amr], [50, amrUp], [60, idle], [110, idle],
+    [120, ship], [135, palUp], [145, pal], [150, pal], [165, idle], [460, idle], [480, palUp]];
+  for (let i = 1; i < keys.length; i++) if (u < keys[i][0]) {
+    const [a, A] = keys[i - 1], [b, B] = keys[i], t = ease(seg(u, a, b));
+    return { x: lerp(A.x, B.x, t), y: lerp(A.y, B.y, t) };
+  }
+  return palUp;
+}
+// Wo das nächste bzw. reisende Paket gerade ist (ohne den Teil beim Bewohner)
+function paketOrte(g) {
+  g %= RUN_P; const out = [], T = greifer(g);
+  if (g >= 125 && g < 466) out.push({ x: PR_PAL.x, y: PIER - 28 });
+  if ((g >= 100 && g < 125) || g >= 466 || g < 20) out.push({ x: T.x, y: T.y + 18 });
+  if (g >= 20 && g < 250) { const b = botePos(g); out.push({ x: b.x, y: b.y - 26, follow: true }); }
+  return out;
+}
+// Für „Paket verfolgen“: Mittelpunkt der Reise zu jedem Zeitpunkt
+function paketFokus(g) {
+  g %= RUN_P;
+  if (g >= 250 && g < 476) return { x: rx(1) + 500, y: FLOOR4 - 60 };
+  if (g >= 476 || g < 20) { const T = greifer(g); return { x: T.x, y: T.y + 10 }; }
+  const b = botePos(g); return { x: b.x, y: b.y - 40 };
+}
+registerRunner({
+  room: 'hafen',
+  draw(g) {
+    const X = PR_HX;
+    ctx.fillStyle = '#3b3d40'; ctx.fillRect(SHAFT_X - WALL, PIER - 58, WALL, 58);
+    // Steg vor dem Schiff
+    for (const x of [500, 560, 620]) box(X + x - 3, PIER, 6, 70, '#6b4a2a', 0, 1.2);
+    box(X + 470, PIER - 4, 170, 8, '#a8763f', 0, 1.5);
+    box(PR_PAL.x - 17, PIER - 9, 34, 5, '#a8763f', 0, 1.2);
+    drawParcel(PR_PAL.x, PIER - 9 + 0, 0, 1.08);
+    withAlpha('entlader', () => {
+      const T = greifer(g), S = { x: X + 548, y: PIER - 36 }, W = { x: T.x, y: T.y - 12 };
+      for (const x of [532, 564]) circle(X + x, PIER - 6, 5, '#2d2f33');
+      box(X + 522, PIER - 26, 52, 18, '#3e6f9e', 3);
+      line(X + 568, PIER - 26, X + 568, PIER - 104, INK, 4); line(X + 568, PIER - 26, X + 568, PIER - 104, '#8a8f94', 2);
+      box(X + 560, PIER - 116, 16, 12, '#2a2723', 2, 1.2); circle(X + 568, PIER - 110, 3, g % 12 < 6 ? '#7fd3ff' : '#3f7895', null);
+      box(X + 538, PIER - 34, 20, 8, '#8a8f94', 2, 1.2);
+      const E = ik2(S, W, 40, 40);
+      limb(S.x, S.y, E.x, E.y, 7, '#f0b429'); limb(E.x, E.y, W.x, W.y, 6, '#f0b429');
+      circle(E.x, E.y, 4, '#3b3d40', INK, 1.2);
+      line(W.x, W.y, T.x, T.y - 5, INK, 3);
+      box(T.x - 13, T.y - 6, 26, 6, '#3b3d40', 1, 1.2);
+    });
+    paketOrte(g).filter(o => !o.follow).forEach(o => drawParcel(o.x, o.y));
+  },
+  robot: { id: 'entlader', name: 'Paketentlader', bereich: 'Logistik', aera: 'seit 2022', typ: 'Fahrbarer Roboterarm mit Sauggreifer',
+    fakt: 'Der Roboter Stretch von Boston Dynamics ist seit 2022 zu kaufen und räumt Kartons aus Lkw und Containern. Ein Sauggreifer hebt Kartons bis etwa 23 Kilogramm. Seit 2023 entlädt er zum Beispiel Container in einem Logistikzentrum am Hafen von Los Angeles.',
+    echt: 'Realistisch bis auf den Ort: In echt arbeitet er in Hallen am Container oder Lkw, nicht auf einem Steg am Schiff.',
+    note: 'Holt ein Paket vom Stapel und setzt es genau in den Hausroboter. Danach wartet er auf die nächste Runde.', color: '#3e6f9e',
+    quelle: 'https://robotics247.com/article/boston_dynamics_stretch_now_available_for_commercial_purchase',
+    box: () => [PR_HX + 516, PIER - 118, 66, 118] },
+});
+registerRunner({
+  room: 'hafen',
+  draw(g) {
+    withAlpha('paketbote', () => {
+      const p = botePos(g);
+      ctx.save(); ctx.translate(p.x, p.y); ctx.scale(p.dir, 1);
+      for (const x of [-11, 11]) circle(x, -5, 4.5, '#2d2f33');
+      box(-17, -26, 34, 20, '#e6e3da', 4);
+      box(-17, -26, 34, 4, '#3e6f9e', 1, 1.2);
+      box(-12, -18, 12, 6, '#23384d', 1, 1); circle(10, -14, 2, g % 8 < 4 ? '#7fe08a' : '#2d5b33', null);
+      line(-14, -26, -14, -46, INK, 1.5); circle(-14, -47, 2.5, '#d9542b', INK, 1);
+      ctx.restore();
+    });
+    paketOrte(g).filter(o => o.follow).forEach(o => drawParcel(o.x, o.y));
+  },
+  robot: { id: 'paketbote', name: 'Hauslieferroboter', bereich: 'Logistik', aera: 'seit 2014', typ: 'Kleiner Lieferroboter für Gebäude',
+    fakt: 'Seit 2014 bringen kleine Roboter in Hotels Handtücher und Bestellungen bis vor die Zimmertür. Heute fahren solche Geräte auch in Kliniken, Bürohäusern und Wohnanlagen, rufen den Aufzug per Funk und finden allein ins richtige Stockwerk.',
+    echt: 'Realistisch. Echte Geräte haben meist ein verschließbares Fach; hier ist es offen, damit man das Paket verfolgen kann.',
+    note: 'Bringt jede Runde ein Paket vom Hafen bis in den Wohnbereich und fährt mit dem Lieferroboter Aufzug. Mit „Paket verfolgen“ fährt die Ansicht mit.', color: '#e6e3da',
+    quelle: 'https://en.wikipedia.org/wiki/Delivery_robot',
+    box: () => { const p = botePos(state.g); return [p.x - 20, p.y - 50, 40, 50]; } },
 });
