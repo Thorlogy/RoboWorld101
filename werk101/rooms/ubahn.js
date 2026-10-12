@@ -2,46 +2,58 @@
    Hauptfigur: fahrerlose U-Bahn · Gag: Weil vorn kein Fahrerstand ist, drückt sich ein Kind an der Frontscheibe die Nase platt
    Läuft auf der globalen Uhr state.g: Zug fährt ein (0–40), hält (40–200), fährt weiter (200–260). Querverweis: Schulklasse steigt aus und geht die Treppe hoch zum Schulweg */
 const UBX = rx(roomOf('ubahn').c), UBY = ry(roomOf('ubahn').r);
-const UB_PLAT = 330, UB_STOP = 300;
+const UB_PLAT = 330, UB_STOP = 10;
+// Wagen in echter Größe zu den Menschen: 320 lang, Dach bei y 150 (gut doppelt so hoch wie ein Mensch)
+const UB_L = 320, UB_TOP = 150, UB_DOORS = [0.27, 0.73];
 function ubTrainX(g) {
   g %= 480;
   if (g < 40) return lerp(720, UB_STOP, 1 - (1 - seg(g, 0, 40)) ** 2);
   if (g < 200) return UB_STOP;
-  if (g < 260) return lerp(UB_STOP, -1100, seg(g, 200, 260) ** 2);
+  if (g < 260) return lerp(UB_STOP, -1500, seg(g, 200, 260) ** 2);
   // kommt von rechts durch den Tunnel unter der Schule (gleiche Geschwindigkeit wie beim Einfahren)
-  if (g >= 400) return lerp(2400, 720, seg(g, 400, 480));
-  return -1100;
+  if (g >= 400) return lerp(720 + 35.5 * 80, 720, seg(g, 400, 480));
+  return -1500;
 }
-const UB_CARS = 4, UB_LEN = UB_CARS * 240 - 10;
+const UB_CARS = 4, UB_LEN = UB_CARS * UB_L - 10;
+const ubDoorX = (car, k) => UB_STOP + car * UB_L + UB_DOORS[k] * (UB_L - 10);
 // ganzer Zug, x in Raumkoordinaten des Feldes, in dem gezeichnet wird
 function ubTrain(x, g) {
   const open = ubDoor(g);
   for (let i = 0; i < UB_CARS; i++) {
-    ubCar(x + i * 240, i === 0, open);
-    if (i > 0) { ctx.fillStyle = '#3b3d40'; ctx.fillRect(x + i * 240 - 10, 280, 10, 40); }
+    ubCar(x + i * UB_L, i === 0, open, i);
+    if (i > 0) { ctx.fillStyle = '#3b3d40'; ctx.fillRect(x + i * UB_L - 10, 230, 10, 80); }
   }
   // Kind an der Frontscheibe, weil vorn kein Fahrer sitzt
-  circle(x + 22, 280, 8, '#e2b48f', INK, 1.2); ctx.fillStyle = '#7a4a2a'; ctx.beginPath(); ctx.arc(x + 22, 277, 8, Math.PI, TAU); ctx.fill();
-  for (const dy of [-6, 6]) circle(x + 11, 280 + dy, 3, '#e2b48f', INK, 1);
-  circle(x + 15, 282, 2, '#d98f8f', null);
-  const hair = ['#3a2c22', '#d6d2c8', '#8a5a2b', '#2a1f18', '#c9a46a', '#7a4a2a', '#3b3d40'];
-  [62, 172, 280, 390, 530, 600, 760, 850].forEach((wx, i) => circle(x + wx, 270, 7, hair[i % hair.length], INK, 1));
+  const kx = x + 30, ky = 248;
+  circle(kx, ky, 11, '#e2b48f', INK, 1.2); ctx.fillStyle = '#7a4a2a'; ctx.beginPath(); ctx.arc(kx, ky - 3, 11, Math.PI, TAU); ctx.fill();
+  for (const dy of [-8, 8]) circle(kx - 14, ky + 10 + dy, 4, '#e2b48f', INK, 1);
+  circle(kx - 9, ky + 2, 2.5, '#d98f8f', null);
 }
 const ubDoor = g => { g %= 480; return g < 50 || g >= 170 ? 0 : g < 58 ? seg(g, 50, 58) : g < 162 ? 1 : 1 - seg(g, 162, 170); };
-function ubCar(x, front, open) {
+function ubCar(x, front, open, idx) {
+  const L = UB_L - 10, T = UB_TOP, B = 338;
   ctx.beginPath();
-  if (front) { ctx.moveTo(x + 230, 236); ctx.lineTo(x + 26, 236); ctx.quadraticCurveTo(x, 240, x, 270); ctx.lineTo(x, 338); ctx.lineTo(x + 230, 338); }
-  else { ctx.moveTo(x, 236); ctx.lineTo(x + 230, 236); ctx.lineTo(x + 230, 338); ctx.lineTo(x, 338); }
+  if (front) { ctx.moveTo(x + L, T); ctx.lineTo(x + 40, T); ctx.quadraticCurveTo(x, T + 8, x, T + 60); ctx.lineTo(x, B); ctx.lineTo(x + L, B); }
+  else { ctx.moveTo(x, T); ctx.lineTo(x + L, T); ctx.lineTo(x + L, B); ctx.lineTo(x, B); }
   ctx.closePath(); paint('#f3f1ea', INK, 2);
-  ctx.fillStyle = '#d9542b'; ctx.fillRect(x + (front ? 4 : 0), 318, front ? 226 : 230, 6);
-  for (const wx of [40, 150]) box(x + wx, 252, 44, 38, '#9fc4d6', 3, 1.2);
-  const d = x + 115, w = 18 * (1 - open);
-  box(d - 18 - (18 - w) * 0, 248, w, 90, '#e6e3da', 1, 1.2); box(d + 18 - w, 248, w, 90, '#e6e3da', 1, 1.2);
-  if (open > 0.05) { ctx.fillStyle = '#cfd6d9'; ctx.fillRect(d - 18 + w, 248, 36 - 2 * w, 90); }
-  for (const wx of [30, 200]) { circle(x + wx, 346, 8, '#2d2f33'); circle(x + wx, 346, 3, '#8a8f94', null); }
+  ctx.fillStyle = '#d9542b'; ctx.fillRect(x + (front ? 4 : 0), 304, front ? L - 4 : L, 8);
+  box(x + 20, T - 8, L - 40, 8, '#c9ccd0', 2, 1.2);
+  // Fenster zwischen den Türen, darin Fahrgäste
+  const hair = ['#3a2c22', '#d6d2c8', '#8a5a2b', '#2a1f18', '#c9a46a', '#7a4a2a'];
+  const wins = [[front ? 60 : 14, 0.27 * L - 40], [0.27 * L + 36, 0.73 * L - 36], [0.73 * L + 40, L - 14]];
+  wins.forEach(([a, b], k) => { if (b - a < 20) return; box(x + a, 180, b - a, 70, '#9fc4d6', 4, 1.2);
+    if (k === 1) for (let j = 0; j < 2; j++) { const hx = x + a + 24 + j * 46; circle(hx, 226, 10, '#e2b48f', INK, 1); ctx.beginPath(); ctx.arc(hx, 223, 10, Math.PI, TAU); ctx.fillStyle = hair[(idx * 2 + j) % hair.length]; ctx.fill(); box(hx - 12, 236, 24, 14, ['#3e6f9e', '#d9542b', '#5f9a4a', '#f0b429'][(idx + j) % 4], 3, 1); } });
+  // zwei Doppeltüren
+  for (const k of UB_DOORS) {
+    const d = x + k * L, w = 26 * (1 - open);
+    if (open > 0.05) { ctx.fillStyle = '#cfd6d9'; ctx.fillRect(d - 26 + w, 172, 52 - 2 * w, B - 172); }
+    box(d - 26, 172, w, B - 172, '#e6e3da', 1, 1.2); box(d + 26 - w, 172, w, B - 172, '#e6e3da', 1, 1.2);
+    if (w > 6) { ctx.fillStyle = 'rgba(159,196,214,0.8)'; ctx.fillRect(d - 22, 184, w - 6, 60); ctx.fillRect(d + 30 - w, 184, w - 6, 60); }
+  }
+  for (const wx of [40, L - 40]) { circle(x + wx, 346, 10, '#2d2f33'); circle(x + wx, 346, 4, '#8a8f94', null); }
   if (front) {
-    ctx.beginPath(); ctx.moveTo(x + 30, 244); ctx.quadraticCurveTo(x + 8, 248, x + 8, 272); ctx.lineTo(x + 8, 296); ctx.lineTo(x + 34, 296); ctx.lineTo(x + 34, 244); ctx.closePath(); paint('#9fc4d6', INK, 1.5);
-    box(x + 4, 302, 10, 6, '#fff3c4', 1, 1);
+    ctx.beginPath(); ctx.moveTo(x + 44, T + 10); ctx.quadraticCurveTo(x + 10, T + 16, x + 10, T + 62); ctx.lineTo(x + 10, 280); ctx.lineTo(x + 52, 280); ctx.lineTo(x + 52, T + 10); ctx.closePath(); paint('#9fc4d6', INK, 1.5);
+    box(x + 4, 290, 12, 8, '#fff3c4', 1, 1);
   }
 }
 function drawUbahn(f) {

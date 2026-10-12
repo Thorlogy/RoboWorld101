@@ -21,7 +21,7 @@ function drawSchulweg(f) {
   for (let y = 332; y < 392; y += 12) line(470, y, 482, y, INK, 1.5);
 }
 // Schulklasse: Lehrerin und vier Kinder, je 10 Bilder versetzt
-const KL_DOOR = { x: UBX + 415, y: UBY + 330 }, KL_SB = { x: UBX + 280, y: UBY + 330 }, KL_ST = { x: SWX + 24, y: SWY + 392 }, KL_END = SWX + 700;
+const KL_DOOR = { x: UBX + ubDoorX(1, 0), y: UBY + 330 }, KL_SB = { x: UBX + 280, y: UBY + 330 }, KL_ST = { x: SWX + 24, y: SWY + 392 }, KL_END = SWX + 700;
 const KL = [
   { s: 1, shirt: '#7b4b8e', pants: '#3b3d40', hair: '#3a2c22', kid: false },
   { s: 0.72, shirt: '#d9542b', pants: '#2f4866', hair: '#e0b860', kid: true, bag: '#3e6f9e' },

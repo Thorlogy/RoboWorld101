@@ -13,7 +13,7 @@ function ubTrack() {
 // Fahrgäste aus Wagen 3 gehen zum Aufzug, der Aufzug fährt hoch zur Schule
 function bsWalker(g, i) {
   g %= 480;
-  const door = 300 + 480 + 115 - (UBSX - UBX), wait = 548 + i * 22;
+  const door = ubDoorX(2, 1) - (UBSX - UBX), wait = 548 + i * 22;
   if (g < 70 + i * 10 || g >= 168) return null;
   if (g < 120) return { x: lerp(door + i * 8, wait, seg(g, 70 + i * 10, 120)), walk: true };
   if (g < 150) return { x: wait, walk: false };
