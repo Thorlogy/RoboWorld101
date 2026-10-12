@@ -8,6 +8,24 @@ function mowerX(f) {
   return 50;
 }
 const winBot = f => ({ x: 336 + 46 * (0.5 - 0.5 * Math.cos(TAU * 3 * f / 60)), y: 96 + 80 * (0.5 - 0.5 * Math.cos(TAU * f / 60)) });
+// Paket für den Bewohner (globale Uhr state.g, Ankunft mit dem Hauslieferroboter ab Bild 240 der 40-s-Runde)
+function opaPaket(G, peek) {
+  const normal = peek ? { x: 490, y: 300 } : { x: 492, y: 288 }, lap = { x: 500, y: 320 }, hold = { x: 492, y: 306 }, up = { x: 482, y: 258 + Math.sin(G / 4) * 2 };
+  const mixP = (A, B, t) => ({ x: lerp(A.x, B.x, t), y: lerp(A.y, B.y, t) });
+  if (G < 240 || G >= 476) return { hand: normal, paper: true };
+  if (G < 250) return { hand: mixP(normal, { x: 586, y: 318 }, ease(seg(G, 240, 250))) };
+  if (G < 262) { const c = mixP({ x: 596, y: 334 }, lap, ease(seg(G, 250, 262))); return { hand: { x: c.x - 10, y: c.y - 16 }, parcel: { ...c, open: 0, s: 1, a: 1 } }; }
+  const open = G < 300 ? 0 : G < 312 ? seg(G, 300, 312) : G < 452 ? 1 : 1 - seg(G, 452, 462);
+  if (G < 312) return { hand: hold, parcel: { ...lap, open, s: 1, a: 1 } };
+  if (G < 452) {
+    const t = G < 326 ? ease(seg(G, 312, 326)) : G < 440 ? 1 : 1 - ease(seg(G, 440, 452));
+    const k = mixP({ x: 500, y: 300 }, up, t);
+    return { hand: k, parcel: { ...lap, open, s: 1, a: 1 }, sock: k };
+  }
+  if (G < 462) return { hand: hold, parcel: { ...lap, open, s: 1, a: 1 } };
+  const t = ease(seg(G, 462, 474));
+  return { hand: mixP(hold, normal, ease(seg(G, 462, 476))), parcel: G < 474 ? { ...mixP(lap, { x: 624, y: 356 }, t), open: 0, s: 1 - 0.4 * t, a: 1 - 0.6 * t } : null };
+}
 function dogPose(f) {
   if (f < 10) return { x: 360, walk: false };
   if (f < 28) return { x: lerp(360, 440, ease(seg(f, 10, 28))), walk: true };
@@ -80,14 +98,20 @@ function drawWohnen(f) {
   box(468, 280, 80, 46, '#3e6f9e', 8);
   box(468, 232, 20, 96, '#335d86', 6); box(468, 318, 80, 14, '#335d86', 4);
   line(478, 332, 476, 358, INK, 3); line(540, 332, 542, 358, INK, 3);
+  // Kartonstapel neben dem Sessel (hier landen die leeren Paketkartons)
+  for (let i = 0; i < 3; i++) box(612 + (i % 2) * 3, 354 - i * 4, 24, 4, '#c9a46a', 0, 1.2);
   withAlpha('opa', () => {
-    const peek = dogPose(f).peek;
-    person({ x: 516, face: -1, sit: true, foot: 360, shirt: '#8a5a3c', pants: '#5d5a55', hair: '#d6d2c8', skin: '#e4bf9c', hand: peek ? { x: 490, y: 300 } : { x: 492, y: 288 } });
+    const peek = dogPose(f).peek, P = opaPaket(state.g, peek);
+    person({ x: 516, face: -1, sit: true, foot: 360, shirt: '#8a5a3c', pants: '#5d5a55', hair: '#d6d2c8', skin: '#e4bf9c', hand: P.hand });
     circle(507, 271, 3.2, null, INK, 1.2); circle(500, 271, 3.2, null, INK, 1.2);
-    ctx.save(); ctx.translate(peek ? 486 : 488, peek ? 296 : 284); ctx.rotate(peek ? 0.5 : -0.15);
-    box(-14, -16, 18, 22, '#f3f1ea', 0, 1.2);
-    for (let y = -12; y < 4; y += 4) line(-11, y, 1, y, '#8a8f94', 1);
-    ctx.restore();
+    if (P.paper) {
+      ctx.save(); ctx.translate(peek ? 486 : 488, peek ? 296 : 284); ctx.rotate(peek ? 0.5 : -0.15);
+      box(-14, -16, 18, 22, '#f3f1ea', 0, 1.2);
+      for (let y = -12; y < 4; y += 4) line(-11, y, 1, y, '#8a8f94', 1);
+      ctx.restore();
+    } else box(470, 274, 16, 6, '#f3f1ea', 0, 1.2);
+    if (P.parcel) { ctx.save(); ctx.globalAlpha *= P.parcel.a; drawParcel(P.parcel.x, P.parcel.y, P.parcel.open, P.parcel.s); ctx.restore(); }
+    if (P.sock) { const k = P.sock; limb(k.x, k.y, k.x, k.y + 14, 5, '#c94040'); limb(k.x, k.y + 14, k.x - 7, k.y + 17, 5, '#c94040'); line(k.x - 2, k.y + 4, k.x + 2, k.y + 4, '#f3efe4', 2); }
   });
   withAlpha('hund2', () => {
     const p = dogPose(f), bl = ballPos(f);
@@ -145,8 +169,9 @@ registerRoom({
       quelle: 'https://en.wikipedia.org/wiki/AIBO',
       box: f => [WX + dogPose(f).x - 32, WY + 300, 72, 60] },
     { id: 'opa', name: 'Bewohner', bereich: 'Mensch', aera: 'Maßstab', typ: 'Mensch im Sessel',
-      fakt: 'Liest Zeitung und schaut dem Roboterhund zu. Wenn der Ball unter dem Sessel liegt, lässt er die Zeitung sinken.',
-      note: 'Holt den Ball nie selbst. Er will sehen, ob der Hund es allein schafft.', color: '#8a5a3c',
+      fakt: 'Liest Zeitung und schaut dem Roboterhund zu. Wenn der Ball unter dem Sessel liegt, lässt er die Zeitung sinken. Einmal pro Runde bringt ihm der Hauslieferroboter ein Paket aus dem Hafen.',
+      echt: 'Riesiger Karton für ein winziges Teil: Das passiert beim Versand wirklich ständig.',
+      note: 'Im Paket ist eine einzelne rote Socke. Der Saugroboter in der Kantine frisst ja ständig welche.', color: '#8a5a3c',
       box: () => [WX + 474, WY + 238, 60, 122] },
     { id: 'waesche', echt: 'Wäschefalten ist für Roboter bis heute schwer, für Fabriken gibt es aber Faltmaschinen. Mit den Schultern zucken können Roboter nicht.', name: 'Wäscheroboter', bereich: 'Haushalt', aera: 'Forschung', typ: 'Zweiarmiger Haushaltsroboter',
       fakt: 'Weiche Stoffe sind für Roboter besonders schwer zu greifen. 2010 faltete ein Forschungsroboter an der University of California in Berkeley Handtücher zuverlässig, brauchte dafür aber rund 20 Minuten pro Stück.',
