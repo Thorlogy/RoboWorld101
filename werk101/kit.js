@@ -178,6 +178,13 @@ function gear(x, y) {
 /* ---------- Zustand ---------- */
 const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const state = { f: 0, g: 0, room: 'kantine', playing: !reduce, filter: 'Alle', sel: null, hover: null, wetter: 'sonne', z: 1, ox: 0, oy: 0, dirty: true };
+// Schutzfeld: Roboter mit Sicherheitssensoren halten an, wenn der Mauszeiger (oder Finger) zu nah kommt.
+// Jeder hält seine eigene Uhr an; danach läuft er von dort weiter.
+const SAFETY = { stapler: 60, kellner: 50, gehweg: 50, kehr: 50, jaeter: 70, cobot: 40 };
+const HOLD = {};
+const heldF = (id, f) => { const o = HOLD[id] ? HOLD[id].off : 0; return (((f - o) % 60) + 60) % 60; };
+const heldG = (id, g) => { const o = HOLD[id] ? HOLD[id].off : 0; return (((g - o) % 480) + 480) % 480; };
+const heldDraw = (id, f, fn) => withAlpha(id, () => fn(heldF(id, f)));
 const alphaOf = id => {
   const r = byId[id];
   return state.filter === 'Alle' || (r && r.bereich === state.filter) ? 1 : 0.2;

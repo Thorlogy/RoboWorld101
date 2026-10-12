@@ -1,6 +1,30 @@
 /* Werk 101 – Gerüst: Umgebung, Baustellen, Aufzug, Ansicht, Eingabe, Panel. Wird nach den Räumen geladen. */
 'use strict';
 const byId = Object.fromEntries(ROBOTS.map(r => [r.id, r]));
+// Schutzfeld: Klickflächen folgen der angehaltenen Uhr des Roboters (Feldroboter rechnet selbst mit heldG)
+for (const id of Object.keys(SAFETY)) if (id !== 'jaeter' && byId[id]) { const b = byId[id].box; byId[id].box = f => b(heldF(id, f)); }
+function updateHolds() {
+  const p = state.ptr;
+  for (const id of Object.keys(SAFETY)) {
+    if (!byId[id]) continue;
+    const h = HOLD[id] || (HOLD[id] = { off: 0, held: false }), m = SAFETY[id];
+    const [x, y, w, hh] = byId[id].box(state.f);
+    const near = !!p && p.x > x - m && p.x < x + w + m && p.y > y - m && p.y < y + hh + m;
+    if (near !== h.held) { h.held = near; state.dirty = true; }
+  }
+}
+function advanceHolds(d) { for (const id in HOLD) if (HOLD[id].held) HOLD[id].off += d; }
+function drawHolds() {
+  for (const id in HOLD) {
+    if (!HOLD[id].held || !byId[id]) continue;
+    const [x, y, w, h] = byId[id].box(state.f), m = SAFETY[id] * 0.6;
+    ctx.save(); ctx.fillStyle = 'rgba(240,180,41,0.16)'; ctx.strokeStyle = '#f0b429'; ctx.lineWidth = 2; ctx.setLineDash([6, 5]);
+    rrect(x - m, y - m, w + 2 * m, h + 2 * m, 10); ctx.fill(); ctx.stroke(); ctx.restore();
+    const cx = x + w / 2, ty = y - m - 30;
+    box(cx - 62, ty, 124, 22, '#f0b429', 4, 1.5);
+    text('STOPP · SCHUTZFELD', cx, ty + 15, 11, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center' });
+  }
+}
 
 /* ---------- Wetter und Tageszeit ---------- */
 const SKY = { sonne: ['#8fb1bd', '#bfd2d4', '#e3dccb'], regen: ['#6f7f86', '#8f9ca0', '#b3b1a8'], abend: ['#131b36', '#3a3d63', '#b8705a'] };
@@ -164,6 +188,7 @@ function draw() {
   }
   if (visible(SHAFT_X, ry(0), SHAFT, BOTTOM)) drawShaft(f);
   RUNNERS.forEach(r => r.draw(state.g));
+  drawHolds();
   if (state.wetter === 'regen') { drawRain(vx0, vy0, vx1, vy1); shadeOutside(vx0, vy0, vx1, vy1, 'rgba(40,52,62,0.16)'); }
   if (state.wetter === 'abend') {
     shadeOutside(vx0, vy0, vx1, vy1, 'rgba(12,18,48,0.45)');
@@ -263,6 +288,10 @@ function endPointer(e) {
 }
 canvas.addEventListener('pointerup', endPointer);
 canvas.addEventListener('pointercancel', endPointer);
+canvas.addEventListener('pointermove', e => { state.ptr = { x: (e.clientX - state.ox) / state.z, y: (e.clientY - state.oy) / state.z }; updateHolds(); });
+canvas.addEventListener('pointerleave', () => { state.ptr = null; updateHolds(); });
+canvas.addEventListener('pointerup', e => { if (e.pointerType !== 'mouse') { state.ptr = null; updateHolds(); } });
+canvas.addEventListener('pointerdown', e => { state.ptr = { x: (e.clientX - state.ox) / state.z, y: (e.clientY - state.oy) / state.z }; updateHolds(); });
 canvas.addEventListener('wheel', e => { e.preventDefault(); zoomAt(Math.exp(-e.deltaY * 0.0015), e.clientX, e.clientY); }, { passive: false });
 window.addEventListener('keydown', e => {
   if (e.target.closest && e.target.closest('button') && (e.key === ' ' || e.key === 'Enter')) return;
@@ -324,7 +353,7 @@ function renderPanel() {
     [r.bereich, r.typ, r.aera].forEach(t => { const s = document.createElement('span'); s.textContent = t; meta.appendChild(s); });
     const kid = simpleMode && typeof KINDER !== 'undefined' && KINDER[r.id];
     document.getElementById('cardFact').textContent = kid || r.fakt;
-    document.getElementById('cardNote').textContent = r.note;
+    document.getElementById('cardNote').textContent = r.note + (SAFETY[r.id] ? ' Probier es aus: Geh mit der Maus oder dem Finger nah heran, dann hält er an.' : '');
     const src = document.getElementById('cardSrc'); src.hidden = !r.quelle; src.textContent = '';
     if (r.quelle) { const a = document.createElement('a'); a.href = r.quelle; a.target = '_blank'; a.rel = 'noopener'; a.textContent = 'Quelle: ' + new URL(r.quelle).hostname.replace(/^www\./, ''); src.append(a); }
     const real = document.getElementById('cardReal'); real.hidden = !r.echt; real.innerHTML = r.echt ? '<b>In echt:</b> ' : ''; if (r.echt) real.append(r.echt);
@@ -371,7 +400,7 @@ function setPlaying(p) {
   playBtn.setAttribute('aria-pressed', String(!p));
 }
 playBtn.addEventListener('click', () => setPlaying(!state.playing));
-document.getElementById('step').addEventListener('click', () => { setPlaying(false); state.g = (state.g + 1) % 480; state.f = state.g % 60; acc = state.g / 12; state.dirty = true; });
+document.getElementById('step').addEventListener('click', () => { setPlaying(false); advanceHolds(1); state.g = (state.g + 1) % 480; state.f = state.g % 60; acc = state.g / 12; state.dirty = true; });
 document.getElementById('zoomIn').addEventListener('click', () => zoomAt(1.3, (canvas.clientWidth - panelWidth()) / 2, canvas.clientHeight / 2));
 document.getElementById('zoomOut').addEventListener('click', () => zoomAt(1 / 1.3, (canvas.clientWidth - panelWidth()) / 2, canvas.clientHeight / 2));
 document.getElementById('goRoom').addEventListener('click', () => { setFollow(false); fitRoom(state.room, true); });
@@ -405,7 +434,7 @@ function tick(ts) {
   if (state.playing) {
     acc = (acc + dt) % 40;
     const ng = Math.floor(acc * 12) % 480;
-    if (ng !== state.g) { state.g = ng; state.f = ng % 60; state.dirty = true; }
+    if (ng !== state.g) { advanceHolds((ng - state.g + 480) % 480); state.g = ng; state.f = ng % 60; state.dirty = true; updateHolds(); }
   }
   if (state.f !== shownF) { frameEl.textContent = `Bild ${String(state.f + 1).padStart(2, '0')} / 60`; shownF = state.f; }
   if (state.follow) followView(reduce ? 1 : 0.12);
