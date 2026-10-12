@@ -2,21 +2,48 @@
 'use strict';
 const byId = Object.fromEntries(ROBOTS.map(r => [r.id, r]));
 
+/* ---------- Wetter und Tageszeit ---------- */
+const SKY = { sonne: ['#8fb1bd', '#bfd2d4', '#e3dccb'], regen: ['#6f7f86', '#8f9ca0', '#b3b1a8'], abend: ['#131b36', '#3a3d63', '#b8705a'] };
+const WETTER = ['sonne', 'regen', 'abend'], WETTER_NAME = { sonne: 'Sonne', regen: 'Regen', abend: 'Abend' };
+// Regen: schräge Striche überall draußen oberhalb des Bodens; Dichte folgt dem Bildschirm, nicht der Welt
+function drawRain(x0, y0, x1, y1) {
+  const step = 46 / Math.min(1, state.z), len = 18, t = state.g * 9;
+  ctx.save(); ctx.beginPath(); ctx.rect(x0, y0, x1 - x0, y1 - y0); ctx.rect(0, TOP - 140, BW, GROUND - TOP + 140); ctx.clip('evenodd');
+  ctx.strokeStyle = 'rgba(220,232,240,0.55)'; ctx.lineWidth = 1.4 / Math.min(1, state.z); ctx.beginPath();
+  const ya = Math.max(y0, -4000), yb = Math.min(y1, GROUND);
+  for (let x = Math.floor(x0 / step) * step; x < x1; x += step) for (let y = Math.floor(ya / step) * step; y < yb; y += step) {
+    const k = (x * 7 + y * 13) % 97, yy = y + ((t + k * 5) % step);
+    if (yy > yb) continue;
+    ctx.moveTo(x + k % 20, yy); ctx.lineTo(x + k % 20 - 5, yy + len);
+  }
+  ctx.stroke(); ctx.restore();
+}
+// Abend und Regen: draußen abdunkeln, das Haus und alles unter der Erde bleibt hell
+function shadeOutside(x0, y0, x1, y1, color) {
+  ctx.save(); ctx.beginPath(); ctx.rect(x0, y0, x1 - x0, Math.max(0, GROUND - y0)); ctx.rect(0, TOP - 140, BW, GROUND - TOP + 140);
+  ctx.fillStyle = color; ctx.fill('evenodd'); ctx.restore();
+}
+function glow(x, y, r, color) {
+  const gr = ctx.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, color); gr.addColorStop(1, 'rgba(255,220,140,0)');
+  ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
+}
+
 /* ---------- Zeichnen: Umgebung ---------- */
 function drawSurroundings(f) {
-  const g = ctx.createLinearGradient(0, TOP - 700, 0, GROUND);
-  g.addColorStop(0, '#8fb1bd'); g.addColorStop(0.55, '#bfd2d4'); g.addColorStop(1, '#e3dccb');
-  ctx.fillStyle = g; ctx.fillRect(-4000, -4000, BW + 8000, GROUND + 4000);
+  const g = ctx.createLinearGradient(0, TOP - 700, 0, GROUND), sky = SKY[state.wetter] || SKY.sonne;
+  g.addColorStop(0, sky[0]); g.addColorStop(0.55, sky[1]); g.addColorStop(1, sky[2]);
+  ctx.fillStyle = g; ctx.fillRect(-9000, -6000, BW + 18000, GROUND + 6000);
+  if (state.wetter === 'abend') { ctx.fillStyle = '#f3efe4'; for (let i = 0; i < 160; i++) { const x = ((i * 733) % 9000) - 3200, y = TOP - 680 + ((i * 397) % 1500); ctx.fillRect(x, y, 3, 3); } }
   // Hintergrund-Silhouetten
-  ctx.fillStyle = '#9eb6bb';
+  ctx.fillStyle = state.wetter === 'abend' ? '#3b4566' : state.wetter === 'regen' ? '#8b989c' : '#9eb6bb';
   [[-900, 600], [-620, 380], [-420, 860], [BW + 120, 700], [BW + 420, 420], [BW + 700, 980]].forEach(([x, h]) => ctx.fillRect(x, GROUND - h, 240, h));
   ctx.fillStyle = '#b4c7c9';
   [[-1300, 420], [BW + 1000, 520]].forEach(([x, h]) => ctx.fillRect(x, GROUND - h, 300, h));
   // Erde
   const e = ctx.createLinearGradient(0, GROUND, 0, BOTTOM + 400);
   e.addColorStop(0, '#7a6450'); e.addColorStop(1, '#4d3e31');
-  ctx.fillStyle = e; ctx.fillRect(-4000, GROUND, BW + 8000, 4000);
-  ctx.fillStyle = '#6f8f5a'; ctx.fillRect(-4000, GROUND - 6, BW + 8000, 12);
+  ctx.fillStyle = e; ctx.fillRect(-9000, GROUND, BW + 18000, 6000);
+  ctx.fillStyle = '#6f8f5a'; ctx.fillRect(-9000, GROUND - 6, BW + 18000, 12);
   ctx.fillStyle = 'rgba(0,0,0,0.12)';
   for (let i = 0; i < 90; i++) { const x = ((i * 377) % (BW + 2400)) - 1200, y = GROUND + 40 + ((i * 211) % 1400); ctx.beginPath(); ctx.arc(x, y, 3 + (i % 4), 0, TAU); ctx.fill(); }
   // Ebenen-Beschriftung links
@@ -130,13 +157,23 @@ function draw() {
   }
   // Außengelände: Räume links neben dem Haus, ohne Wände und Decke
   for (const room of ROOMS) {
-    if (room.c >= 0) continue;
+    if (!room.outdoor) continue;
     const x = rx(room.c), y = ry(room.r), def = BUILT.find(d => d.key === room.built);
     if (!def || !visible(x, y, RW, RH)) continue;
     ctx.save(); ctx.beginPath(); ctx.rect(x, y, RW, RH + 8); ctx.clip(); ctx.translate(x, y); def.draw(f); ctx.restore();
   }
   if (visible(SHAFT_X, ry(0), SHAFT, BOTTOM)) drawShaft(f);
   RUNNERS.forEach(r => r.draw(state.g));
+  if (state.wetter === 'regen') { drawRain(vx0, vy0, vx1, vy1); shadeOutside(vx0, vy0, vx1, vy1, 'rgba(40,52,62,0.16)'); }
+  if (state.wetter === 'abend') {
+    shadeOutside(vx0, vy0, vx1, vy1, 'rgba(12,18,48,0.45)');
+    // Lichter der Außenfelder nach dem Abdunkeln, damit sie leuchten
+    for (const room of ROOMS) {
+      const def = room.outdoor && BUILT.find(d => d.key === room.built);
+      if (!def || !def.glow || !visible(rx(room.c), ry(room.r), RW, RH)) continue;
+      ctx.save(); ctx.translate(rx(room.c), ry(room.r)); def.glow(f); ctx.restore();
+    }
+  }
 
   const sel = state.sel && byId[state.sel];
   if (sel) {
@@ -163,7 +200,7 @@ function fit(x, y, w, h, animate = true) {
   requestAnimationFrame(step);
 }
 const fitRoom = (key, a) => { const o = roomOf(key); fit(rx(o.c) - 30, ry(o.r) - 40, RW + 60, RH + 80, a); };
-const fitAll = a => { const c0 = Math.min(...ROOMS.map(o => o.c)); fit(rx(c0) - 40, TOP - 340, BW - rx(c0) + 100, BOTTOM - TOP + 360, a); };
+const fitAll = a => { const c0 = Math.min(...ROOMS.map(o => o.c)), c1 = Math.max(...ROOMS.map(o => o.c)), xr = c1 >= 3 ? rx(c1) + RW + 40 : BW + 60; fit(rx(c0) - 40, TOP - 340, xr - rx(c0) + 40, BOTTOM - TOP + 360, a); };
 function zoomAt(factor, sx, sy) {
   const nz = clamp(state.z * factor, 0.06, 5);
   const wx = (sx - state.ox) / state.z, wy = (sy - state.oy) / state.z;
@@ -251,7 +288,7 @@ BUILT.forEach(o => {
   roomsEl.appendChild(b);
 });
 document.querySelector('.bar i').style.width = (BUILT.length / ROOMS.length * 100).toFixed(1) + '%';
-document.getElementById('progressText').textContent = BUILT.length === ROOMS.length ? `Alle ${ROOMS.length} Räume gebaut. Unterwegs sind außerdem Lieferroboter, Fassadendrohne, Rohrpost und ein Paket vom Hafen bis in den Wohnbereich. Draußen: Straße, Park, Feld und Energiepark.` : `${BUILT.length} von ${ROOMS.length} Räumen gebaut. Der Rest ist Baustelle.`;
+document.getElementById('progressText').textContent = BUILT.length === ROOMS.length ? `Alle ${ROOMS.length} Räume gebaut. Unterwegs sind außerdem Lieferroboter, Fassadendrohne, Rohrpost und ein Paket vom Hafen bis in den Wohnbereich. Draußen: Straße, Park, Feld, Energiepark, Schulweg und U-Bahnhof.` : `${BUILT.length} von ${ROOMS.length} Räumen gebaut. Der Rest ist Baustelle.`;
 FILTERS.forEach(name => {
   const b = document.createElement('button'); b.type = 'button'; b.textContent = name;
   b.setAttribute('aria-pressed', String(name === 'Alle'));
@@ -354,6 +391,11 @@ function followView(k) {
   state.ox += (aw / 2 - p.x * state.z - state.ox) * k; state.oy += (cy - p.y * state.z - state.oy) * k; state.dirty = true;
 }
 if (followBtn) followBtn.addEventListener('click', () => setFollow(!state.follow));
+const wetterBtn = document.getElementById('wetter');
+if (wetterBtn) wetterBtn.addEventListener('click', () => {
+  state.wetter = WETTER[(WETTER.indexOf(state.wetter) + 1) % WETTER.length];
+  wetterBtn.textContent = 'Wetter: ' + WETTER_NAME[state.wetter]; state.dirty = true;
+});
 if (reduce) document.getElementById('hint').textContent = 'Die Bewegung ist angehalten, weil dein System reduzierte Bewegung wünscht. Mit „Abspielen“ läuft sie trotzdem.';
 
 let acc = 0, last = null, shownF = -1;

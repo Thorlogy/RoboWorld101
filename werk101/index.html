@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="RoboWorld 101: eine animierte Welt voller echter Roboter. Erstes Gebäude: Werk 101.">
 <title>RoboWorld 101</title>
-<link rel="stylesheet" href="fonts/fonts.css?v=20261012c">
+<link rel="stylesheet" href="fonts/fonts.css?v=20261012d">
 <style>
 /* Layout: Vollbild-Leinwand mit dem Gebäudequerschnitt, schwebende Werkzeugleiste oben, Raum-Panel rechts (mobil: unten). Bewusst nur ein Look, weil die Zeichnung selbst die Farben vorgibt. */
 :root {
@@ -126,6 +126,7 @@ body { background: #a9c3cb; color: var(--ink); font-family: var(--font-body); ov
     <button id="goRoom">Zum Raum</button>
     <button id="goAll">Ganzes Haus</button>
     <button id="follow" aria-pressed="false">Paket verfolgen</button>
+    <button id="wetter">Wetter: Sonne</button>
     <button id="play" aria-pressed="false">Pause</button>
     <button id="step">Einzelbild</button>
     <span class="frame" id="frame" aria-live="off">Bild 01 / 60</span>
@@ -174,41 +175,43 @@ body { background: #a9c3cb; color: var(--ink); font-family: var(--font-body); ov
   </div>
 </aside>
 
-<script src="kit.js?v=20261012c"></script>
-<script src="rooms/kantine.js?v=20261012c"></script>
-<script src="rooms/fertigung.js?v=20261012c"></script>
-<script src="rooms/lager.js?v=20261012c"></script>
-<script src="rooms/kranken.js?v=20261012c"></script>
-<script src="rooms/wohnen.js?v=20261012c"></script>
-<script src="rooms/sport.js?v=20261012c"></script>
-<script src="rooms/museum.js?v=20261012c"></script>
-<script src="rooms/drohnen.js?v=20261012c"></script>
-<script src="rooms/bergwerk.js?v=20261012c"></script>
-<script src="rooms/satellit.js?v=20261012c"></script>
-<script src="rooms/labor.js?v=20261012c"></script>
-<script src="rooms/schule.js?v=20261012c"></script>
-<script src="rooms/pruef.js?v=20261012c"></script>
-<script src="rooms/garage.js?v=20261012c"></script>
-<script src="rooms/eingang.js?v=20261012c"></script>
-<script src="rooms/stall.js?v=20261012c"></script>
-<script src="rooms/kat.js?v=20261012c"></script>
-<script src="rooms/tiefsee.js?v=20261012c"></script>
-<script src="rooms/mars.js?v=20261012c"></script>
-<script src="rooms/apotheke.js?v=20261012c"></script>
-<script src="rooms/supermarkt.js?v=20261012c"></script>
-<script src="rooms/film.js?v=20261012c"></script>
-<script src="rooms/recycling.js?v=20261012c"></script>
-<script src="rooms/hafen.js?v=20261012c"></script>
-<script src="rooms/iss.js?v=20261012c"></script>
-<script src="rooms/buecher.js?v=20261012c"></script>
-<script src="rooms/baustelle.js?v=20261012c"></script>
-<script src="rooms/aussen.js?v=20261012c"></script>
-<script src="rooms/feld.js?v=20261012c"></script>
-<script src="rooms/energie.js?v=20261012c"></script>
-<script src="kinder.js?v=20261012c"></script>
-<script src="runners.js?v=20261012c"></script>
-<script src="engine.js?v=20261012c"></script>
-<script src="game.js?v=20261012c"></script>
+<script src="kit.js?v=20261012d"></script>
+<script src="rooms/kantine.js?v=20261012d"></script>
+<script src="rooms/fertigung.js?v=20261012d"></script>
+<script src="rooms/lager.js?v=20261012d"></script>
+<script src="rooms/kranken.js?v=20261012d"></script>
+<script src="rooms/wohnen.js?v=20261012d"></script>
+<script src="rooms/sport.js?v=20261012d"></script>
+<script src="rooms/museum.js?v=20261012d"></script>
+<script src="rooms/drohnen.js?v=20261012d"></script>
+<script src="rooms/bergwerk.js?v=20261012d"></script>
+<script src="rooms/satellit.js?v=20261012d"></script>
+<script src="rooms/labor.js?v=20261012d"></script>
+<script src="rooms/schule.js?v=20261012d"></script>
+<script src="rooms/pruef.js?v=20261012d"></script>
+<script src="rooms/garage.js?v=20261012d"></script>
+<script src="rooms/eingang.js?v=20261012d"></script>
+<script src="rooms/stall.js?v=20261012d"></script>
+<script src="rooms/kat.js?v=20261012d"></script>
+<script src="rooms/tiefsee.js?v=20261012d"></script>
+<script src="rooms/mars.js?v=20261012d"></script>
+<script src="rooms/apotheke.js?v=20261012d"></script>
+<script src="rooms/supermarkt.js?v=20261012d"></script>
+<script src="rooms/film.js?v=20261012d"></script>
+<script src="rooms/recycling.js?v=20261012d"></script>
+<script src="rooms/hafen.js?v=20261012d"></script>
+<script src="rooms/iss.js?v=20261012d"></script>
+<script src="rooms/buecher.js?v=20261012d"></script>
+<script src="rooms/baustelle.js?v=20261012d"></script>
+<script src="rooms/aussen.js?v=20261012d"></script>
+<script src="rooms/feld.js?v=20261012d"></script>
+<script src="rooms/energie.js?v=20261012d"></script>
+<script src="rooms/ubahn.js?v=20261012d"></script>
+<script src="rooms/schulweg.js?v=20261012d"></script>
+<script src="kinder.js?v=20261012d"></script>
+<script src="runners.js?v=20261012d"></script>
+<script src="engine.js?v=20261012d"></script>
+<script src="game.js?v=20261012d"></script>
 
 </body>
 </html>

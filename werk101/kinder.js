@@ -98,4 +98,6 @@ const KINDER = {
   jaeter: 'Dieser Roboter sät Rüben und hackt danach das Unkraut weg, ganz ohne Gift. Er merkt sich, wo jedes Samenkorn liegt, und weiß so, was stehen bleiben darf.',
   putz: 'Dieser Roboter putzt Solarmodule ohne Wasser. Saubere Module machen mehr Strom, aber der Wind bringt schnell neuen Staub.',
   blatt: 'Dieser Roboter repariert die Flügel von Windrädern. Er hängt an Seilen und schleift die Kante glatt, damit kein Mensch dort hochklettern muss.',
+  gartenbot: 'Dieser Roboter fährt über ein Hochbeet und gießt jede Pflanze einzeln. Unkraut drückt er einfach zurück in die Erde.',
+  ubahn: 'Diese U-Bahn fährt ganz ohne Fahrer. Deshalb kann man vorne aus dem Fenster in den Tunnel schauen.',
 };

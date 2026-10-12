@@ -7,7 +7,7 @@ const ctx = canvas.getContext('2d');
 /* ---------- Welt ---------- */
 const WALL = 16, RW = 640, RH = 400, SHAFT = 160, TOP = 360, ROWS = 9;
 const BW = WALL + 3 * (RW + WALL) + SHAFT + WALL;
-const rx = c => WALL + c * (RW + WALL);
+const rx = c => (c >= 3 ? BW + WALL + (c - 3) * (RW + WALL) : WALL + c * (RW + WALL)); // c >= 3: Außengelände rechts neben dem Haus
 const ry = r => TOP + WALL + r * (RH + WALL);
 const SHAFT_X = WALL + 3 * (RW + WALL);
 const GROUND = ry(6) + RH + WALL / 2;
@@ -46,6 +46,8 @@ const ROOMS = [
   { r: 6, c: -2, name: 'Park', built: 'park', outdoor: true },
   { r: 6, c: -3, name: 'Feld', built: 'feld', outdoor: true },
   { r: 6, c: -4, name: 'Energiepark', built: 'energie', outdoor: true },
+  { r: 6, c: 3, name: 'Schulweg', built: 'schulweg', outdoor: true },
+  { r: 7, c: 3, name: 'U-Bahnhof', built: 'ubahn', outdoor: true },
 ];
 const roomOf = key => ROOMS.find(x => x.built === key);
 
@@ -175,7 +177,7 @@ function gear(x, y) {
 
 /* ---------- Zustand ---------- */
 const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const state = { f: 0, g: 0, room: 'kantine', playing: !reduce, filter: 'Alle', sel: null, hover: null, z: 1, ox: 0, oy: 0, dirty: true };
+const state = { f: 0, g: 0, room: 'kantine', playing: !reduce, filter: 'Alle', sel: null, hover: null, wetter: 'sonne', z: 1, ox: 0, oy: 0, dirty: true };
 const alphaOf = id => {
   const r = byId[id];
   return state.filter === 'Alle' || (r && r.bereich === state.filter) ? 1 : 0.2;
