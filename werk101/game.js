@@ -7,7 +7,8 @@
     { text: 'Finde vier Tiere im Haus', ids: ['katze', 'moewe', 'hafenmoewe', 'kanarie', 'ratte', 'hummel', 'kuh', 'fisch'], need: 4 },
     { text: 'Finde den Roboter, der ein Selfie macht', ids: ['rover'], need: 1 },
     { text: 'Finde beide Stellen mit der roten Socke', ids: ['saug', 'sortierer'], need: 2 },
-    { text: 'Finde drei Roboter, die Pakete oder Waren bringen', ids: ['liefer', 'gehweg', 'paket', 'regal', 'sortier', 'transporter', 'automat', 'pflege'], need: 3 },
+    { text: 'Finde drei Roboter, die Pakete oder Waren bringen', ids: ['liefer', 'gehweg', 'paket', 'regal', 'sortier', 'transporter', 'automat', 'pflege', 'paketbote', 'entlader'], need: 3 },
+    { text: 'Folge dem Paket: Finde den Roboter, der es vom Stapel hebt, den, der es bringt, und wer es bekommt', ids: ['entlader', 'paketbote', 'opa'], need: 3 },
     { text: 'Finde den Menschen im Roboterkostüm', ids: ['kostuem'], need: 1 },
   ];
   let found = new Set();
