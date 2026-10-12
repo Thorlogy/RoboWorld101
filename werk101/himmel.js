@@ -188,7 +188,7 @@ registerRunner({
 
 /* ---------- Paketdrohne zur Paketstation auf dem Dach der Schule 102 ---------- */
 // Schule 102 wie H2 in engine.js (die wird erst später geladen)
-const S2X = rx(4) - WALL, S2Y = ry(4) - WALL, S2W = 2 * (RW + WALL) + WALL;
+const S2X = rx(4) - WALL, S2Y = ry(5) - WALL, S2W = 2 * (RW + WALL) + WALL;
 const ST_X = S2X + 436, ST_TOP = S2Y - 80, ST_FLOOR = S2Y - 14, ALT2 = S2Y - 420, IN_X = S2X + S2W + 1100;
 function stationDrone(g) {
   g %= RUN_P;
@@ -237,7 +237,7 @@ registerRunner({
 /* ---------- Abendhimmel: Satellitenkette und Raumstation, nur bei „Abend“ zu sehen ---------- */
 const abend = () => state.wetter === 'abend';
 const SL_N = 22;
-const slPos = (g, i) => { const t = ((g % RUN_P) / RUN_P) - i * 0.006; return { x: lerp(-4600, 6600, t), y: lerp(-420, 40, t) }; };
+const slPos = (g, i) => { const t = ((g % RUN_P) / RUN_P) - i * 0.006; return { x: lerp(-4600, 6600, t), y: lerp(-470, -420, t) }; };
 registerRunner({
   room: 'strasse',
   draw() {},
@@ -251,11 +251,11 @@ registerRunner({
     quelle: 'https://en.wikipedia.org/wiki/Starlink',
     box: () => { if (!abend()) return HIDE; const a = slPos(state.g, 0), b = slPos(state.g, SL_N - 1); return [Math.min(a.x, b.x) - 10, Math.min(a.y, b.y) - 10, Math.abs(a.x - b.x) + 20, Math.abs(a.y - b.y) + 20]; } },
 });
-const issPos = g => { g %= RUN_P; if (g < 120 || g >= 260) return null; const t = seg(g, 120, 260); return { x: lerp(6200, -4200, t), y: -260 - 160 * Math.sin(Math.PI * t) }; };
+const issPos = g => { g %= RUN_P; if (g < 120 || g >= 260) return null; const t = seg(g, 120, 260); return { x: lerp(6200, -4200, t), y: -520 - 20 * Math.sin(Math.PI * t) }; };
 registerRunner({
   room: 'iss',
   draw() {},
-  glow(g) { const p = issPos(g); if (p) { glow(p.x, p.y, 26, 'rgba(255,255,255,0.95)'); circle(p.x, p.y, 4, '#ffffff', null); } },
+  glow(g) { const p = issPos(g); if (p) { glow(p.x, p.y, 40, 'rgba(255,255,255,0.95)'); circle(p.x, p.y, 6, '#ffffff', null); } },
   robot: { id: 'issflug', name: 'Raumstation am Abendhimmel', bereich: 'Raumfahrt', aera: 'seit 1998', typ: 'Internationale Raumstation ISS',
     fakt: 'Die Internationale Raumstation umrundet die Erde in etwa 90 Minuten. Abends sieht man sie als hellen Punkt, der nicht blinkt und gleichmäßig über den Himmel zieht. An Bord arbeiten Roboterarme und kleine fliegende Roboter, wie unten in der Raumstation-Übungshalle.',
     echt: 'Echt, nur viel langsamer: In echt dauert ein Überflug einige Minuten. Flugzeuge blinken, die Raumstation nicht.',
@@ -265,22 +265,25 @@ registerRunner({
 });
 
 /* ---------- Raketenstart mit Landung der ersten Stufe (weit hinten zwischen Schule 102 und Halle 103) ---------- */
-const RK_PAD = { x: rx(6) + 80, y: GROUND - 6 }, RK_LZ = { x: rx(6) + 210, y: GROUND - 6 }, RK_H = 118;
+const RK_PAD = { x: rx(6) + 90, y: GROUND - 6 }, RK_LZ = { x: rx(6) + 230, y: GROUND - 6 }, RK_K = 2.4, RK_H = 118 * RK_K;
 // Start 40–200 (steigt aus dem Bild), Stufe kommt 300–400 zurück und landet, 440–479 Stufe weg, neue Rakete da
 function rkState(g) {
   g %= RUN_P;
-  const up = g < 60 ? 0 : g < 200 ? 1400 * seg(g, 60, 200) ** 2 : 1400;
-  const back = g < 300 ? null : g < 400 ? RK_LZ.y - 1100 * (1 - ease(seg(g, 300, 400))) : RK_LZ.y;
+  const up = g < 60 ? 0 : g < 200 ? 4400 * seg(g, 60, 200) ** 2 : 4400;
+  const back = g < 300 ? null : g < 400 ? RK_LZ.y - 4000 * (1 - ease(seg(g, 300, 400))) : RK_LZ.y;
   return { up, back, fire: g >= 50 && g < 200, burn: g >= 350 && g < 400, legs: g >= 370 ? seg(g, 370, 385) : 0,
     smoke: g >= 44 && g < 140 ? seg(g, 44, 70) * (1 - seg(g, 110, 140)) : 0, newA: seg(g, 440, 476), oldA: g >= 400 ? 1 - seg(g, 440, 476) : 1 };
 }
+// gezeichnet im kleinen Maß (Höhe 118) und mit RK_K vergrößert
 function rkBody(x, base, h, stage) {
+  ctx.save(); ctx.translate(x, base); ctx.scale(RK_K, RK_K); ctx.translate(-x, -base); h /= RK_K;
   box(x - 6, base - h, 12, h, '#f3f1ea', 2, 1.5);
   ctx.fillStyle = '#2a2723'; ctx.fillRect(x - 6, base - h * 0.62, 12, 6);
   if (!stage) { ctx.beginPath(); ctx.moveTo(x - 7, base - h * 0.62); ctx.lineTo(x - 7, base - h - 6); ctx.quadraticCurveTo(x, base - h - 20, x + 7, base - h - 6); ctx.lineTo(x + 7, base - h * 0.62); ctx.closePath(); paint('#f3f1ea', INK, 1.5); }
   for (const s of [-1, 1]) line(x + s * 6, base - (stage ? h - 4 : h * 0.66), x + s * 11, base - (stage ? h - 8 : h * 0.66 - 4), INK, 2);
+  ctx.restore();
 }
-function rkFlame(x, base, len, g) { ctx.beginPath(); ctx.moveTo(x - 5, base); ctx.lineTo(x + 5, base); ctx.lineTo(x, base + len + (g % 2) * 6); ctx.closePath(); ctx.fillStyle = '#ffb347'; ctx.fill(); ctx.beginPath(); ctx.moveTo(x - 2, base); ctx.lineTo(x + 2, base); ctx.lineTo(x, base + len * 0.6); ctx.closePath(); ctx.fillStyle = '#fff3c4'; ctx.fill(); }
+function rkFlame(x, base, len, g) { ctx.save(); ctx.translate(x, base); ctx.scale(RK_K, RK_K); ctx.translate(-x, -base); ctx.beginPath(); ctx.moveTo(x - 5, base); ctx.lineTo(x + 5, base); ctx.lineTo(x, base + len + (g % 2) * 6); ctx.closePath(); ctx.fillStyle = '#ffb347'; ctx.fill(); ctx.beginPath(); ctx.moveTo(x - 2, base); ctx.lineTo(x + 2, base); ctx.lineTo(x, base + len * 0.6); ctx.closePath(); ctx.fillStyle = '#fff3c4'; ctx.fill(); ctx.restore(); }
 registerRunner({
   room: 'dunkel',
   draw(g) {
@@ -288,12 +291,13 @@ registerRunner({
     withAlpha('rakete', () => {
       const r = rkState(g);
       // Startturm und Landeplatz
-      line(RK_PAD.x - 18, RK_PAD.y, RK_PAD.x - 18, RK_PAD.y - RK_H - 10, '#8a8f94', 3); for (let y = RK_PAD.y - 20; y > RK_PAD.y - RK_H; y -= 18) line(RK_PAD.x - 18, y, RK_PAD.x - 8, y, '#8a8f94', 1.5);
-      box(RK_PAD.x - 22, RK_PAD.y, 44, 6, '#5d6064', 1, 1.2);
-      ctx.beginPath(); ctx.ellipse(RK_LZ.x, RK_LZ.y + 3, 26, 4, 0, 0, TAU); paint('#5d6064', INK, 1); text('X', RK_LZ.x, RK_LZ.y + 6, 7, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center', color: '#f0b429' });
+      for (const dx of [-44, -30]) line(RK_PAD.x + dx, RK_PAD.y, RK_PAD.x + dx, RK_PAD.y - RK_H - 20, '#8a8f94', 3);
+      for (let y = RK_PAD.y - 20; y > RK_PAD.y - RK_H; y -= 22) { line(RK_PAD.x - 44, y, RK_PAD.x - 30, y - 22, '#8a8f94', 1.5); line(RK_PAD.x - 30, y, RK_PAD.x - 16, y, '#8a8f94', 2); }
+      box(RK_PAD.x - 50, RK_PAD.y, 100, 8, '#5d6064', 1, 1.2);
+      ctx.beginPath(); ctx.ellipse(RK_LZ.x, RK_LZ.y + 3, 54, 7, 0, 0, TAU); paint('#5d6064', INK, 1); text('X', RK_LZ.x, RK_LZ.y + 8, 14, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center', color: '#f0b429' });
       // Rakete startet
       if (r.up < 1400 && g % RUN_P < 440) { const base = RK_PAD.y - r.up; rkBody(RK_PAD.x, base, RK_H, false); if (r.fire) rkFlame(RK_PAD.x, base, 26 + r.up * 0.02, g); }
-      if (r.smoke > 0) for (let i = 0; i < 9; i++) circle(RK_PAD.x - 30 + i * 8, RK_PAD.y - 6 - (i % 3) * 6, 10 * r.smoke + (i % 2) * 3, 'rgba(240,238,232,0.85)', null);
+      if (r.smoke > 0) for (let i = 0; i < 9; i++) circle(RK_PAD.x - 80 + i * 20, RK_PAD.y - 10 - (i % 3) * 14, 26 * r.smoke + (i % 2) * 6, 'rgba(240,238,232,0.85)', null);
       // neue Rakete erscheint nach der Landung
       if (r.newA > 0) { ctx.save(); ctx.globalAlpha *= r.newA; rkBody(RK_PAD.x, RK_PAD.y, RK_H, false); ctx.restore(); }
       // erste Stufe kommt zurück und landet aufrecht
@@ -301,15 +305,15 @@ registerRunner({
         ctx.save(); ctx.globalAlpha *= r.oldA;
         const sh = RK_H * 0.66; rkBody(RK_LZ.x, r.back, sh, true);
         if (r.burn) rkFlame(RK_LZ.x, r.back, 22, g);
-        for (const s of [-1, 1]) line(RK_LZ.x + s * 6, r.back - 14, RK_LZ.x + s * (6 + 12 * r.legs), r.back + 2 * r.legs, INK, 2);
+        for (const s of [-1, 1]) line(RK_LZ.x + s * 14, r.back - 34, RK_LZ.x + s * (14 + 28 * r.legs), r.back + 4 * r.legs, INK, 3);
         ctx.restore();
       }
     });
   },
   glow(g) {
     if (regen()) return; const r = rkState(g);
-    if (r.fire) glow(RK_PAD.x, RK_PAD.y - r.up + 20, 60, 'rgba(255,190,90,0.9)');
-    if (r.burn) glow(RK_LZ.x, r.back + 16, 50, 'rgba(255,190,90,0.9)');
+    if (r.fire) glow(RK_PAD.x, RK_PAD.y - r.up + 50, 140, 'rgba(255,190,90,0.9)');
+    if (r.burn) glow(RK_LZ.x, r.back + 40, 110, 'rgba(255,190,90,0.9)');
   },
   robot: { id: 'rakete', name: 'Rakete mit Landestufe', bereich: 'Raumfahrt', aera: 'seit 2015', typ: 'Wiederverwendbare Rakete',
     fakt: 'Die erste Stufe einer Falcon-9-Rakete fliegt nach dem Start zurück und landet aufrecht auf ihren Beinen. Gesteuert wird das vom Bordcomputer, kein Mensch lenkt mit. Das gelang zum ersten Mal im Dezember 2015. Manche Stufen sind inzwischen mehr als 20 Mal geflogen.',
@@ -317,7 +321,7 @@ registerRunner({
     note: 'Startet, verschwindet nach oben, und die erste Stufe kommt zurück und landet auf dem X. Dann steht die nächste Rakete bereit.', color: '#f3f1ea',
     quelle: 'https://en.wikipedia.org/wiki/Falcon_9',
     box: () => { if (regen()) return HIDE; const r = rkState(state.g), g = state.g % RUN_P;
-      if (r.back != null && g < 440) return [RK_LZ.x - 20, r.back - RK_H * 0.66 - 4, 40, RK_H * 0.66 + 10];
-      if (r.up < 600) return [RK_PAD.x - 20, RK_PAD.y - r.up - RK_H - 24, 40, RK_H + 30];
-      return [RK_PAD.x - 26, RK_PAD.y - RK_H - 14, 52, RK_H + 20]; } },
+      if (r.back != null && g < 440) return [RK_LZ.x - 40, r.back - RK_H * 0.66 - 8, 80, RK_H * 0.66 + 14];
+      if (r.up < 2000) return [RK_PAD.x - 40, RK_PAD.y - r.up - RK_H - 50, 80, RK_H + 60];
+      return [RK_PAD.x - 50, RK_PAD.y - RK_H - 40, 100, RK_H + 46]; } },
 });

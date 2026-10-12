@@ -137,3 +137,9 @@ registerRoom({
   - Reinraum: statt des zweiten Marsrovers ein Andock-Simulator mit zwei Industrierobotern (DLR OOS-SIM). Das Selfie macht jetzt der Rover-Zwilling auf dem Mars-Testgelände.
   - Himmel (`himmel.js`): bei „Abend“ eine Satellitenkette und ab und zu die Raumstation als heller Punkt; Raketenstart zwischen Schule 102 und Halle 103, die erste Stufe landet wieder auf dem X (bei Regen kein Start).
   - Insgesamt 45 Felder plus ein geheimes, 188 Figuren.
+- Überarbeitung (12. Oktober 2026, Version 20261012j):
+  - Schule 102 hat nur noch zwei Stockwerke (Reihen 5 und 6); Bewegungsraum und Lehrerzimmer sind entfernt. Klasse 4b mit Whiteboard, Fenster, Kinderbildern und Bodenroboter Biene (Bee-Bot). Informatik mit Beamer und CodeON (Blockprogrammierung auf Basis des Open Roberta Lab); der Würfel-Fehler steht im Block „zufällig von 6 bis 6“. Halle mit Bilderwand, Schließfächern, Uhr; Robotik-AG mit 3D-Drucker, Bauteilregal, Pokal und der Kiste Ersatzräder von der Paketdrohne. Helfer in campus.js: `c2Window`, `c2Art`, `c2Plant`, `c2Clock`.
+  - U-Bahn in echter Größe: Wagen 320 lang, Dach bei y 150, zwei Doppeltüren je Wagen (`ubDoorX(wagen, tür)`), Halt bei x 10.
+  - Rakete 2,4-mal größer (`RK_K`), Satellitenkette (y −470 bis −420) und Raumstation (y um −520) liegen jetzt deutlich über den Flugtaxis; „Ganzes Haus“ zeigt dafür mehr Himmel (TOP − 920).
+  - Zweiter geheimer Raum „Denkspiele“ (r 8, c 7, `rooms/denkspiele.js`), wird zusammen mit der Spielhalle freigeschaltet: ELIZA (1966) zum Selberchatten im Fenster unten links, Deep Blue (1997) mit Helfer, der die Figuren zieht, AlphaGo mit Zug 37 (2016), ein Programm, das Breakout lernt und den Tunneltrick findet (2015). Karten können `onSelect` mitgeben; engine.js ruft es beim Auswählen auf.
+  - Insgesamt 43 Felder plus zwei geheime, 194 Figuren.

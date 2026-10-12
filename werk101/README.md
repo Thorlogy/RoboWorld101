@@ -1,6 +1,6 @@
 # Werk 101
 
-Ein animierter Querschnitt durch eine kleine Welt voller echter Roboter, nach dem Vorbild von floor796. 45 Felder in drei Gebäuden, im Außengelände und unter der Erde, dazu ein geheimer Raum, 188 Figuren. Jede Figur hat eine Karte: was der Roboter wirklich kann, was nur ein Spaß ist, und eine Quelle.
+Ein animierter Querschnitt durch eine kleine Welt voller echter Roboter, nach dem Vorbild von floor796. 43 Felder in drei Gebäuden, im Außengelände und unter der Erde, dazu zwei geheime Räume, 194 Figuren. Jede Figur hat eine Karte: was der Roboter wirklich kann, was nur ein Spaß ist, und eine Quelle.
 
 Live: https://thorlogy.github.io/RoboWorld101/
 

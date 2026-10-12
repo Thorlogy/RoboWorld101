@@ -28,7 +28,7 @@ function drawHolds() {
 
 /* ---------- Häuser ---------- */
 // Haus 1: Werk 101. Haus 2: Schule 102 rechts neben dem Schulweg (Spalten 4 und 5, Reihen 4 bis 6)
-const H2 = { x: rx(4) - WALL, y: ry(4) - WALL, w: 2 * (RW + WALL) + WALL, h: 3 * (RH + WALL) + WALL };
+const H2 = { x: rx(4) - WALL, y: ry(5) - WALL, w: 2 * (RW + WALL) + WALL, h: 2 * (RH + WALL) + WALL };
 // Haus 3: Halle 103, eine fensterlose Fabrikhalle mit einem Raum
 const H3 = { x: rx(6.5) - WALL, y: ry(6) - WALL, w: RW + 2 * WALL, h: RH + 2 * WALL };
 const HOUSES = [{ x: 0, y: TOP - 140, w: BW, h: GROUND - TOP + 140 }, { x: H2.x, y: H2.y - 120, w: H2.w, h: GROUND - H2.y + 120 }, { x: H3.x - 12, y: H3.y - 60, w: H3.w + 24, h: GROUND - H3.y + 60 }];
@@ -276,7 +276,7 @@ function fit(x, y, w, h, animate = true) {
   requestAnimationFrame(step);
 }
 const fitRoom = (key, a) => { const o = roomOf(key); fit(rx(o.c) - 30, ry(o.r) - 40, RW + 60, RH + 80, a); };
-const fitAll = a => { const c0 = Math.min(...ROOMS.map(o => o.c)), c1 = Math.max(...ROOMS.map(o => o.c)), xr = c1 >= 3 ? rx(c1) + RW + 40 : BW + 60; fit(rx(c0) - 40, TOP - 560, xr - rx(c0) + 40, BOTTOM - TOP + 580, a); };
+const fitAll = a => { const c0 = Math.min(...ROOMS.map(o => o.c)), c1 = Math.max(...ROOMS.map(o => o.c)), xr = c1 >= 3 ? rx(c1) + RW + 40 : BW + 60; fit(rx(c0) - 40, TOP - 920, xr - rx(c0) + 40, BOTTOM - TOP + 940, a); };
 function zoomAt(factor, sx, sy) {
   const nz = clamp(state.z * factor, 0.06, 5);
   const wx = (sx - state.ox) / state.z, wy = (sy - state.oy) / state.z;
@@ -426,6 +426,7 @@ if (simpleBtn) {
 }
 function select(id, fly) {
   state.sel = id;
+  if (id && byId[id] && byId[id].onSelect) byId[id].onSelect();
   if (id) state.room = byId[id].room;
   renderPanel(); state.dirty = true;
   const panel = document.getElementById('panel');
@@ -514,7 +515,7 @@ function unlockSecret() {
   state.secret = true; state.dirty = true;
   try { localStorage.setItem('werk101-geheim', '1'); } catch (e) {}
   const key = (ROOMS.find(o => o.secret) || {}).built;
-  const b = key && document.querySelector(`#rooms button[data-key="${key}"]`); if (b) b.hidden = false;
+  ROOMS.filter(o => o.secret).forEach(o => { const b = document.querySelector(`#rooms button[data-key="${o.built}"]`); if (b) b.hidden = false; });
   const t = document.querySelector('.toast');
   if (t) { t.textContent = 'Geheimer Raum entdeckt!'; t.classList.add('on'); setTimeout(() => t.classList.remove('on'), 2600); }
   if (key) setTimeout(() => { state.room = key; state.sel = null; renderPanel(); fitRoom(key, true); }, 700);

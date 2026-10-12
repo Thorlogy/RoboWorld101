@@ -53,14 +53,13 @@ const ROOMS = [
   { r: 6, c: 5, name: 'Schule: Robotik-AG', built: 'robotik', haus: 2 },
   { r: 5, c: 4, name: 'Schule: Klassenzimmer', built: 'klasse2', haus: 2 },
   { r: 5, c: 5, name: 'Schule: Informatikraum', built: 'info', haus: 2 },
-  { r: 4, c: 4, name: 'Schule: Bewegungsraum', built: 'bewegung', haus: 2 },
-  { r: 4, c: 5, name: 'Schule: Lehrerzimmer', built: 'lehrer', haus: 2 },
   { r: 6, c: 6.5, name: 'Dunkle Fabrik', built: 'dunkel', haus: 3 },
   { r: 7, c: 4, name: 'U-Bahnsteig Ost', built: 'bahnsteig', outdoor: true },
   { r: 7, c: 5, name: 'U-Bahn-Tunnel', built: 'tunnel', outdoor: true },
   { r: 8, c: 4, name: 'Tunnelbau: Nachläufer', built: 'nachlauf', outdoor: true },
   { r: 8, c: 5, name: 'Tunnelbau: Bohrkopf', built: 'bohrkopf', outdoor: true },
   { r: 8, c: 6, name: 'Geheime Spielhalle', built: 'spielhalle', outdoor: true, secret: true },
+  { r: 8, c: 7, name: 'Geheime Denkspiele', built: 'denkspiele', outdoor: true, secret: true },
 ];
 const roomOf = key => ROOMS.find(x => x.built === key);
 // geheime Räume erscheinen erst nach dem Freischalten (state.secret)
