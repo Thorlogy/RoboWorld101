@@ -1,9 +1,13 @@
 /* Raum: Satelliten-Werkstatt (Dach) – Reinraum
-   Hauptfigur: Marsrover in der Testgrube · Gag: Selfie mit dem Kameraarm (Bild 0–15) · Querverweis: Kran auf dem Dach */
+   Hauptfigur: Andock-Simulator mit zwei Industrierobotern · Gag: der Zielsatellit taumelt, der Wartungssatellit dreht sich mit, bis er ihn fängt · Querverweis: Kran auf dem Dach */
 const AX = rx(roomOf('satellit').c), AY = ry(roomOf('satellit').r);
 
 const panelT = f => (f < 16 ? 0 : f < 32 ? ease(seg(f, 16, 32)) : f < 48 ? 1 : f < 58 ? 1 - ease(seg(f, 48, 58)) : 0);
-const selfieT = f => (f < 2 ? 0 : f < 8 ? ease(seg(f, 2, 8)) : f < 14 ? 1 : f < 20 ? 1 - ease(seg(f, 14, 20)) : 0);
+// Andock-Simulator: Annähern (0–25), Drehung angleichen (25–40), fangen (40–52), loslassen und zurück (52–60)
+const dockAng = f => 0.35 * Math.sin(TAU * f / 60);
+const dockMatch = f => (f < 25 ? 0 : f < 35 ? ease(seg(f, 25, 35)) : f < 52 ? 1 : 1 - ease(seg(f, 52, 58)));
+const dockB = f => ({ x: f < 25 ? lerp(540, 492, ease(seg(f, 0, 25))) : f < 52 ? 492 : lerp(492, 540, ease(seg(f, 52, 60))), y: 230 });
+const dockMsg = f => (f < 25 ? 'Annähern' : f < 40 ? 'Drehung angleichen' : f < 52 ? 'Gefangen!' : 'Zurück');
 
 function wheel(x, y, r) { circle(x, y, r, '#8a8f94'); for (let i = 0; i < 6; i++) { const a = i / 6 * TAU; line(x, y, x + Math.cos(a) * (r - 2), y + Math.sin(a) * (r - 2), '#5d6064', 1); } circle(x, y, 2.5, '#3b3d40', null); }
 
@@ -38,30 +42,27 @@ function drawSatellit(f) {
     }
   });
 
-  // Testgrube mit Sand und Steinen, Marsrover macht ein Selfie
-  ctx.fillStyle = '#c98b5a'; ctx.fillRect(300, 332, 330, 28);
-  box(296, 326, 338, 8, '#8a8f94', 0, 1.5);
-  for (const [x, r] of [[350, 7], [420, 9], [590, 6]]) { ctx.beginPath(); ctx.ellipse(x, 334, r + 4, r, 0, Math.PI, TAU); paint('#7a4f33', INK, 1.5); }
-  withAlpha('rover', () => {
-    const x = 470, y0 = 304, s = selfieT(f);
-    // Rocker-Bogie-Fahrwerk mit sechs Rädern
-    line(x - 46, 336, x - 4, 316, INK, 3); line(x - 4, 316, x + 20, 336, INK, 3); line(x + 20, 336, x + 48, 336, INK, 3);
-    line(x - 4, 316, x + 34, 324, INK, 3);
-    wheel(x - 46, 342, 10); wheel(x, 342, 10); wheel(x + 46, 342, 10);
-    box(x - 40, y0 - 2, 84, 18, '#e6e3da', 3);
-    box(x + 26, y0 - 16, 18, 14, '#8a8f94', 2, 1.5);
-    // Mast mit Kamerakopf
-    line(x - 26, y0 - 2, x - 26, y0 - 64, '#5d6064', 4);
-    box(x - 40, y0 - 78, 30, 14, '#e6e3da', 3); circle(x - 34, y0 - 71, 3, '#23384d', null); circle(x - 22, y0 - 71, 3, '#23384d', null);
-    // Roboterarm mit Kamera
-    const sh = { x: x + 40, y: y0 + 6 };
-    const tip = mix({ x: x + 62, y: y0 + 24 }, { x: x + 110, y: y0 - 60 }, s);
-    const el = ik2(sh, tip, 46, 46);
-    limb(sh.x, sh.y, el.x, el.y, 5, '#b0b4b8'); limb(el.x, el.y, tip.x, tip.y, 4, '#b0b4b8');
-    circle(el.x, el.y, 3, '#3b3d40'); box(tip.x - 6, tip.y - 6, 12, 12, '#3b3d40', 2, 1.2);
-    if (f >= 8 && f < 10) { ctx.fillStyle = 'rgba(255,255,255,0.85)'; ctx.beginPath(); ctx.arc(tip.x, tip.y, 40, 0, TAU); ctx.fill(); }
+  // Andock-Simulator: zwei Industrieroboter spielen nach, wie ein Wartungssatellit einen taumelnden Satelliten fängt
+  box(470, 36, 150, 50, '#18263a', 3, 1.5);
+  text('ANDOCK-SIMULATOR', 545, 54, 10, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center', color: '#9fc4d6' });
+  text(dockMsg(f), 545, 74, 12, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center', color: f >= 40 && f < 52 ? '#7fe08a' : '#ffb347' });
+  withAlpha('andock', () => {
+    const tA = { x: 440, y: 230 }, tB = dockB(f), ang = dockAng(f), m = dockMatch(f);
+    // Roboter A hält den taumelnden Zielsatelliten
+    let E = ik2({ x: 360, y: 300 }, { x: tA.x - 30, y: tA.y + 10 }, 70, 66);
+    box(340, 300, 40, 60, '#f0b429', 3, 2); limb(360, 300, E.x, E.y, 16, '#f0b429'); limb(E.x, E.y, tA.x - 30, tA.y + 10, 12, '#f0b429'); circle(E.x, E.y, 8, '#3b3d40');
+    ctx.save(); ctx.translate(tA.x, tA.y); ctx.rotate(ang);
+    box(-24, -20, 48, 40, '#d6a521', 4, 1.8); box(24, -10, 30, 20, '#23384d', 1, 1.2); line(-24, 0, -34, 0, INK, 3); circle(-36, 0, 4, '#8a8f94', INK, 1);
+    ctx.restore();
+    // Roboter B mit Wartungssatellit und kleinem Greifarm
+    E = ik2({ x: 600, y: 300 }, { x: tB.x + 34, y: tB.y + 10 }, 70, 66);
+    box(580, 300, 40, 60, '#f0b429', 3, 2); limb(600, 300, E.x, E.y, 16, '#f0b429'); limb(E.x, E.y, tB.x + 34, tB.y + 10, 12, '#f0b429'); circle(E.x, E.y, 8, '#3b3d40');
+    ctx.save(); ctx.translate(tB.x, tB.y); ctx.rotate(ang * m);
+    box(-10, -18, 44, 36, '#f3f1ea', 4, 1.8); circle(4, -6, 4, '#23384d', null);
+    const g = f >= 40 && f < 54 ? 4 : 10;
+    line(-10, 0, -26, 0, '#8a8f94', 4); line(-26, 0, -34, -g, INK, 2.5); line(-26, 0, -34, g, INK, 2.5);
+    ctx.restore();
   });
-
   // Technikerin im Reinraumanzug
   withAlpha('technik', () => {
     const p = person({ x: 250, face: 1, shirt: '#f3f1ea', pants: '#f3f1ea', hat: '#f3f1ea', skin: '#e2b48f', hand: { x: 268, y: 290 } });
@@ -73,14 +74,14 @@ function drawSatellit(f) {
 
 registerRoom({
   key: 'satellit', name: 'Satelliten-Werkstatt', level: 'Dach',
-  hitOrder: ['technik', 'rover', 'satellit'],
+  hitOrder: ['technik', 'andock', 'satellit'],
   robots: [
-    { id: 'rover', name: 'Marsrover', bereich: 'Raumfahrt', aera: 'seit 1997', typ: 'Sechsrädriges Erkundungsfahrzeug',
-      fakt: 'Der Rover Curiosity landete 2012 auf dem Mars, Perseverance 2021. Beide fotografieren sich regelmäßig selbst: Die Kamera am Roboterarm nimmt viele Einzelbilder auf, die zu einem Selfie zusammengesetzt werden. Der Arm ist dabei herausgerechnet.',
-      echt: 'Echt, bis auf den Blitz. Auf dem Mars fahren die Rover sehr langsam, meist nur wenige Zentimeter pro Sekunde, damit sie nirgends hängen bleiben.',
-      note: 'Macht jede Runde ein Selfie. Zur Sicherheit.', color: '#e6e3da',
-      quelle: 'https://en.wikipedia.org/wiki/Curiosity_(rover)',
-      box: () => [AX + 420, AY + 220, 150, 136] },
+    { id: 'andock', name: 'Andock-Simulator', bereich: 'Raumfahrt', aera: 'seit 2013', typ: 'Zwei Industrieroboter spielen Weltraum',
+      fakt: 'Beim DLR in Oberpfaffenhofen halten zwei große Industrieroboter je ein Satellitenmodell und bewegen sie so, als schwebten sie im All. So wird geübt, wie ein Wartungssatellit mit einem Greifarm einen taumelnden, kaputten Satelliten fängt, um ihn zu reparieren oder aus der Umlaufbahn zu holen.',
+      echt: 'Echt. In der echten Anlage sitzt am Wartungssatelliten noch ein eigener Leichtbauarm, der zugreift.',
+      note: 'Der goldene Satellit taumelt. Der weiße dreht sich mit und greift zu, sobald beide gleich schnell sind.', color: '#f0b429',
+      quelle: 'https://www.dlr.de/en/rm/research/robotic-systems/multi-arm/oos-sim',
+      box: () => [AX + 330, AY + 180, 300, 180] },
     { id: 'satellit', name: 'Satellit', bereich: 'Raumfahrt', aera: 'seit 1957', typ: 'Satellit mit ausklappbaren Solarflügeln',
       fakt: 'Solarflügel werden vor dem Start auf der Erde viele Male aus- und eingeklappt. Weil sie für die Schwerelosigkeit gebaut sind, hängen sie dabei an Seilen, die ihr Gewicht abfangen.',
       echt: 'Realistisch, auch die goldene Folie: Sie schützt den Satelliten vor Hitze und Kälte im All.',

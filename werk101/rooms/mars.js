@@ -1,9 +1,10 @@
 /* Raum: Mars-Testgelände (Dach)
-   Hauptfigur: Erdzwilling eines Marsrovers · Gag: Hubschrauber-Hüpfer in der Unterdruckkammer (Bild 35–50) · Querverweis: Rover-Selfie in der Satelliten-Werkstatt nebenan */
+   Hauptfigur: Erdzwilling eines Marsrovers · Gag: Hubschrauber-Hüpfer in der Unterdruckkammer (Bild 35–50) · Gag 2: Selfie mit dem Kameraarm, wenn der Rover links steht (Bild 52–8) */
 const MSX = rx(roomOf('mars').c), MSY = ry(roomOf('mars').r);
 const marsRoverX = f => 70 + 90 * (0.5 - 0.5 * Math.cos(TAU * f / 60));
 const rockBump = x => Math.max(0, 9 - Math.abs(x - 150) * 0.6);
 const heliHop = f => (f >= 35 && f < 50 ? Math.sin(Math.PI * seg(f, 35, 50)) * 22 : 0);
+const marsSelfie = f => (f < 8 ? 1 - ease(seg(f, 3, 8)) : f >= 52 ? ease(seg(f, 52, 57)) : 0);
 const landerArm = f => 0.5 - 0.5 * Math.cos(TAU * f / 60);
 
 function drawMars(f) {
@@ -24,6 +25,11 @@ function drawMars(f) {
     line(x - 24, 290, x - 24, 236, '#5d6064', 4);
     box(x - 38, 222, 30, 14, '#e6e3da', 3); circle(x - 32, 229, 3, '#23384d', null); circle(x - 20, 229, 3, '#23384d', null);
     box(x + 24, 280, 18, 10, '#8a8f94', 2, 1.2);
+    // Roboterarm mit Kamera für das Selfie
+    const sh = { x: x + 38, y: 300 }, s = marsSelfie(f), tip = mix({ x: x + 58, y: 318 }, { x: x + 96, y: 236 }, s), el = ik2(sh, tip, 44, 44);
+    limb(sh.x, sh.y, el.x, el.y, 5, '#b0b4b8'); limb(el.x, el.y, tip.x, tip.y, 4, '#b0b4b8');
+    circle(el.x, el.y, 3, '#3b3d40'); box(tip.x - 6, tip.y - 6, 12, 12, '#3b3d40', 2, 1.2);
+    if (f === 0 || f === 1) { ctx.fillStyle = 'rgba(255,255,255,0.85)'; ctx.beginPath(); ctx.arc(tip.x, tip.y, 36, 0, TAU); ctx.fill(); }
   });
 
   withAlpha('lander', () => {
@@ -56,11 +62,11 @@ registerRoom({
   hitOrder: ['ingenieurin', 'heli', 'lander', 'marsrover'],
   robots: [
     { id: 'marsrover', name: 'Rover-Zwilling', bereich: 'Raumfahrt', aera: 'seit 1997', typ: 'Testfahrzeug auf der Erde',
-      fakt: 'Von jedem Marsrover baut die NASA einen Zwilling, der auf der Erde bleibt. Auf einem roten Testgelände mit Felsen probieren die Ingenieure Fahrmanöver aus, bevor sie die Befehle zum Mars schicken.',
+      fakt: 'Von jedem Marsrover baut die NASA einen Zwilling, der auf der Erde bleibt. Auf einem roten Testgelände mit Felsen probieren die Ingenieure Fahrmanöver aus, bevor sie die Befehle zum Mars schicken. Die Rover auf dem Mars fotografieren sich auch selbst: Die Kamera am Arm nimmt viele Einzelbilder auf, aus denen ein Selfie wird, der Arm ist dabei herausgerechnet.',
       echt: 'Realistisch. Das Testgelände des Jet Propulsion Laboratory in Kalifornien heißt Mars Yard.',
-      note: 'Fährt immer wieder über denselben Felsen. Das Fahrwerk kippt dabei mit, wie beim echten Rover.', color: '#e6e3da',
+      note: 'Fährt immer wieder über denselben Felsen und macht am Ende jeder Runde ein Selfie. Den Blitz gibt es in echt nicht.', color: '#e6e3da',
       quelle: 'https://en.wikipedia.org/wiki/Perseverance_(rover)',
-      box: f => [MSX + marsRoverX(f) - 50, MSY + 216, 104, 134] },
+      box: f => [MSX + marsRoverX(f) - 50, MSY + 216, 150, 134] },
     { id: 'heli', name: 'Mars-Hubschrauber', bereich: 'Raumfahrt', aera: 'seit 2021', typ: 'Kleiner Hubschrauber mit zwei Rotoren',
       fakt: 'Der Hubschrauber Ingenuity flog am 19. April 2021 als erstes Fluggerät auf einem anderen Planeten. Weil die Marsluft sehr dünn ist, wurde er auf der Erde in einer Kammer getestet, in der die Luft so dünn ist wie auf dem Mars.',
       echt: 'Realistisch: Draußen auf der Erde wäre die Luft für diesen Hubschrauber zu dicht, deshalb hüpft er in der Kammer.',
@@ -74,7 +80,7 @@ registerRoom({
       quelle: 'https://en.wikipedia.org/wiki/InSight',
       box: () => [MSX + 196, MSY + 262, 220, 82] },
     { id: 'ingenieurin', name: 'Ingenieurin', bereich: 'Mensch', aera: 'Maßstab', typ: 'Mensch',
-      fakt: 'Prüft die Messwerte aus der Kammer.', note: 'Nebenan macht der Rover gerade ein Selfie.', color: '#f3f1ea',
+      fakt: 'Prüft die Messwerte aus der Kammer.', note: 'Nebenan im Reinraum üben zwei Roboter das Andocken im All.', color: '#f3f1ea',
       box: () => [MSX + 600, MSY + 236, 40, 124] },
   ],
   draw: drawMars,

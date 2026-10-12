@@ -6,11 +6,21 @@ const berryY = f => (f < 15 ? 200 : f < 20 ? lerp(200, 290, seg(f, 15, 20) ** 2)
 const spiderX = f => 200 + 280 * (0.5 - 0.5 * Math.cos(TAU * f / 60));
 const jaw = f => 0.25 + 0.25 * Math.sin(TAU * f / 20);
 
+// Bewegter Scheinwerfer folgt dem Kameraarm
+const fmHead = f => { const c = camArm(f); return { x: lerp(330, 420, c.t) + 20 * Math.sin(TAU * f / 60), a: Math.atan2(360 - 46, lerp(330, 420, c.t) - 500) - Math.PI / 2 }; };
+const fmRolling = f => f >= 10 && f < 32;
 function drawFilm(f) {
   ctx.fillStyle = '#2f2d2a'; ctx.fillRect(0, 0, RW, RH);
   ctx.fillStyle = '#3fa34d'; ctx.fillRect(240, 30, 260, 330);
   text('STUDIO 2', 24, 70, 36, { family: '"Saira Condensed", sans-serif', weight: 700, color: 'rgba(243,241,234,0.15)' });
   ctx.fillStyle = '#4e4840'; ctx.fillRect(0, 360, RW, 40); line(0, 360, RW, 360, INK, 2);
+  // Lichttraverse mit Scheinwerfern; Lichtkegel liegen hinter den Darstellern
+  box(0, 14, RW, 8, '#5d6064', 0, 1.2); for (let x = 10; x < RW; x += 20) line(x, 14, x + 10, 22, 'rgba(0,0,0,0.4)', 1);
+  const mh = fmHead(f);
+  ctx.fillStyle = 'rgba(255,243,196,0.10)';
+  for (const [lx, tx] of [[200, 305], [560, 530]]) { ctx.beginPath(); ctx.moveTo(lx - 8, 44); ctx.lineTo(lx + 8, 44); ctx.lineTo(tx + 60, 360); ctx.lineTo(tx - 60, 360); ctx.closePath(); ctx.fill(); }
+  ctx.fillStyle = 'rgba(255,236,170,0.16)'; ctx.beginPath(); ctx.moveTo(500, 46); ctx.lineTo(mh.x - 34, 360); ctx.lineTo(mh.x + 34, 360); ctx.closePath(); ctx.fill();
+  for (const lx of [200, 560]) { line(lx, 22, lx, 30, INK, 2); box(lx - 14, 30, 28, 16, '#2a2723', 3, 1.5); circle(lx, 46, 6, '#fff3c4', INK, 1); for (const d of [-14, 14]) line(lx + d, 30, lx + d * 1.4, 24, INK, 1.5); }
   // Seilkamera
   withAlpha('seilkamera', () => {
     const x = spiderX(f), y = 80;
@@ -27,6 +37,18 @@ function drawFilm(f) {
   // Erdbeere hängt an der Halterung, bis sie fällt
   line(305, 120, 305, 192, '#8a8f94', 1.5); box(298, 186, 14, 6, '#3b3d40', 1, 1);
   if (f >= 40 && f < 60) { ctx.beginPath(); ctx.ellipse(305, 200, 6, 8, 0, 0, TAU); paint('#d9342b', INK, 1.2); }
+  // Beweglicher Scheinwerfer an der Traverse
+  withAlpha('movinghead', () => {
+    const mh = fmHead(f);
+    box(488, 22, 24, 10, '#3b3d40', 2, 1.2); line(492, 32, 492, 40, INK, 2); line(508, 32, 508, 40, INK, 2);
+    ctx.save(); ctx.translate(500, 44); ctx.rotate(mh.a); box(-10, -6, 20, 22, '#2a2723', 4, 1.5); circle(0, 16, 6, '#fff3c4', INK, 1); ctx.restore();
+  });
+  // Lampe „Aufnahme“ leuchtet, solange gedreht wird
+  box(520, 112, 76, 22, fmRolling(f) ? '#d9342b' : '#4a2a26', 3, 1.5);
+  text('AUFNAHME', 558, 127, 10, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center', color: fmRolling(f) ? '#ffffff' : '#7a5a55' });
+  // Tonangel am Galgenstativ, Mikrofon mit Windschutz über dem Set
+  line(238, 360, 238, 140, '#5d6064', 3); line(226, 360, 250, 360, INK, 3); line(238, 140, 350, 150, '#8a8f94', 3);
+  line(350, 150, 350, 166, INK, 1.5); ctx.beginPath(); ctx.ellipse(350, 178, 6, 14, 0, 0, TAU); paint('#8a8f94', INK, 1);
   // Kameraroboter auf Schiene
   box(20, 344, 220, 10, '#5d6064', 1, 1.5);
   withAlpha('kamera', () => {
@@ -40,7 +62,12 @@ function drawFilm(f) {
     if (f >= 14 && f < 30) circle(c.x - 2, c.y - 14, 3, '#ff3b30', null);
   });
   // Klappe
-  box(344, 336, 46, 22, '#2a2723', 2); text('TAKE 47', 367, 352, 9, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center', color: '#f3f1ea' });
+  box(344, 334, 46, 24, '#2a2723', 2); text('TAKE 47', 367, 352, 9, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center', color: '#f3f1ea' });
+  // Klappe schlägt kurz vor der Aufnahme zu
+  const clap = f >= 4 && f < 10 ? 0.5 * (1 - seg(f, 4, 9)) : 0;
+  ctx.save(); ctx.translate(344, 334); ctx.rotate(-clap); box(0, -7, 46, 7, '#f3f1ea', 1, 1.2);
+  for (let i = 0; i < 4; i++) { ctx.fillStyle = '#2a2723'; ctx.beginPath(); ctx.moveTo(4 + i * 11, -7); ctx.lineTo(10 + i * 11, -7); ctx.lineTo(6 + i * 11, 0); ctx.lineTo(0 + i * 11, 0); ctx.closePath(); ctx.fill(); }
+  ctx.restore();
   // Motion-Capture-Darsteller vor dem Greenscreen, Monitor zeigt die Roboterfigur
   const pose = Math.sin(TAU * f / 30);
   withAlpha('mocap', () => {
@@ -101,7 +128,7 @@ function drawFilm(f) {
 
 registerRoom({
   key: 'film', name: 'Filmstudio', level: 'Ebene 2',
-  hitOrder: ['puppe', 'kostuem', 'mocap', 'requisite', 'seilkamera', 'kamera'],
+  hitOrder: ['movinghead', 'puppe', 'kostuem', 'mocap', 'requisite', 'seilkamera', 'kamera'],
   robots: [
     { id: 'kamera', name: 'Kameraroboter', bereich: 'Medien', aera: 'seit den 2000ern', typ: 'Schneller Industriearm mit Kamera',
       fakt: 'Für Zeitlupenaufnahmen in der Werbung schwenken schnelle Roboterarme die Kamera mit mehreren Metern pro Sekunde. Weil sie jede Bewegung millimetergenau wiederholen, lässt sich eine Aufnahme beliebig oft gleich drehen.',
@@ -132,6 +159,12 @@ registerRoom({
       note: 'Fährt ein Stück vor und zurück und schaut sich um. Gesteuert vom Puppenspieler am Rand.', color: '#e6e3da',
       quelle: 'https://en.wikipedia.org/wiki/Short_Circuit_(1986_film)',
       box: f => [FMX + Math.min(486 + 12 * Math.sin(TAU * f / 60) - 18, 470), FMY + 230, 160, 130] },
+    { id: 'movinghead', name: 'Beweglicher Scheinwerfer', bereich: 'Medien', aera: 'seit 1981', typ: 'Scheinwerfer mit Motoren',
+      fakt: 'Bewegliche Scheinwerfer drehen und neigen sich mit Motoren und werden von einem Lichtpult gesteuert. Sie wiederholen eine programmierte Bewegung jedes Mal gleich. Die ersten kamen 1981 bei Konzerten zum Einsatz.',
+      echt: 'Echt. Hier folgt er dem Kameraarm, damit das Set dort hell ist, wo gerade gefilmt wird.',
+      note: 'Schwenkt mit, wenn der Kameraarm vorfährt. Die Lampe „Aufnahme“ leuchtet, solange gedreht wird.', color: '#2a2723',
+      quelle: 'https://en.wikipedia.org/wiki/Intelligent_lighting',
+      box: () => [FMX + 484, FMY + 20, 32, 46] },
     { id: 'requisite', quelle: 'https://en.wikipedia.org/wiki/R.U.R.', name: 'Requisitenregal', bereich: 'Medien', aera: '1920er bis 1980er', typ: 'Eigene Entwürfe im Stil dreier Epochen',
       fakt: 'Filmroboter zeigen, wie sich Menschen ihrer Zeit die Zukunft vorstellten: in den 1920ern glänzend und elegant, in den 1950ern kastig aus Blech, in den 1980ern als freundlicher Haushaltshelfer. Das Wort Roboter stammt aus Karel Čapeks Theaterstück „R.U.R.“ von 1920.',
       echt: 'Die drei Figuren sind eigene Entwürfe im Stil der Epochen, keine Nachbildungen bestimmter Filmroboter.',

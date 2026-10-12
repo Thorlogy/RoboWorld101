@@ -7,8 +7,25 @@ function ubTrainX(g) {
   g %= 480;
   if (g < 40) return lerp(720, UB_STOP, 1 - (1 - seg(g, 0, 40)) ** 2);
   if (g < 200) return UB_STOP;
-  if (g < 260) return lerp(UB_STOP, -600, seg(g, 200, 260) ** 2);
-  return -600;
+  if (g < 260) return lerp(UB_STOP, -1100, seg(g, 200, 260) ** 2);
+  // kommt von rechts durch den Tunnel unter der Schule (gleiche Geschwindigkeit wie beim Einfahren)
+  if (g >= 400) return lerp(2400, 720, seg(g, 400, 480));
+  return -1100;
+}
+const UB_CARS = 4, UB_LEN = UB_CARS * 240 - 10;
+// ganzer Zug, x in Raumkoordinaten des Feldes, in dem gezeichnet wird
+function ubTrain(x, g) {
+  const open = ubDoor(g);
+  for (let i = 0; i < UB_CARS; i++) {
+    ubCar(x + i * 240, i === 0, open);
+    if (i > 0) { ctx.fillStyle = '#3b3d40'; ctx.fillRect(x + i * 240 - 10, 280, 10, 40); }
+  }
+  // Kind an der Frontscheibe, weil vorn kein Fahrer sitzt
+  circle(x + 22, 280, 8, '#e2b48f', INK, 1.2); ctx.fillStyle = '#7a4a2a'; ctx.beginPath(); ctx.arc(x + 22, 277, 8, Math.PI, TAU); ctx.fill();
+  for (const dy of [-6, 6]) circle(x + 11, 280 + dy, 3, '#e2b48f', INK, 1);
+  circle(x + 15, 282, 2, '#d98f8f', null);
+  const hair = ['#3a2c22', '#d6d2c8', '#8a5a2b', '#2a1f18', '#c9a46a', '#7a4a2a', '#3b3d40'];
+  [62, 172, 280, 390, 530, 600, 760, 850].forEach((wx, i) => circle(x + wx, 270, 7, hair[i % hair.length], INK, 1));
 }
 const ubDoor = g => { g %= 480; return g < 50 || g >= 170 ? 0 : g < 58 ? seg(g, 50, 58) : g < 162 ? 1 : 1 - seg(g, 162, 170); };
 function ubCar(x, front, open) {
@@ -47,16 +64,8 @@ function drawUbahn(f) {
   text('U-BAHN', 600, 150, 30, { family: '"Saira Condensed", sans-serif', weight: 700, align: 'right', color: 'rgba(42,39,35,0.13)' });
   // Zug
   withAlpha('ubahn', () => {
-    const x = ubTrainX(g), open = ubDoor(g);
-    if (x < RW + 10) {
-      ubCar(x, true, open); ubCar(x + 240, false, open);
-      ctx.fillStyle = '#3b3d40'; ctx.fillRect(x + 230, 280, 10, 40);
-      // Kind an der Frontscheibe, weil vorn kein Fahrer sitzt
-      circle(x + 22, 280, 8, '#e2b48f', INK, 1.2); ctx.fillStyle = '#7a4a2a'; ctx.beginPath(); ctx.arc(x + 22, 277, 8, Math.PI, TAU); ctx.fill();
-      for (const dy of [-6, 6]) circle(x + 11, 280 + dy, 3, '#e2b48f', INK, 1);
-      circle(x + 15, 282, 2, '#d98f8f', null);
-      [62, 172, 280, 390].forEach((wx, i) => circle(x + wx, 270, 7, ['#3a2c22', '#d6d2c8', '#8a5a2b', '#2a1f18'][i], INK, 1));
-    }
+    const x = ubTrainX(g);
+    if (x < RW + 10 && x + UB_LEN > -10) ubTrain(x, g);
   });
   // Bahnsteig vorn
   ctx.fillStyle = '#bdb6a8'; ctx.fillRect(0, UB_PLAT, RW, 12); line(0, UB_PLAT, RW, UB_PLAT, INK, 2);
@@ -83,7 +92,7 @@ registerRoom({
       echt: 'Realistisch. Weil vorn kein Fahrerstand ist, kann man ganz vorn aus dem Fenster in den Tunnel schauen, ein beliebter Platz bei Kindern.',
       note: 'Fährt pünktlich ein, lässt die Schulklasse aussteigen und fährt weiter. Vorn drückt sich ein Kind die Nase an der Scheibe platt.', color: '#f3f1ea',
       quelle: 'https://www.koinno.de/fileadmin/user_upload/praxisbeispiele/KOINNO-Praxisbeispiele_66_Pruefung_und_Beschaffung_einer_vollautomatischen_U-Bahn.pdf',
-      box: () => { const x = ubTrainX(state.g); return [UBX + Math.max(0, x), UBY + 232, Math.max(0, Math.min(RW, x + 470) - Math.max(0, x)), 120]; } },
+      box: () => { const x = ubTrainX(state.g), a = Math.max(0, x), b = Math.min(RW, x + UB_LEN); return b > a ? [UBX + a, UBY + 232, b - a, 120] : [-99999, -99999, 1, 1]; } },
     { id: 'fahrgast2', name: 'Fahrgast', bereich: 'Mensch', aera: 'Maßstab', typ: 'Mensch',
       fakt: 'Wartet auf den Zug und steigt ein, sobald die Schulklasse draußen ist.', note: 'Erst aussteigen lassen, dann einsteigen. Klappt.', color: '#5f7d3a',
       box: () => (state.g % 480 < 158 ? [UBX + 478, UBY + 206, 44, 124] : [-9999, 0, 0, 0]) },
