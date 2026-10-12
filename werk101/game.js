@@ -1,14 +1,14 @@
 /* Werk 101 – Suchspiel. Nur Klicks im Bild zählen, nicht in der Liste. Fortschritt bleibt im Browser. */
 (() => {
   const TASKS = [
-    { text: 'Finde drei Roboter, die fliegen', ids: ['paket', 'scout', 'schwarm', 'loesch', 'fassade', 'heli', 'wing', 'stationsdrohne', 'flugtaxi', 'flugtaxi2'], need: 3 },
+    { text: 'Finde drei Roboter, die fliegen', ids: ['paket', 'scout', 'schwarm', 'loesch', 'fassade', 'heli', 'wing', 'stationsdrohne', 'flugtaxi', 'flugtaxi2', 'thermo'], need: 3 },
     { text: 'Finde zwei Roboter, die unter Wasser arbeiten', ids: ['rov', 'aal', 'robofisch', 'rumpf'], need: 2 },
     { text: 'Finde drei Roboter, die älter als 50 Jahre sind', ids: ['schach', 'unimate', 'shakey', 'schildkroete', 'blech'], need: 3 },
-    { text: 'Finde vier Tiere', ids: ['katze', 'moewe', 'hafenmoewe', 'kanarie', 'ratte', 'hummel', 'kuh', 'fisch', 'kraehe', 'schaf', 'igel', 'motte'], need: 4 },
+    { text: 'Finde vier Tiere', ids: ['katze', 'moewe', 'hafenmoewe', 'kanarie', 'ratte', 'hummel', 'kuh', 'fisch', 'kraehe', 'schaf', 'igel', 'motte', 'taube'], need: 4 },
     { text: 'Finde zwei Fahrzeuge, die Menschen ohne Fahrer befördern', ids: ['shuttle', 'robotaxi', 'taxi2', 'ubahn', 'flugtaxi', 'flugtaxi2'], need: 2 },
     { text: 'Finde die Schulklasse', ids: ['klasse'], need: 1 },
     { text: 'Finde drei Roboter in der Schule 102', ids: ['schrubber', 'robocup', 'av1', 'calliope', 'nao', 'barista'], need: 3 },
-    { text: 'Finde drei Roboter, die draußen für Essen oder Strom arbeiten', ids: ['jaeter', 'putz', 'blatt', 'ernte', 'schieber', 'gartenbot'], need: 3 },
+    { text: 'Finde drei Roboter, die draußen für Essen oder Strom arbeiten', ids: ['jaeter', 'putz', 'blatt', 'ernte', 'schieber', 'gartenbot', 'maximo'], need: 3 },
     { text: 'Mach in der dunklen Fabrik das Licht an', ids: ['lichtschalter'], need: 1 },
     { text: 'Finde den Roboter, der ein Selfie macht', ids: ['rover'], need: 1 },
     { text: 'Finde beide Stellen mit der roten Socke', ids: ['saug', 'sortierer'], need: 2 },

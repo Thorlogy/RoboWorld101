@@ -368,7 +368,7 @@ BUILT.forEach(o => {
   roomsEl.appendChild(b);
 });
 document.querySelector('.bar i').style.width = (BUILT.length / ROOMS.length * 100).toFixed(1) + '%';
-document.getElementById('progressText').textContent = BUILT.length === ROOMS.length ? `Alle ${ROOMS.length} Räume gebaut. Unterwegs sind außerdem Lieferroboter, Fassadendrohne, Rohrpost und ein Paket vom Hafen bis in den Wohnbereich. Draußen: Straße, Park, Feld, Energiepark, Schulweg und U-Bahnhof. Rechts stehen die Schule 102 und die Halle 103, eine Fabrik, in der das Licht aus ist. Am Himmel fliegen Flugtaxis und Lieferdrohnen.` : `${BUILT.length} von ${ROOMS.length} Räumen gebaut. Der Rest ist Baustelle.`;
+document.getElementById('progressText').textContent = BUILT.length === ROOMS.length ? `Alle ${ROOMS.length} Räume gebaut. Unterwegs sind außerdem Lieferroboter, Fassadendrohne, Rohrpost und ein Paket vom Hafen bis in den Wohnbereich. Draußen: Straße, Park, Feld, Energiepark, Solarpark, Schulweg und U-Bahnhof. Rechts stehen die Schule 102 und die Halle 103, eine Fabrik, in der das Licht aus ist. Am Himmel fliegen Flugtaxis und Lieferdrohnen.` : `${BUILT.length} von ${ROOMS.length} Räumen gebaut. Der Rest ist Baustelle.`;
 FILTERS.forEach(name => {
   const b = document.createElement('button'); b.type = 'button'; b.textContent = name;
   b.setAttribute('aria-pressed', String(name === 'Alle'));

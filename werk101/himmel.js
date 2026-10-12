@@ -6,9 +6,9 @@ const HIDE = [-99999, -99999, 1, 1];
 const regen = () => state.wetter === 'regen';
 
 /* ---------- Flugtaxis ---------- */
-const TX_L = -3300, TX_R = 5600, TX_A = -70, TX_B = -160;
-const taxiA = g => ({ x: lerp(TX_L, TX_R, (g % RUN_P) / RUN_P), y: TX_A + 6 * Math.sin(TAU * g / 120), s: 0.55, dir: 1 });
-const taxiB = g => ({ x: lerp(TX_R, TX_L, ((g + 200) % RUN_P) / RUN_P), y: TX_B + 4 * Math.sin(TAU * g / 90), s: 0.3, dir: -1 });
+const TX_L = -4300, TX_R = 5600, TX_A = -115, TX_B = -175;
+const taxiA = g => ({ x: lerp(TX_L, TX_R, (g % RUN_P) / RUN_P), y: TX_A + 6 * Math.sin(TAU * g / 120), s: 1, dir: 1 });
+const taxiB = g => ({ x: lerp(TX_R, TX_L, ((g + 200) % RUN_P) / RUN_P), y: TX_B + 4 * Math.sin(TAU * g / 90), s: 0.32, dir: -1 });
 // Ein Fahrgast fotografiert Werk 101, wenn das Taxi drüberfliegt
 const taxiFoto = p => p.x > 700 && p.x < 1500 && Math.floor(p.x / 120) % 3 === 0;
 function drawTaxi(p, g, foto) {
@@ -45,20 +45,45 @@ function taxiGlow(p) {
 }
 const taxiBox = p => [p.x - 145 * p.s, p.y - 75 * p.s, 290 * p.s, 140 * p.s];
 
-registerRunner({
-  room: 'strasse',
-  draw(g) {
-    if (regen()) return;
-    withAlpha('flugtaxi', () => { const p = taxiA(g); drawTaxi(p, g, taxiFoto(p) && g % 6 < 1); });
-  },
-  glow(g) { if (!regen()) taxiGlow(taxiA(g)); },
-  robot: { id: 'flugtaxi', name: 'Flugtaxi ohne Pilot', bereich: 'Mobilität', aera: 'seit 2023 zugelassen', typ: 'Elektrischer Multikopter für zwei Fahrgäste',
-    fakt: 'In China erhielt im Oktober 2023 zum ersten Mal ein Flugtaxi ohne Pilot eine Musterzulassung. Es hat 16 Rotoren an acht Armen, fliegt elektrisch und bringt zwei Fahrgäste auf festgelegten Strecken ans Ziel. Eine Leitstelle am Boden überwacht jeden Flug.',
-    echt: 'Die Bauform ist echt. Gezeichnet ist es kleiner, weil es weit weg fliegt. In Deutschland gibt es bisher keinen regulären Flugtaxi-Betrieb mit Fahrgästen. Bei Regen bleibt es hier am Boden.',
-    note: 'Fliegt hoch über alle Gebäude. Über Werk 101 fotografiert ein Fahrgast das Dach.', color: '#e8e6e0',
-    quelle: 'https://en.wikipedia.org/wiki/EHang_216',
-    box: () => (regen() ? HIDE : taxiBox(taxiA(state.g))) },
-});
+// Flugtaxi mit Pilot und vier Fahrgästen: Flügel, Leitwerk und sechs schwenkbare Propeller (im Reiseflug nach vorn gekippt)
+function drawTilt(p, g, foto) {
+  ctx.save(); ctx.translate(p.x, p.y); ctx.scale(p.s * p.dir, p.s);
+  // hinterer Flügel/Leitwerk in V-Form
+  ctx.beginPath(); ctx.moveTo(-118, -14); ctx.lineTo(-150, -50); ctx.lineTo(-136, -50); ctx.lineTo(-96, -14); ctx.closePath(); paint('#e8e6e0', INK, 2);
+  // Rumpf
+  ctx.beginPath(); ctx.moveTo(-140, -10); ctx.quadraticCurveTo(-60, -40, 60, -34); ctx.quadraticCurveTo(140, -30, 150, 2); ctx.quadraticCurveTo(140, 28, 60, 30); ctx.lineTo(-90, 18); ctx.quadraticCurveTo(-140, 8, -140, -10); ctx.closePath(); paint('#f3f1ea', INK, 2.5);
+  // Fensterband mit Pilot vorn und vier Fahrgästen
+  ctx.save(); ctx.beginPath(); ctx.moveTo(-50, -24); ctx.lineTo(110, -24); ctx.quadraticCurveTo(136, -20, 140, -4); ctx.lineTo(-50, -4); ctx.closePath(); ctx.fillStyle = '#9fc4d6'; ctx.fill(); ctx.clip();
+  [[-34, '#3a2c22', '#3e6f9e'], [-8, '#c9a46a', '#d9542b'], [18, '#7a4a2a', '#5f9a4a'], [44, '#2a2723', '#f0b429'], [104, '#3b3d40', '#23384d']].forEach(([hx, hair, shirt]) => {
+    box(hx - 8, -6, 16, 14, shirt, 4, 1); circle(hx, -14, 7, '#e2b48f', INK, 1); ctx.beginPath(); ctx.arc(hx, -16, 7, Math.PI, 0); ctx.fillStyle = hair; ctx.fill();
+  });
+  box(52, -16, 6, 9, '#2a2723', 1, 1);
+  ctx.restore();
+  ctx.strokeStyle = INK; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(-50, -24); ctx.lineTo(110, -24); ctx.quadraticCurveTo(136, -20, 140, -4); ctx.lineTo(-50, -4); ctx.closePath(); ctx.stroke();
+  line(80, -24, 80, -4, INK, 1.5); line(96, -26, 96, 26, 'rgba(42,39,35,0.4)', 1);
+  ctx.fillStyle = '#3e6f9e'; ctx.fillRect(-120, 6, 200, 5);
+  // Flügel oben, von der Seite fast nur als Kante zu sehen
+  box(-30, -48, 90, 9, '#e8e6e0', 4, 2); line(0, -40, 0, -34, INK, 3); line(40, -40, 40, -34, INK, 3);
+  // Gondeln mit Propellern: vorn am Flügel, hinten am Leitwerk
+  for (const [nx, ny] of [[64, -44], [-150, -50]]) {
+    box(nx - 22, ny - 6, 26, 12, '#d6d9dc', 5, 1.5);
+    ctx.beginPath(); ctx.ellipse(nx + 6, ny, 3, g % 2 ? 34 : 26, 0, 0, TAU); ctx.fillStyle = 'rgba(42,39,35,0.35)'; ctx.fill();
+  }
+  // Fahrwerk
+  for (const wx of [-60, 100]) { line(wx, 22, wx, 40, INK, 3); circle(wx, 42, 6, '#2d2f33', INK, 1.5); }
+  // Positionslichter
+  circle(-10, -48, 4, '#d94a4a', null); circle(60, -48, 4, '#5fbf6a', null);
+  if (g % 10 < 1) circle(0, 30, 5, '#ffffff', INK, 1);
+  ctx.restore();
+  if (foto) { ctx.save(); ctx.globalAlpha = 0.85; ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(p.x + 52 * p.s * p.dir, p.y - 12 * p.s, 20 * p.s, 0, TAU); ctx.fill(); ctx.restore(); }
+}
+function tiltGlow(p) {
+  glow(p.x - 10 * p.s, p.y - 48 * p.s, 30 * p.s, 'rgba(255,90,80,0.9)');
+  glow(p.x + 60 * p.s, p.y - 48 * p.s, 30 * p.s, 'rgba(110,255,130,0.9)');
+  glow(p.x + 40 * p.s, p.y - 14 * p.s, 120 * p.s, 'rgba(255,236,190,0.55)');
+}
+const tiltBox = p => [p.x - 155 * p.s, p.y - 60 * p.s, 310 * p.s, 110 * p.s];
+
 registerRunner({
   room: 'strasse',
   draw(g) {
@@ -66,12 +91,26 @@ registerRunner({
     withAlpha('flugtaxi2', () => drawTaxi(taxiB(g), g, false));
   },
   glow(g) { if (!regen()) taxiGlow(taxiB(g)); },
-  robot: { id: 'flugtaxi2', name: 'Flugtaxi in der Ferne', bereich: 'Mobilität', aera: 'in Erprobung', typ: 'Elektrischer Multikopter',
-    fakt: 'Flugtaxis sollen auf festen Strecken zwischen Landeplätzen pendeln, ähnlich wie eine Buslinie in der Luft. Weil sie elektrisch fliegen, reicht eine Akkuladung nur für kurze Strecken.',
-    echt: 'So viel Verkehr am Himmel ist noch Zukunft. Bisher fliegen Flugtaxis vor allem bei Tests und Vorführungen.',
-    note: 'Fliegt weiter hinten in die andere Richtung und wirkt deshalb kleiner.', color: '#e8e6e0',
+  robot: { id: 'flugtaxi2', name: 'Flugtaxi ohne Pilot', bereich: 'Mobilität', aera: 'seit 2023 zugelassen', typ: 'Elektrischer Multikopter für zwei Fahrgäste',
+    fakt: 'In China erhielt im Oktober 2023 zum ersten Mal ein Flugtaxi ohne Pilot eine Musterzulassung. Es hat 16 Rotoren an acht Armen, fliegt elektrisch und bringt zwei Fahrgäste auf festgelegten Strecken ans Ziel. Eine Leitstelle am Boden überwacht jeden Flug.',
+    echt: 'Die Bauform ist echt. Es fliegt weit hinten und wirkt deshalb klein. In Deutschland gibt es bisher keinen regulären Flugtaxi-Betrieb mit Fahrgästen. Bei Regen bleibt es hier am Boden.',
+    note: 'Fliegt weit hinten in die andere Richtung.', color: '#e8e6e0',
     quelle: 'https://en.wikipedia.org/wiki/EHang_216',
     box: () => (regen() ? HIDE : taxiBox(taxiB(state.g))) },
+});
+registerRunner({
+  room: 'strasse',
+  draw(g) {
+    if (regen()) return;
+    withAlpha('flugtaxi', () => { const p = taxiA(g); drawTilt(p, g, taxiFoto(p) && g % 6 < 1); });
+  },
+  glow(g) { if (!regen()) tiltGlow(taxiA(g)); },
+  robot: { id: 'flugtaxi', name: 'Flugtaxi für vier Fahrgäste', bereich: 'Mobilität', aera: 'in Erprobung', typ: 'Elektrisches Senkrechtstarter-Flugzeug mit sechs Propellern',
+    fakt: 'Dieses Flugtaxi startet senkrecht wie ein Hubschrauber. In der Luft kippt es seine sechs Propeller nach vorn und fliegt mit Flügeln weiter wie ein Flugzeug. Vorn sitzt ein Pilot, dahinter haben vier Fahrgäste Platz. In Dubai fanden 2025 Testflüge mit Pilot statt, dort soll einer der ersten Linienbetriebe beginnen.',
+    echt: 'Bauform und Größe passen ungefähr: Der Rumpf ist etwa so lang wie ein Kleinbus. Über einer Stadt in Deutschland fliegt so etwas bisher nicht. Bei Regen bleibt es hier am Boden.',
+    note: 'Fliegt hoch über alle Gebäude. Über Werk 101 fotografiert ein Fahrgast das Dach.', color: '#f3f1ea',
+    quelle: 'https://en.wikipedia.org/wiki/Joby_Aviation',
+    box: () => (regen() ? HIDE : tiltBox(taxiA(state.g))) },
 });
 
 /* ---------- Lieferdrohne mit Seilwinde: Werk 101 → Feld ---------- */
