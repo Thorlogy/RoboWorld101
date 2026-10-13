@@ -266,13 +266,39 @@ registerRunner({
 
 /* ---------- Raketenstart mit Landung der ersten Stufe (weit hinten zwischen Schule 102 und Halle 103) ---------- */
 const RK_PAD = { x: rx(6) + 90, y: GROUND - 6 }, RK_LZ = { x: rx(6) + 230, y: GROUND - 6 }, RK_K = 2.4, RK_H = 118 * RK_K;
-// Start 40–200 (steigt aus dem Bild), Stufe kommt 300–400 zurück und landet, 440–479 Stufe weg, neue Rakete da
+// Start 60–175 (steigt bis hoch in den Himmel), 175 Stufentrennung, 185–240 Oberstufe steigt weiter, 205 Spitze öffnet,
+// 215–300 Satellit treibt davon und klappt die Solarflügel aus. Erste Stufe kommt 300–400 zurück und landet, 440–479 neue Rakete.
+const RK_SEP = 3000;
 function rkState(g) {
   g %= RUN_P;
-  const up = g < 60 ? 0 : g < 200 ? 4400 * seg(g, 60, 200) ** 2 : 4400;
+  const up = g < 60 ? 0 : g < 175 ? RK_SEP * seg(g, 60, 175) ** 2 : RK_SEP;
+  const up2 = g < 175 ? up : RK_SEP + 30 + 170 * ease(seg(g, 178, 250));
   const back = g < 300 ? null : g < 400 ? RK_LZ.y - 4000 * (1 - ease(seg(g, 300, 400))) : RK_LZ.y;
-  return { up, back, fire: g >= 50 && g < 200, burn: g >= 350 && g < 400, legs: g >= 370 ? seg(g, 370, 385) : 0,
+  return { up, up2, back, sep: g >= 175, fall: g >= 175 && g < 200 ? seg(g, 175, 200) : g >= 200 ? 1 : 0,
+    fire: g >= 50 && g < 175, fire2: g >= 182 && g < 238, open: seg(g, 204, 214), sat: g >= 212 && g < 330 ? seg(g, 212, 300) : 0,
+    upperA: g < 175 ? 0 : 1 - seg(g, 250, 270), satA: g < 212 ? 0 : 1 - seg(g, 310, 330),
+    burn: g >= 350 && g < 400, legs: g >= 370 ? seg(g, 370, 385) : 0,
     smoke: g >= 44 && g < 140 ? seg(g, 44, 70) * (1 - seg(g, 110, 140)) : 0, newA: seg(g, 440, 476), oldA: g >= 400 ? 1 - seg(g, 440, 476) : 1 };
+}
+// Oberstufe mit Nutzlastverkleidung; open 0–1 klappt die zwei Hälften auf
+function rkUpper(x, base, open) {
+  ctx.save(); ctx.translate(x, base); ctx.scale(RK_K, RK_K);
+  box(-6, -18, 12, 18, '#f3f1ea', 1, 1.5); line(-3, 0, -5, 6, INK, 1.5); line(3, 0, 5, 6, INK, 1.5);
+  for (const s of [-1, 1]) {
+    ctx.save(); ctx.translate(s * 7 + s * 26 * open, -18 + 10 * open); ctx.rotate(s * 0.9 * open);
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -16); ctx.quadraticCurveTo(-s * 2, -30, -s * 7, -32); ctx.lineTo(-s * 7, 0); ctx.closePath(); paint('#f3f1ea', INK, 1.3);
+    ctx.restore();
+  }
+  ctx.restore();
+}
+// Satellit: Kasten mit zwei Solarflügeln, die sich auffalten
+function rkSat(x, y, unfold) {
+  ctx.save(); ctx.translate(x, y); ctx.scale(RK_K, RK_K);
+  box(-7, -7, 14, 14, '#d6a521', 1, 1.2);
+  const w = 4 + 26 * unfold;
+  for (const s of [-1, 1]) { line(s * 7, 0, s * 10, 0, INK, 1.2); box(s > 0 ? 10 : -10 - w, -5, w, 10, '#23384d', 0, 1); }
+  circle(0, -9, 2.5, '#e6e3da', INK, 1);
+  ctx.restore();
 }
 // gezeichnet im kleinen Maß (Höhe 118) und mit RK_K vergrößert
 function rkBody(x, base, h, stage) {
@@ -296,7 +322,17 @@ registerRunner({
       box(RK_PAD.x - 50, RK_PAD.y, 100, 8, '#5d6064', 1, 1.2);
       ctx.beginPath(); ctx.ellipse(RK_LZ.x, RK_LZ.y + 3, 54, 7, 0, 0, TAU); paint('#5d6064', INK, 1); text('X', RK_LZ.x, RK_LZ.y + 8, 14, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center', color: '#f0b429' });
       // Rakete startet
-      if (r.up < 1400 && g % RUN_P < 440) { const base = RK_PAD.y - r.up; rkBody(RK_PAD.x, base, RK_H, false); if (r.fire) rkFlame(RK_PAD.x, base, 26 + r.up * 0.02, g); }
+      const gg = g % RUN_P;
+      if (!r.sep && gg >= 40 && gg < 440 || gg < 40) { const base = RK_PAD.y - r.up; rkBody(RK_PAD.x, base, RK_H, false); if (r.fire) rkFlame(RK_PAD.x, base, 26 + Math.min(r.up, 2000) * 0.02, g); }
+      if (r.sep && gg < 300) {
+        const top = RK_PAD.y - RK_SEP;
+        // erste Stufe fällt nach der Trennung zurück und verschwindet (sie landet später auf dem X)
+        if (r.fall < 1) { ctx.save(); ctx.globalAlpha *= 1 - r.fall; rkBody(RK_PAD.x, top + 140 * r.fall, RK_H * 0.66, true); ctx.restore(); }
+        const ub = RK_PAD.y - r.up2 - RK_H * 0.66;
+        if (r.upperA > 0) { ctx.save(); ctx.globalAlpha *= r.upperA; rkUpper(RK_PAD.x + 20 * r.sat, ub, r.open); if (r.fire2) rkFlame(RK_PAD.x, ub, 10, g); ctx.restore(); }
+        if (r.satA > 0) { ctx.save(); ctx.globalAlpha *= r.satA; rkSat(RK_PAD.x - 10 - 260 * r.sat, ub - 60 - 70 * r.sat, seg(gg, 225, 260)); ctx.restore(); }
+        if (gg >= 176 && gg < 186) glow(RK_PAD.x, top - RK_H * 0.66, 60, 'rgba(255,220,160,0.8)');
+      }
       if (r.smoke > 0) for (let i = 0; i < 9; i++) circle(RK_PAD.x - 80 + i * 20, RK_PAD.y - 10 - (i % 3) * 14, 26 * r.smoke + (i % 2) * 6, 'rgba(240,238,232,0.85)', null);
       // neue Rakete erscheint nach der Landung
       if (r.newA > 0) { ctx.save(); ctx.globalAlpha *= r.newA; rkBody(RK_PAD.x, RK_PAD.y, RK_H, false); ctx.restore(); }
@@ -313,15 +349,54 @@ registerRunner({
   glow(g) {
     if (regen()) return; const r = rkState(g);
     if (r.fire) glow(RK_PAD.x, RK_PAD.y - r.up + 50, 140, 'rgba(255,190,90,0.9)');
+    if (r.fire2) glow(RK_PAD.x, RK_PAD.y - r.up2 - RK_H * 0.66 + 30, 60, 'rgba(255,190,90,0.9)');
     if (r.burn) glow(RK_LZ.x, r.back + 40, 110, 'rgba(255,190,90,0.9)');
   },
   robot: { id: 'rakete', name: 'Rakete mit Landestufe', bereich: 'Raumfahrt', aera: 'seit 2015', typ: 'Wiederverwendbare Rakete',
     fakt: 'Die erste Stufe einer Falcon-9-Rakete fliegt nach dem Start zurück und landet aufrecht auf ihren Beinen. Gesteuert wird das vom Bordcomputer, kein Mensch lenkt mit. Das gelang zum ersten Mal im Dezember 2015. Manche Stufen sind inzwischen mehr als 20 Mal geflogen.',
     echt: 'Die Landung ist echt. Ein Startplatz mitten in der Stadt ist ein Spaß: Raketen starten weit weg von Häusern, oft am Meer. Bei Regen startet hier nichts.',
-    note: 'Startet, verschwindet nach oben, und die erste Stufe kommt zurück und landet auf dem X. Dann steht die nächste Rakete bereit.', color: '#f3f1ea',
+    note: 'Steigt hoch in den Himmel, wirft die erste Stufe ab, öffnet die Spitze und setzt einen Satelliten aus, der seine Solarflügel ausklappt. Die erste Stufe kommt zurück und landet auf dem X.', color: '#f3f1ea',
     quelle: 'https://en.wikipedia.org/wiki/Falcon_9',
     box: () => { if (regen()) return HIDE; const r = rkState(state.g), g = state.g % RUN_P;
       if (r.back != null && g < 440) return [RK_LZ.x - 40, r.back - RK_H * 0.66 - 8, 80, RK_H * 0.66 + 14];
-      if (r.up < 2000) return [RK_PAD.x - 40, RK_PAD.y - r.up - RK_H - 50, 80, RK_H + 60];
+      if (g >= 175 && g < 330) { const ub = RK_PAD.y - r.up2 - RK_H * 0.66; return [RK_PAD.x - 300 - 260 * r.sat + 200, ub - 240, 420, 260]; }
+      if (g >= 40 && g < 175) return [RK_PAD.x - 40, RK_PAD.y - r.up - RK_H - 50, 80, RK_H + 60];
       return [RK_PAD.x - 50, RK_PAD.y - RK_H - 40, 100, RK_H + 46]; } },
+});
+
+/* ---------- Magnetschwebebahn hinter den Häusern: fährt auf einer Stelzenstrecke einmal pro langer Runde von links nach rechts ---------- */
+const MG_Y = GROUND - 330, MG_CAR = 560, MG_N = 3;
+const mgX = g => lerp(-6200, 10400, (g % RUN_P) / RUN_P);
+function drawMaglevBack(g) {
+  const ab = state.wetter === 'abend';
+  // Fahrweg: Betonträger auf Stelzen
+  ctx.fillStyle = ab ? '#4a5470' : '#b9c3c4'; ctx.fillRect(-7000, MG_Y + 6, 18000, 26);
+  ctx.strokeStyle = ab ? '#2f3650' : '#8f9a9c'; ctx.lineWidth = 2; ctx.strokeRect(-7000, MG_Y + 6, 18000, 26);
+  for (let x = -6900; x < 11000; x += 420) { ctx.fillStyle = ab ? '#424b66' : '#aab5b6'; ctx.fillRect(x, MG_Y + 32, 22, GROUND - MG_Y - 32); }
+  if (regen() && false) return;
+  const head = mgX(g);
+  for (let k = 0; k < MG_N; k++) {
+    const x1 = head - k * (MG_CAR + 10), x0 = x1 - MG_CAR;
+    ctx.beginPath();
+    if (k === 0) { ctx.moveTo(x0, MG_Y + 6); ctx.lineTo(x1 - 120, MG_Y + 6); ctx.quadraticCurveTo(x1 + 10, MG_Y + 4, x1 - 30, MG_Y - 50); ctx.quadraticCurveTo(x1 - 90, MG_Y - 66, x1 - 160, MG_Y - 66); ctx.lineTo(x0, MG_Y - 66); }
+    else if (k === MG_N - 1) { ctx.moveTo(x1, MG_Y + 6); ctx.lineTo(x0 + 120, MG_Y + 6); ctx.quadraticCurveTo(x0 - 10, MG_Y + 4, x0 + 30, MG_Y - 50); ctx.quadraticCurveTo(x0 + 90, MG_Y - 66, x0 + 160, MG_Y - 66); ctx.lineTo(x1, MG_Y - 66); }
+    else { ctx.rect(x0, MG_Y - 66, MG_CAR, 72); }
+    ctx.closePath(); paint(ab ? '#c9cfd6' : '#eef1ef', ab ? '#2f3650' : '#6f7a7c', 2);
+    // Fensterband und Streifen
+    const wx0 = k === MG_N - 1 ? x0 + 150 : x0 + 20, wx1 = k === 0 ? x1 - 150 : x1 - 20;
+    ctx.fillStyle = ab ? '#ffe7a3' : '#55687a'; ctx.fillRect(wx0, MG_Y - 50, wx1 - wx0, 18);
+    ctx.fillStyle = 'rgba(217,84,43,0.8)'; ctx.fillRect(Math.max(x0, wx0 - 10), MG_Y - 22, Math.min(x1, wx1 + 10) - Math.max(x0, wx0 - 10), 6);
+    // Schürze umgreift den Fahrweg
+    ctx.fillStyle = ab ? '#9aa3ad' : '#c6ccce'; ctx.fillRect(x0 + 10, MG_Y + 6, MG_CAR - 20, 16);
+  }
+}
+registerRunner({
+  room: 'schulweg',
+  draw() {},
+  robot: { id: 'magnetbahn', name: 'Magnetschwebebahn', bereich: 'Mobilität', aera: 'seit 2004 im Linienbetrieb', typ: 'Zug, der über der Schiene schwebt',
+    fakt: 'Die Bahn hat keine Räder. Magnete heben sie einen Zentimeter über den Fahrweg und ziehen sie vorwärts. Ohne Reibung schafft sie über 400 Kilometer pro Stunde. Gesteuert wird sie aus einer Leitzentrale, im Zug sitzt kein Fahrer.',
+    echt: 'Echt. Die deutsche Magnetbahn Transrapid wurde im Emsland getestet und fährt seit 2004 in Shanghai zum Flughafen. In Japan entsteht eine Strecke für über 500 Kilometer pro Stunde. Hinter unseren Häusern fährt sie nur zum Spaß.',
+    note: 'Saust auf ihrer Stelzenstrecke hinter den Häusern vorbei. Am besten sieht man sie zwischen den Gebäuden.', color: '#eef1ef',
+    quelle: 'https://en.wikipedia.org/wiki/Transrapid',
+    box: () => { const h = mgX(state.g); return [h - MG_N * (MG_CAR + 10), MG_Y - 70, MG_N * (MG_CAR + 10), 96]; } },
 });

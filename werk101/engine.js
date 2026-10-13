@@ -131,6 +131,8 @@ function drawSurroundings(f) {
   [[-900, 600], [-620, 380], [-420, 860], [BW + 120, 700], [BW + 420, 420], [BW + 700, 980]].forEach(([x, h]) => ctx.fillRect(x, GROUND - h, 240, h));
   ctx.fillStyle = '#b4c7c9';
   [[-1300, 420], [BW + 1000, 520]].forEach(([x, h]) => ctx.fillRect(x, GROUND - h, 300, h));
+  // Magnetschwebebahn (himmel.js) fährt hinter allen Häusern
+  if (typeof drawMaglevBack === 'function') drawMaglevBack(state.g);
   // Erde
   const e = ctx.createLinearGradient(0, GROUND, 0, BOTTOM + 400);
   e.addColorStop(0, '#7a6450'); e.addColorStop(1, '#4d3e31');

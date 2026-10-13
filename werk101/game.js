@@ -5,7 +5,7 @@
     { text: 'Finde zwei Roboter, die unter Wasser arbeiten', ids: ['rov', 'aal', 'robofisch', 'rumpf'], need: 2 },
     { text: 'Finde drei Roboter, die älter als 50 Jahre sind', ids: ['schach', 'unimate', 'shakey', 'schildkroete', 'blech'], need: 3 },
     { text: 'Finde vier Tiere', ids: ['katze', 'moewe', 'hafenmoewe', 'kanarie', 'ratte', 'hummel', 'kuh', 'fisch', 'kraehe', 'schaf', 'igel', 'motte', 'taube', 'ammonit'], need: 4 },
-    { text: 'Finde zwei Fahrzeuge, die Menschen ohne Fahrer befördern', ids: ['shuttle', 'robotaxi', 'taxi2', 'ubahn', 'flugtaxi', 'flugtaxi2'], need: 2 },
+    { text: 'Finde zwei Fahrzeuge, die Menschen ohne Fahrer befördern', ids: ['shuttle', 'robotaxi', 'taxi2', 'ubahn', 'flugtaxi', 'flugtaxi2', 'magnetbahn'], need: 2 },
     { text: 'Finde die Schulklasse', ids: ['klasse'], need: 1 },
     { text: 'Finde drei Roboter in der Schule 102', ids: ['schrubber', 'robocup', 'av1', 'calliope', 'beebot', 'schuldrucker', 'codeon', 'nao', 'bausteinbot', 'fischertechnik', 'pepper'], need: 3 },
     { text: 'Finde drei Roboter, die draußen für Essen oder Strom arbeiten', ids: ['jaeter', 'putz', 'blatt', 'ernte', 'schieber', 'gartenbot', 'maximo'], need: 3 },

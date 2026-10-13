@@ -161,3 +161,7 @@ registerRoom({
   - Haus 104 ganz rechts (c 10.5, `H5`/`drawH5` in engine.js, `rooms/haus104.js`): unten Imbiss mit Pizzastraße und weichem Greifer, oben Pflege mit Hebe-Roboter (fährt rückwärts vom Bett zum Rollstuhl und zurück, `liftPos`), Pflegerin mit Rücken-Exoskelett und Mann mit Handprothese.
   - Feld: fahrerloser Traktor zieht in der Ferne über die Hügel (`drawTractor`, Maßstab 0,2, läuft mit `state.g`).
   - Insgesamt 48 Felder plus zwei geheime, 227 Figuren.
+- Ergänzung (13. Oktober 2026, Version 20261013c):
+  - Magnetschwebebahn hinter allen Häusern (`drawMaglevBack` in himmel.js, aufgerufen in `drawSurroundings`): Stelzenstrecke bei `GROUND - 330`, drei Wagen, fährt einmal pro `RUN_P` von links nach rechts; am besten zwischen den Gebäuden und rechts von Haus 104 zu sehen.
+  - Rakete steigt jetzt bis über die Dächer (Stufentrennung bei `RK_SEP = 3000`), Oberstufe öffnet die Spitze (Bild 204–214), Satellit treibt davon und klappt die Solarflügel aus (`rkUpper`, `rkSat`).
+  - Insgesamt 48 Felder plus zwei geheime, 228 Figuren.
