@@ -13,6 +13,7 @@ function nzLinks() {
   L.push({ pts: [{ x: HX, y: T }, { x: HX, y: ry(5) + 24 }, { x: rx(6.5) + 30, y: ry(5) + 24 }], col: NZ_ORANGE, n: 3, both: true, speed: 1 });
   L.push({ pts: [{ x: ZX, y: T }, { x: ZX, y: H4.y - 10 }], col: NZ_ORANGE, n: 3, both: true, speed: 3 });
   L.push({ pts: [{ x: rx(8) + 24, y: ry(6) + 24 }, { x: rx(9) + RW - 24, y: ry(6) + 24 }], col: NZ_ORANGE, n: 4, both: true, speed: 2 });
+  L.push({ pts: [{ x: H4.x + H4.w - 60, y: T }, { x: H5.x + 40, y: T }, { x: H5.x + 40, y: ry(5) + 24 }, { x: H5.x + H5.w - 40, y: ry(5) + 24 }], col: NZ_ORANGE, n: 3, both: true, speed: 1 });
   L.push({ pts: [{ x: RZ_MAST.x, y: T }, { x: RZ_MAST.x, y: RZ_MAST.top + 10 }], col: NZ_ORANGE, n: 2, both: true, speed: 2 });
   L.push({ pts: [{ x: RZ_DISH.x, y: RZ_DISH.y }, { x: RZ_DISH.x + 700, y: TOP - 860 }], col: NZ_WHITE, n: 3, both: true, speed: 1, dash: true });
   return L;

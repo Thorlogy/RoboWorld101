@@ -57,6 +57,8 @@ const ROOMS = [
   { r: 5, c: 6.5, name: 'Halle 103: Montage', built: 'montage', haus: 3 },
   { r: 6, c: 8, name: 'Rechenzentrum: Serverhalle', built: 'rz1', haus: 4 },
   { r: 6, c: 9, name: 'Rechenzentrum: Leitwarte', built: 'rz2', haus: 4 },
+  { r: 6, c: 10.5, name: 'Haus 104: Imbiss', built: 'imbiss', haus: 5 },
+  { r: 5, c: 10.5, name: 'Haus 104: Pflege', built: 'pflege', haus: 5 },
   { r: 7, c: 4, name: 'U-Bahnsteig Ost', built: 'bahnsteig', outdoor: true },
   { r: 7, c: 5, name: 'U-Bahn-Tunnel', built: 'tunnel', outdoor: true },
   { r: 8, c: 4, name: 'Tunnelbau: Nachläufer', built: 'nachlauf', outdoor: true },

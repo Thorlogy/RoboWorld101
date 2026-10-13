@@ -157,3 +157,7 @@ registerRoom({
   - Leitwarte: Kilobots-Tisch mit Deckenkamera, der Schwarm bildet ein K (Vergleich zum Agenten-Schwarm).
   - Suchspiel: Aufgaben, die mit „Geheim“ beginnen, erscheinen erst nach dem Freischalten; Zähler zählt nur sichtbare Aufgaben.
   - Insgesamt 46 Felder plus zwei geheime, 219 Figuren.
+- Ergänzung (13. Oktober 2026, Version 20261013b):
+  - Haus 104 ganz rechts (c 10.5, `H5`/`drawH5` in engine.js, `rooms/haus104.js`): unten Imbiss mit Pizzastraße und weichem Greifer, oben Pflege mit Hebe-Roboter (fährt rückwärts vom Bett zum Rollstuhl und zurück, `liftPos`), Pflegerin mit Rücken-Exoskelett und Mann mit Handprothese.
+  - Feld: fahrerloser Traktor zieht in der Ferne über die Hügel (`drawTractor`, Maßstab 0,2, läuft mit `state.g`).
+  - Insgesamt 48 Felder plus zwei geheime, 227 Figuren.

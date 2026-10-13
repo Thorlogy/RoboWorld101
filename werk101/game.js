@@ -24,7 +24,8 @@
     { text: 'Finde die drei Robotergesetze, die sich ein Schriftsteller ausgedacht hat', ids: ['asimov'], need: 1 },
     { text: 'Finde in der Montage den SCARA, den Humanoiden und den Hexapod', ids: ['scara', 'humanoidfabrik', 'hexapod'], need: 3 },
     { text: 'Finde zwei Schwärme: einen aus Software und einen aus echten Robotern', ids: ['agentenschwarm', 'kilobots'], need: 2 },
-    { text: 'Finde den Melkroboter', ids: ['melk'], need: 1 },
+    { text: 'Finde zwei Roboter auf dem Bauernhof, die ohne Mensch arbeiten', ids: ['melk', 'traktor', 'jaeter', 'schieber'], need: 2 },
+    { text: 'Finde in Haus 104 drei Helfer für Menschen', ids: ['umlager', 'exoarbeit', 'prothese', 'pizza', 'softgreifer'], need: 3 },
     { text: 'Finde den Menschen im Roboterkostüm', ids: ['kostuem'], need: 1 },
   ];
   let found = new Set();

@@ -34,6 +34,17 @@ const H3 = { x: rx(6.5) - WALL, y: ry(5) - WALL, w: RW + 2 * WALL, h: 2 * (RH + 
 const H4 = { x: rx(8) - WALL, y: ry(6) - WALL, w: 2 * (RW + WALL) + WALL, h: RH + 2 * WALL };
 const RZ_MAST = { x: (rx(6.5) + RW + WALL + H4.x) / 2, top: GROUND - 420 }, RZ_DISH = { x: H4.x + 70, y: H4.y - 40 };
 const HOUSES = [{ x: 0, y: TOP - 140, w: BW, h: GROUND - TOP + 140 }, { x: H2.x, y: H2.y - 120, w: H2.w, h: GROUND - H2.y + 120 }, { x: H3.x - 12, y: H3.y - 60, w: H3.w + 24, h: GROUND - H3.y + 60 }, { x: H4.x - 12, y: H4.y - 70, w: H4.w + 24, h: GROUND - H4.y + 70 }];
+const H5 = { x: rx(10.5) - WALL, y: ry(5) - WALL, w: RW + 2 * WALL, h: 2 * (RH + WALL) + WALL };
+HOUSES.push({ x: H5.x - 12, y: H5.y - 60, w: H5.w + 24, h: GROUND - H5.y + 60 });
+// Haus 104: Wohn- und Geschäftshaus, unten Imbiss, oben Pflege
+function drawH5() {
+  ctx.fillStyle = '#c98f6a'; ctx.fillRect(H5.x, H5.y, H5.w, H5.h);
+  ctx.strokeStyle = INK; ctx.lineWidth = 3; ctx.strokeRect(H5.x, H5.y, H5.w, H5.h);
+  ctx.fillStyle = '#5f5b55'; ctx.fillRect(H5.x - 12, H5.y - 10, H5.w + 24, 14);
+  box(H5.x + 20, H5.y - 58, 200, 40, '#2a2723');
+  text('HAUS 104', H5.x + 120, H5.y - 28, 30, { family: '"Saira Condensed", sans-serif', weight: 700, align: 'center', color: '#f3efe4' });
+  box(H5.x + H5.w - 160, H5.y - 40, 120, 30, '#8a8f94', 2, 1.5);
+}
 // Haus 4: Rechenzentrum ohne Fenster, Rückkühler auf dem Dach, Satellitenschüssel; daneben ein Funkmast
 function drawRZ(f) {
   ctx.fillStyle = '#a3a8a6'; ctx.fillRect(H4.x, H4.y, H4.w, H4.h);
@@ -265,6 +276,17 @@ function draw() {
       ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.strokeRect(x, y, RW, RH);
     }
   }
+  // Haus 104
+  if (visible(H5.x, H5.y - 60, H5.w, H5.h + 60)) {
+    drawH5();
+    for (const room of ROOMS) {
+      if (room.haus !== 5) continue;
+      const x = rx(room.c), y = ry(room.r), def = BUILT.find(d => d.key === room.built);
+      if (!def || !visible(x, y, RW, RH)) continue;
+      ctx.save(); ctx.beginPath(); ctx.rect(x, y, RW, RH); ctx.clip(); ctx.translate(x, y); def.draw(f); ctx.restore();
+      ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.strokeRect(x, y, RW, RH);
+    }
+  }
   // Haus 4: Rechenzentrum
   if (visible(RZ_MAST.x - 40, H4.y - 420, H4.x + H4.w - RZ_MAST.x + 60, H4.h + 420)) {
     drawRZ(f);
@@ -412,7 +434,7 @@ BUILT.forEach(o => {
 });
 const OPEN_ROOMS = ROOMS.filter(o => !o.secret), OPEN_BUILT = BUILT.filter(d => !roomOf(d.key) || !roomOf(d.key).secret);
 document.querySelector('.bar i').style.width = (OPEN_BUILT.length / OPEN_ROOMS.length * 100).toFixed(1) + '%';
-document.getElementById('progressText').textContent = OPEN_BUILT.length === OPEN_ROOMS.length ? `Alle ${OPEN_ROOMS.length} Räume gebaut. Unterwegs sind außerdem Lieferroboter, Fassadendrohne, Rohrpost und ein Paket vom Hafen bis in den Wohnbereich. Draußen: Straße, Park, Feld, Energiepark, Solarpark, Schulweg, U-Bahn mit Tunnel und eine Tunnelbaustelle. Rechts stehen die Schule 102, die Halle 103, eine Fabrik, in der das Licht aus ist, und das Rechenzentrum. Am Himmel fliegen Flugtaxis und Lieferdrohnen. Der Knopf „Datennetz“ zeigt, wie die Häuser Daten austauschen.` : `${OPEN_BUILT.length} von ${OPEN_ROOMS.length} Räumen gebaut. Der Rest ist Baustelle.`;
+document.getElementById('progressText').textContent = OPEN_BUILT.length === OPEN_ROOMS.length ? `Alle ${OPEN_ROOMS.length} Räume gebaut. Unterwegs sind außerdem Lieferroboter, Fassadendrohne, Rohrpost und ein Paket vom Hafen bis in den Wohnbereich. Draußen: Straße, Park, Feld, Energiepark, Solarpark, Schulweg, U-Bahn mit Tunnel und eine Tunnelbaustelle. Rechts stehen die Schule 102, die Halle 103, eine Fabrik, in der das Licht aus ist, das Rechenzentrum und ganz rechts Haus 104 mit Imbiss und Pflege. Am Himmel fliegen Flugtaxis und Lieferdrohnen. Der Knopf „Datennetz“ zeigt, wie die Häuser Daten austauschen.` : `${OPEN_BUILT.length} von ${OPEN_ROOMS.length} Räumen gebaut. Der Rest ist Baustelle.`;
 FILTERS.forEach(name => {
   const b = document.createElement('button'); b.type = 'button'; b.textContent = name;
   b.setAttribute('aria-pressed', String(name === 'Alle'));
