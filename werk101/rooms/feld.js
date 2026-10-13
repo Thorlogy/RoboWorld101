@@ -16,12 +16,31 @@ function fdCrow(g) {
   const hop = g >= 200 && g < 230 ? Math.sin(Math.PI * seg(g, 200, 230)) : 0;
   return { dx: -40 + 30 * seg(g, 200, 230), lift: hop * 22, flap: hop > 0.05 };
 }
+/* ---------- Fahrerloser Traktor in der Ferne: fährt einmal pro langer Runde (state.g) über die Hügel und eggt ---------- */
+const fdHill = x => 322 - Math.sin(Math.PI * x / RW) * (36 + 14 * Math.sin(x / 70));
+const tractorX = g => lerp(-180, RW + 180, (g % 480) / 480);
+function drawTractor(g) {
+  const x = tractorX(g), y = fdHill(clamp(x, 0, RW)) + 4, k = 0.2;
+  ctx.save(); ctx.translate(x, y); ctx.scale(k, k);
+  // Egge hinten mit Staub
+  line(-150, -30, -230, -30, INK, 6); for (let i = 0; i < 6; i++) line(-225 + i * 14, -30, -229 + i * 14, -2, INK, 4);
+  for (let i = 0; i < 5; i++) { ctx.save(); ctx.globalAlpha = 0.35; circle(-250 - i * 34, -24 - (i % 2) * 14, 20 + i * 6, '#c9b08a', null); ctx.restore(); }
+  box(-150, -110, 220, 70, '#d9542b', 8, 4);
+  box(70, -90, 110, 50, '#d9542b', 8, 4);
+  box(-130, -230, 130, 122, 'rgba(159,196,214,0.85)', 8, 4);
+  line(-66, -230, -66, -110, INK, 3);
+  box(-80, -250, 30, 20, '#f3f1ea', 6, 3);
+  circle(-90, -38, 70, '#2d2f33', INK, 4); circle(-90, -38, 26, '#8a8f94', null);
+  circle(130, -30, 42, '#2d2f33', INK, 4); circle(130, -30, 16, '#8a8f94', null);
+  ctx.restore();
+}
 function drawFeld(f) {
   const g = heldG('jaeter', state.g);
   // ferne Hügel, an beiden Rändern flach auslaufend
   ctx.beginPath(); ctx.moveTo(0, 322);
   for (let x = 0; x <= RW; x += 20) ctx.lineTo(x, 322 - Math.sin(Math.PI * x / RW) * (36 + 14 * Math.sin(x / 70)));
   ctx.lineTo(RW, 322); ctx.closePath(); ctx.fillStyle = '#a9c48a'; ctx.fill();
+  withAlpha('traktor', () => drawTractor(state.g));
   // Acker mit Reihen
   ctx.fillStyle = '#8a6a4c'; ctx.fillRect(0, 322, RW, 78); line(0, 322, RW, 322, INK, 1.5);
   ctx.strokeStyle = 'rgba(42,39,35,0.18)'; ctx.lineWidth = 2;
@@ -69,8 +88,14 @@ function drawFeld(f) {
 
 registerRoom({
   key: 'feld', name: 'Feld', level: 'Außengelände',
-  hitOrder: ['kraehe', 'landwirtin', 'jaeter'],
+  hitOrder: ['kraehe', 'landwirtin', 'jaeter', 'traktor'],
   robots: [
+    { id: 'traktor', name: 'Fahrerloser Traktor', bereich: 'Landwirtschaft', aera: 'seit 2022 zu kaufen', typ: 'Traktor, der allein über den Acker fährt',
+      fakt: 'Kameras rund um die Kabine und satellitengestützte Ortung lenken den Traktor zentimetergenau über das Feld. Die Landwirtin startet ihn mit dem Handy und bekommt Bilder, wenn etwas im Weg steht.',
+      echt: 'Echt, aber noch selten. Meist darf er nur auf dem eigenen Acker allein fahren, auf der Straße sitzt weiter ein Mensch am Steuer.',
+      note: 'Zieht hinten am Horizont seine Bahn, die Kabine ist leer.', color: '#d9542b',
+      quelle: 'https://en.wikipedia.org/wiki/Driverless_tractor',
+      box: () => { const x = tractorX(state.g); return x < -80 || x > RW + 80 ? [-9999, 0, 0, 0] : [FDX + x - 56, FDY + fdHill(clamp(x, 0, RW)) - 52, 96, 56]; } },
     { id: 'jaeter', name: 'Säh- und Jäteroboter', bereich: 'Landwirtschaft', aera: 'seit 2019', typ: 'Feldroboter mit Solardach',
       fakt: 'Der dänische Feldroboter FarmDroid FD20 sät zum Beispiel Zuckerrüben und hackt danach das Unkraut weg, ganz ohne Gift. Beim Säen speichert er per Satellitenortung die genaue Position jedes Samenkorns, deshalb weiß er später, was Rübe ist und was weg darf. Strom liefern Solarmodule auf dem Dach und ein Akku.',
       echt: 'Realistisch, auch das Tempo: Er fährt langsamer als ein Mensch geht und schafft trotzdem einige Hektar am Tag, weil er Tag und Nacht arbeiten kann.',
