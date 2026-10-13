@@ -64,17 +64,28 @@ function drawSatellit(f) {
     ctx.restore();
   });
   // Technikerin im Reinraumanzug
+  // Granittisch: der Würfelroboter der Raumstation gleitet auf einem Luftkissen fast reibungsfrei
+  box(226, 296, 104, 18, '#5d5a55', 2); for (let i = 0; i < 12; i++) circle(232 + rnd(i) * 92, 300 + rnd(i + 3) * 10, 1.1, '#8a8780', null);
+  box(236, 314, 10, 46, '#3b3d40'); box(310, 314, 10, 46, '#3b3d40');
+  withAlpha('astrobee', () => {
+    const x = 270 + 26 * Math.sin(TAU * f / 60);
+    box(x - 14, 290, 28, 6, '#8a8f94', 2, 1);
+    ctx.fillStyle = 'rgba(255,255,255,0.6)'; for (let i = 0; i < 3; i++) ctx.fillRect(x - 12 + i * 10, 296, 4, 1.5);
+    box(x - 14, 266, 28, 24, '#f3f1ea', 3, 1.5);
+    box(x - 12, 270, 5, 16, '#d9542b', 1, 1); box(x + 7, 270, 5, 16, '#d9542b', 1, 1);
+    circle(x, 278, 3, '#23384d', INK, 1); circle(x + 9, 268, 1.5, f % 6 < 3 ? '#7fe08a' : '#2d5b33', null);
+  });
   withAlpha('technik', () => {
-    const p = person({ x: 250, face: 1, shirt: '#f3f1ea', pants: '#f3f1ea', hat: '#f3f1ea', skin: '#e2b48f', hand: { x: 268, y: 290 } });
+    const p = person({ x: 196, face: 1, shirt: '#f3f1ea', pants: '#f3f1ea', hat: '#f3f1ea', skin: '#e2b48f', hand: { x: 214, y: 290 } });
     box(p.head.x + 2, p.head.y + 1, 9, 6, '#7fd3ff', 2, 1);
-    box(264, 284, 22, 14, '#3b3d40', 2, 1.2);
-    ctx.fillStyle = '#7fe08a'; ctx.fillRect(267, 287, 16, 7);
+    box(210, 284, 22, 14, '#3b3d40', 2, 1.2);
+    ctx.fillStyle = '#7fe08a'; ctx.fillRect(213, 287, 16, 7);
   });
 }
 
 registerRoom({
   key: 'satellit', name: 'Satelliten-Werkstatt', level: 'Dach',
-  hitOrder: ['technik', 'andock', 'satellit'],
+  hitOrder: ['astrobee', 'technik', 'andock', 'satellit'],
   robots: [
     { id: 'andock', name: 'Andock-Simulator', bereich: 'Raumfahrt', aera: 'seit 2013', typ: 'Zwei Industrieroboter spielen Weltraum',
       fakt: 'Beim DLR in Oberpfaffenhofen halten zwei große Industrieroboter je ein Satellitenmodell und bewegen sie so, als schwebten sie im All. So wird geübt, wie ein Wartungssatellit mit einem Greifarm einen taumelnden, kaputten Satelliten fängt, um ihn zu reparieren oder aus der Umlaufbahn zu holen.',
@@ -88,10 +99,16 @@ registerRoom({
       note: 'Klappt seine Flügel aus und wieder ein. Prüfen heißt hier: oft wiederholen.', color: '#d6a521',
       quelle: 'https://en.wikipedia.org/wiki/Solar_panels_on_spacecraft',
       box: () => [AX + 6, AY + 160, 270, 200] },
+    { id: 'astrobee', name: 'Würfelroboter der Raumstation', bereich: 'Raumfahrt', aera: 'seit 2019', typ: 'Fliegender Helfer, 32 cm groß',
+      fakt: 'Auf der Internationalen Raumstation fliegen würfelförmige Roboter. Sie saugen Luft an und blasen sie gezielt wieder aus, so bewegen sie sich in der Schwerelosigkeit. Sie filmen, machen Inventur und helfen bei Versuchen.',
+      echt: 'Echt. Auf der Erde können sie nicht fliegen. Deshalb gleiten sie zum Testen auf einem Luftkissen über einen glatten Granittisch, fast ohne Reibung.',
+      note: 'Gleitet hin und her, ohne den Tisch zu berühren.', color: '#f3f1ea',
+      quelle: 'https://en.wikipedia.org/wiki/Astrobee',
+      box: () => [AX + 226, AY + 260, 104, 54] },
     { id: 'technik', name: 'Technikerin', bereich: 'Mensch', aera: 'Maßstab', typ: 'Mensch im Reinraumanzug',
       fakt: 'Im Reinraum tragen alle Overall, Haube und Mundschutz, damit kein Staub und kein Haar auf die empfindliche Technik fällt.',
       note: 'Überwacht den Test auf dem Tablet.', color: '#f3f1ea',
-      box: () => [AX + 230, AY + 232, 60, 128] },
+      box: () => [AX + 176, AY + 232, 60, 128] },
   ],
   draw: drawSatellit,
 });

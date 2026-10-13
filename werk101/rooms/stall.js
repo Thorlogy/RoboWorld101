@@ -11,6 +11,33 @@ function pickArm(f) {
 }
 const pusherX = f => lerp(-60, 700, f / 60);
 
+/* ---------- Melkroboter: Laser sucht die Zitzen (4–10), Becher dran (10–14), melken (14–44), ab und zurück (44–56) ---------- */
+const MK_HOME = { x: 380, y: 318 }, MK_UDDER = { x: 446, y: 342 };
+function melkTip(f) {
+  if (f < 10) return mix(MK_HOME, MK_UDDER, ease(seg(f, 0, 10)));
+  if (f < 46) return MK_UDDER;
+  return mix(MK_UDDER, MK_HOME, ease(seg(f, 46, 58)));
+}
+function drawMelk(f) {
+  // Melkbox mit Milchtank und Anzeige
+  box(312, 236, 56, 122, '#e6e3da', 4, 1.8);
+  box(318, 246, 44, 26, '#23384d', 2, 1.2);
+  const liter = 8.4 * seg(f, 14, 44);
+  text(`${liter.toFixed(1).replace('.', ',')} l`, 340, 264, 10, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center', color: '#7fe08a' });
+  box(320, 286, 40, 52, '#c9ccc8', 6, 1.2);
+  ctx.fillStyle = '#fbfaf6'; const h = 46 * (0.25 + 0.6 * seg(f, 14, 44)); ctx.fillRect(323, 335 - h, 34, h);
+  const t = melkTip(f), on = f >= 12 && f < 46;
+  // Arm unter dem Bauch der Kuh
+  const S = { x: 368, y: 318 }, E = { x: (S.x + t.x) / 2, y: Math.max(S.y, t.y) + 6 };
+  limb(S.x, S.y, E.x, E.y, 8, '#8a8f94'); limb(E.x, E.y, t.x, t.y, 7, '#8a8f94'); circle(E.x, E.y, 4, '#3b3d40', INK, 1);
+  for (let i = 0; i < 4; i++) {
+    const cx = t.x - 9 + i * 6, cy = on ? MK_UDDER.y + 2 : t.y + 4;
+    box(cx - 2, cy - 2, 5, 9, '#5d6064', 1, 0.8);
+    if (on) { ctx.save(); ctx.globalAlpha = 0.9; line(cx, cy + 7, 360, 300, 'rgba(240,240,240,0.9)', 1.2); ctx.restore(); }
+  }
+  if (on) for (let i = 0; i < 4; i++) { const u = ((f * 2 + i * 8) % 30) / 30; circle(lerp(t.x, 362, u), lerp(t.y + 10, 300, u), 1.6, '#ffffff', null); }
+  if (f >= 4 && f < 11) { ctx.save(); ctx.globalAlpha = 0.8; line(t.x + 4, t.y, t.x + 26, MK_UDDER.y - 6, '#ff3b30', 1.2); ctx.restore(); }
+}
 function cow(x, y, f) {
   ctx.save(); ctx.translate(x, y);
   const sw = Math.sin(TAU * f / 20) * 0.12;
@@ -91,6 +118,7 @@ function drawStall(f) {
   ctx.beginPath(); ctx.ellipse(578, 298, 24, 6, 0, 0, TAU); paint('#c9a46a', INK, 1.5);
   line(430, 8, 430, 240, '#8a8f94', 3);
   withAlpha('kuh', () => cow(470, 356, f));
+  withAlpha('melk', () => drawMelk(f));
   withAlpha('buerste', () => {
     const on = f >= 5 && f < 20;
     ctx.save(); ctx.translate(430, 262); ctx.rotate(on ? 0.15 : 0);
@@ -113,7 +141,7 @@ function drawStall(f) {
 
 registerRoom({
   key: 'stall', name: 'Gewächshaus und Stall', level: 'EG',
-  hitOrder: ['hummel', 'schieber', 'ernte', 'buerste', 'kuh'],
+  hitOrder: ['hummel', 'schieber', 'ernte', 'buerste', 'melk', 'kuh'],
   robots: [
     { id: 'buerste', name: 'Kuhbürste', bereich: 'Landwirtschaft', aera: 'seit den 2000ern', typ: 'Automatische Drehbürste',
       fakt: 'Automatische Kuhbürsten beginnen sich zu drehen, sobald eine Kuh sie berührt, und hören von selbst wieder auf. Die Kühe schrubben sich damit Rücken, Hals und Kopf.',
@@ -134,6 +162,12 @@ registerRoom({
       fakt: 'In Gewächshäusern bestäuben gekaufte Hummelvölker die Blüten. Forscher haben auch winzige Bestäuberdrohnen gebaut, doch Hummeln sind bisher deutlich besser darin.',
       echt: 'Echt: Hummelkästen stehen in vielen Gewächshäusern.', note: 'Drei Runden um die Pflanzen, dann wieder von vorn.', color: '#f0b429',
       box: () => [HX + 160, HY + 206, 116, 140] },
+    { id: 'melk', name: 'Melkroboter', bereich: 'Landwirtschaft', aera: 'seit 1992', typ: 'Melkbox mit Greifarm und Laser',
+      fakt: 'Die Kuh geht von selbst zum Melken, wann sie will, meist zwei- bis dreimal am Tag. Ein Laser oder eine 3D-Kamera findet die Zitzen, der Arm setzt die Melkbecher an. Der Roboter misst dabei Menge und Qualität der Milch.',
+      echt: 'Echt und weit verbreitet. Weltweit melken Zehntausende solcher Roboter, die ersten kamen 1992 in den Niederlanden in den Stall.',
+      note: 'Setzt die Becher an, während die Kuh weiterfrisst. Sie merkt es kaum.', color: '#e6e3da',
+      quelle: 'https://en.wikipedia.org/wiki/Automatic_milking',
+      box: () => [HX + 312, HY + 236, 140, 122] },
     { id: 'kuh', name: 'Kuh', bereich: 'Tier', aera: 'kein Roboter', typ: 'Milchkuh',
       fakt: 'Frisst am Futtertisch und lässt sich dabei von der Bürste den Rücken schrubben.',
       note: 'Kommt jede Runde zur Bürste. Mehr Wellness gibt es im ganzen Haus nicht.', color: '#2a2723',

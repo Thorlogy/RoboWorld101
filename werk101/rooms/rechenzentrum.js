@@ -180,6 +180,28 @@ function drawImmersion(f) {
   text('Abwärme heizt', 550, 134, 9, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center' });
   text('Nachbarhäuser', 550, 147, 9, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center' });
 }
+/* ---------- Kilobots: echter Roboterschwarm auf dem Tisch, von oben gefilmt; bildet den Buchstaben K ---------- */
+const KB_N = 48;
+const kbTarget = i => {
+  // Punkte auf dem K: Stamm (16), oberer Arm (16), unterer Arm (16)
+  const t = (i % 16) / 15;
+  if (i < 16) return { x: 0, y: t };
+  if (i < 32) return { x: t * 0.7, y: 0.5 - t * 0.5 };
+  return { x: t * 0.7, y: 0.5 + t * 0.5 };
+};
+function drawKilobots(f) {
+  box(306, 304, 120, 8, '#e6e3da', 1, 1.5); line(314, 312, 314, 332, INK, 3); line(418, 312, 418, 332, INK, 3);
+  for (let i = 0; i < 14; i++) { const x = 312 + i * 8 + Math.sin(TAU * f / 20 + i) * 1.5; box(x, 299, 5, 5, '#3b3d40', 2, 0.6); }
+  // Bild der Deckenkamera
+  box(310, 258, 112, 40, '#0b1220', 2, 1.2);
+  const k = ease(seg(f, 0, 30)) - ease(seg(f, 45, 60));
+  for (let i = 0; i < KB_N; i++) {
+    const a = { x: 316 + rnd(i * 3.1) * 100, y: 264 + rnd(i * 7.7) * 28 }, tg = kbTarget(i);
+    const b = { x: 352 + tg.x * 30, y: 263 + tg.y * 30 };
+    circle(lerp(a.x, b.x, k), lerp(a.y, b.y, k), 1.4, '#ffb347', null);
+  }
+  text('von oben', 418, 294, 7, { family: '"IBM Plex Mono", monospace', align: 'right', color: '#c9d6e2' });
+}
 function drawRz2(f) {
   ctx.fillStyle = '#d0d3d5'; ctx.fillRect(0, 0, RW, RH);
   ctx.fillStyle = '#5f5b55'; ctx.fillRect(0, 0, RW, 8);
@@ -187,6 +209,7 @@ function drawRz2(f) {
   rzFloor(f, null);
   withAlpha('agentenschwarm', () => drawSwarm(f));
   withAlpha('tauchkuehlung', () => drawImmersion(f));
+  withAlpha('kilobots', () => drawKilobots(f));
   // Pult mit zwei Bildschirmen
   box(60, 284, 240, 10, '#8a6a4a', 1, 1.5); line(70, 294, 70, 332, INK, 3); line(290, 294, 290, 332, INK, 3);
   box(92, 246, 64, 38, '#1a1d22', 2, 1.5); box(166, 246, 64, 38, '#1a1d22', 2, 1.5);
@@ -230,7 +253,7 @@ registerRoom({
 });
 registerRoom({
   key: 'rz2', name: 'Rechenzentrum: Leitwarte', level: 'Rechenzentrum',
-  hitOrder: ['operator', 'tauchkuehlung', 'agentenschwarm'],
+  hitOrder: ['operator', 'kilobots', 'tauchkuehlung', 'agentenschwarm'],
   draw: drawRz2,
   robots: [
     { id: 'agentenschwarm', name: 'Agenten-Schwarm', bereich: 'KI', aera: 'seit 2023', typ: 'Viele KI-Agenten mit einem Chef-Agenten',
@@ -239,6 +262,12 @@ registerRoom({
       note: 'Gelb geht raus, grün kommt zurück. Bei 8 von 8 ist der Bericht fertig.', color: '#f0b429',
       quelle: 'https://www.anthropic.com/engineering/multi-agent-research-system',
       box: () => [RZ2X + 24, RZ2Y + 60, 380, 194] },
+    { id: 'kilobots', name: 'Kilobots', bereich: 'Forschung', aera: '2014', typ: 'Schwarm aus über tausend Mini-Robotern',
+      fakt: 'An der Universität Harvard haben 1024 Roboter, jeder nur 3 Zentimeter groß, ganz ohne Chef eine Form gebildet, zum Beispiel den Buchstaben K. Jeder Roboter redet nur mit seinen Nachbarn und folgt ein paar einfachen Regeln.',
+      echt: 'Echt. Die Kilobots zittern sich auf drei dünnen Beinen vorwärts, das dauert: Für eine Form brauchten sie viele Stunden. Hier steht der Tisch als Vergleich zum Agenten-Schwarm auf dem Bildschirm, der nur aus Software besteht.',
+      note: 'Von oben gefilmt finden die Punkte zum K und laufen wieder auseinander.', color: '#ffb347',
+      quelle: 'https://en.wikipedia.org/wiki/Kilobot',
+      box: () => [RZ2X + 306, RZ2Y + 256, 120, 76] },
     { id: 'tauchkuehlung', name: 'Tauchkühlung', bereich: 'Daten', aera: 'seit den 2010ern', typ: 'Computer in einer Flüssigkeit',
       fakt: 'Die Rechner liegen in einer Flüssigkeit, die keinen Strom leitet. Sie siedet schon bei etwa 50 Grad. Die Blasen tragen die Wärme nach oben, an den Kupferrohren wird der Dampf wieder flüssig.',
       echt: 'Realistisch, wird in einigen Rechenzentren genutzt. Die Abwärme heizt anderswo tatsächlich Wohnungen oder Schwimmbäder.',
