@@ -30,7 +30,7 @@ function drawHolds() {
 // Haus 1: Werk 101. Haus 2: Schule 102 rechts neben dem Schulweg (Spalten 4 und 5, Reihen 4 bis 6)
 const H2 = { x: rx(4) - WALL, y: ry(5) - WALL, w: 2 * (RW + WALL) + WALL, h: 2 * (RH + WALL) + WALL };
 // Haus 3: Halle 103, eine fensterlose Fabrikhalle mit einem Raum
-const H3 = { x: rx(6.5) - WALL, y: ry(6) - WALL, w: RW + 2 * WALL, h: RH + 2 * WALL };
+const H3 = { x: rx(6.5) - WALL, y: ry(5) - WALL, w: RW + 2 * WALL, h: 2 * (RH + WALL) + WALL };
 const H4 = { x: rx(8) - WALL, y: ry(6) - WALL, w: 2 * (RW + WALL) + WALL, h: RH + 2 * WALL };
 const RZ_MAST = { x: (rx(6.5) + RW + WALL + H4.x) / 2, top: GROUND - 420 }, RZ_DISH = { x: H4.x + 70, y: H4.y - 40 };
 const HOUSES = [{ x: 0, y: TOP - 140, w: BW, h: GROUND - TOP + 140 }, { x: H2.x, y: H2.y - 120, w: H2.w, h: GROUND - H2.y + 120 }, { x: H3.x - 12, y: H3.y - 60, w: H3.w + 24, h: GROUND - H3.y + 60 }, { x: H4.x - 12, y: H4.y - 70, w: H4.w + 24, h: GROUND - H4.y + 70 }];

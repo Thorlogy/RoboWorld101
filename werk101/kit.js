@@ -54,6 +54,7 @@ const ROOMS = [
   { r: 5, c: 4, name: 'Schule: Klassenzimmer', built: 'klasse2', haus: 2 },
   { r: 5, c: 5, name: 'Schule: Informatikraum', built: 'info', haus: 2 },
   { r: 6, c: 6.5, name: 'Dunkle Fabrik', built: 'dunkel', haus: 3 },
+  { r: 5, c: 6.5, name: 'Halle 103: Montage', built: 'montage', haus: 3 },
   { r: 6, c: 8, name: 'Rechenzentrum: Serverhalle', built: 'rz1', haus: 4 },
   { r: 6, c: 9, name: 'Rechenzentrum: Leitwarte', built: 'rz2', haus: 4 },
   { r: 7, c: 4, name: 'U-Bahnsteig Ost', built: 'bahnsteig', outdoor: true },

@@ -10,7 +10,7 @@ function nzLinks() {
   for (let r = 0; r < ROWS; r++) L.push({ pts: [{ x: WX, y: ry(r) + 24 }, { x: 24, y: ry(r) + 24 }], col: NZ_ORANGE, n: 2, both: true, speed: 1 });
   L.push({ pts: [{ x: SX, y: T }, { x: SX, y: ry(5) + 24 }], col: NZ_ORANGE, n: 3, both: true, speed: 2 });
   for (const r of [5, 6]) L.push({ pts: [{ x: rx(4) + 24, y: ry(r) + 24 }, { x: rx(5) + RW - 24, y: ry(r) + 24 }], col: NZ_ORANGE, n: 3, both: true, speed: 1 });
-  L.push({ pts: [{ x: HX, y: T }, { x: HX, y: ry(6) + 24 }, { x: rx(6.5) + 30, y: ry(6) + 24 }], col: NZ_ORANGE, n: 2, both: true, speed: 1 });
+  L.push({ pts: [{ x: HX, y: T }, { x: HX, y: ry(5) + 24 }, { x: rx(6.5) + 30, y: ry(5) + 24 }], col: NZ_ORANGE, n: 3, both: true, speed: 1 });
   L.push({ pts: [{ x: ZX, y: T }, { x: ZX, y: H4.y - 10 }], col: NZ_ORANGE, n: 3, both: true, speed: 3 });
   L.push({ pts: [{ x: rx(8) + 24, y: ry(6) + 24 }, { x: rx(9) + RW - 24, y: ry(6) + 24 }], col: NZ_ORANGE, n: 4, both: true, speed: 2 });
   L.push({ pts: [{ x: RZ_MAST.x, y: T }, { x: RZ_MAST.x, y: RZ_MAST.top + 10 }], col: NZ_ORANGE, n: 2, both: true, speed: 2 });

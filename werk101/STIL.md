@@ -151,3 +151,9 @@ registerRoom({
   - Fahrzeuge in echter Größe: `car()` ist 4,6 m lang (316), Räder 68 cm; der Shuttlebus 4 m × 2,75 m; die Kehrmaschine 1,9-mal größer. Maßstab: 1 m ≈ 69 (Mensch 118 hoch).
   - ELIZA-Chat mittig über allem, tippt Buchstabe für Buchstabe; Tasten im Eingabefeld gehen nicht mehr an die Welt (vorher hielt die Leertaste die Animation an). Dreimal Klopfen am Notausgang versteckt die geheimen Räume wieder (`lockSecret`).
   - Insgesamt 45 Felder plus zwei geheime, 213 Figuren.
+- Ergänzung (13. Oktober 2026, Version 20261013a):
+  - Halle 103 hat ein Obergeschoss „Montage“ (r 5, c 6.5, `rooms/montage.js`, `H3` jetzt zweistöckig): SCARA setzt Chips im 20er-Takt, Humanoider holt Blechteile aus dem Regal, Hexapod rüttelt ein Bauteil.
+  - Stall: Melkroboter mit Laser und Bechern (`drawMelk` in stall.js). Satelliten-Werkstatt: Würfelroboter der Raumstation auf dem Granittisch (Luftkissen), Technikerin steht jetzt bei x 196.
+  - Leitwarte: Kilobots-Tisch mit Deckenkamera, der Schwarm bildet ein K (Vergleich zum Agenten-Schwarm).
+  - Suchspiel: Aufgaben, die mit „Geheim“ beginnen, erscheinen erst nach dem Freischalten; Zähler zählt nur sichtbare Aufgaben.
+  - Insgesamt 46 Felder plus zwei geheime, 219 Figuren.

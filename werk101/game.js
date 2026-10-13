@@ -22,6 +22,9 @@
     { text: 'Finde drei Arten, wie Roboter lernen', ids: ['greiffarm', 'laufsim', 'vierbeiner', 'aloha'], need: 3 },
     { text: 'Finde im Rechenzentrum den Agenten-Schwarm und den Bandroboter', ids: ['agentenschwarm', 'bandroboter'], need: 2 },
     { text: 'Finde die drei Robotergesetze, die sich ein Schriftsteller ausgedacht hat', ids: ['asimov'], need: 1 },
+    { text: 'Finde in der Montage den SCARA, den Humanoiden und den Hexapod', ids: ['scara', 'humanoidfabrik', 'hexapod'], need: 3 },
+    { text: 'Finde zwei Schwärme: einen aus Software und einen aus echten Robotern', ids: ['agentenschwarm', 'kilobots'], need: 2 },
+    { text: 'Finde den Melkroboter', ids: ['melk'], need: 1 },
     { text: 'Finde den Menschen im Roboterkostüm', ids: ['kostuem'], need: 1 },
   ];
   let found = new Set();
@@ -37,17 +40,19 @@
   const toast = document.createElement('div'); toast.className = 'toast'; toast.setAttribute('role', 'status'); document.body.appendChild(toast);
   let toastTimer = null;
 
+  // Aufgaben zu geheimen Räumen erst zeigen, wenn die Räume freigeschaltet sind
+  const shown = () => TASKS.filter(t => !t.text.startsWith('Geheim') || state.secret);
   function render() {
     list.innerHTML = '';
     let done = 0;
-    TASKS.forEach(t => {
+    shown().forEach(t => {
       const n = Math.min(t.need, t.ids.filter(id => found.has(id)).length), ok = n >= t.need;
       if (ok) done++;
       const li = document.createElement('li'); li.className = ok ? 'ok' : '';
       li.innerHTML = `<span></span><b>${n}/${t.need}</b>`; li.firstChild.textContent = t.text;
       list.appendChild(li);
     });
-    score.textContent = `${done} von ${TASKS.length}`;
+    score.textContent = `${done} von ${shown().length}`;
     return done;
   }
   function flash(msg) { toast.textContent = msg; toast.classList.add('on'); clearTimeout(toastTimer); toastTimer = setTimeout(() => toast.classList.remove('on'), 2200); }
@@ -57,15 +62,16 @@
     original(id, fly);
     if (!id || fly) return;
     const before = render();
-    const relevant = TASKS.filter(t => t.ids.includes(id));
+    const relevant = shown().filter(t => t.ids.includes(id));
     if (!relevant.length || found.has(id)) return;
     found.add(id); save();
     const after = render();
     const name = (byId[id] && byId[id].name) || id;
-    if (after === TASKS.length) flash('Alle Aufgaben geschafft! Du kennst das Haus jetzt besser als der Hausmeister.');
+    if (after === shown().length) flash('Alle Aufgaben geschafft! Du kennst das Haus jetzt besser als der Hausmeister.');
     else if (after > before) flash(`Aufgabe geschafft: ${name} gefunden.`);
     else flash(`Gefunden: ${name}`);
   };
   box.querySelector('.reset').addEventListener('click', () => { found = new Set(); save(); render(); });
   render();
+  for (const fn of ['unlockSecret', 'lockSecret']) { const orig = window[fn]; if (orig) window[fn] = (...a) => { orig(...a); render(); }; }
 })();

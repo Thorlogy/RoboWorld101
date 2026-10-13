@@ -165,5 +165,11 @@ const KINDER = {
   greiffarm: 'Diese Arme üben Greifen, immer wieder. Mit jedem Versuch werden sie besser.',
   laufsim: 'Im Computer üben viele Roboter gleichzeitig laufen. Wer hinfällt, lernt daraus.',
   vierbeiner: 'Dieser Roboter hat im Computer laufen gelernt. Jetzt probiert er es auf dem Laufband.',
+  melk: 'Die Kuh geht von allein zum Melkroboter. Ein Laser findet das Euter, dann setzt der Arm die Becher an.',
+  astrobee: 'Dieser Würfel fliegt auf der Raumstation herum. Auf der Erde übt er auf einem Luftkissen-Tisch.',
+  scara: 'Dieser flinke Arm dreht sich nur waagerecht. Er setzt ganz schnell kleine Chips auf Platinen.',
+  humanoidfabrik: 'Ein Roboter mit Armen und Beinen wie ein Mensch. In der Fabrik holt er Teile aus dem Regal.',
+  hexapod: 'Sechs Beine schieben die Platte hin und her. So wird getestet, ob ein Teil das Rütteln aushält.',
+  kilobots: 'Ganz viele winzige Roboter bilden zusammen einen Buchstaben. Keiner ist der Chef.',
   aloha: 'Der Mensch macht es vor, der Roboterarm macht es nach. So lernt er, einen Becher umzustellen.',
 };
