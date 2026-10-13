@@ -2,8 +2,8 @@
 (() => {
   const STEPS = [
     { all: true, title: 'Willkommen',
-      text: 'RoboWorld 101 zeigt echte Roboter in gezeichneten Szenen. Alles bewegt sich, und jede Figur lässt sich anklicken. Die Tour zeigt fünfzehn Stellen, an denen besonders viel passiert.',
-      kid: 'Hier wohnen ganz viele Roboter, und alle gibt es wirklich. Komm mit, ich zeige dir die besten Stellen!' },
+      text: 'RoboWorld 101 zeigt echte Roboter in gezeichneten Szenen. Alles bewegt sich, und jede Figur lässt sich anklicken. Jeder Roboter macht dabei dasselbe: Er fühlt mit Sensoren, denkt mit einem Rechner und handelt mit Motoren. Achte bei jeder Station darauf, wo diese drei Teile sitzen. Die Tour zeigt fünfzehn Stellen, an denen besonders viel passiert.',
+      kid: 'Hier wohnen ganz viele Roboter, und alle gibt es wirklich. Jeder Roboter fühlt, denkt und handelt. Komm mit, ich zeige dir die besten Stellen!' },
     { id: 'saug', title: 'Kantine',
       text: 'Ein Wok-Roboter kocht, ein Kellnerroboter bringt das Essen. Der Saugroboter kämpft mit einer Socke: Socken und Kabel sind für echte Saugroboter bis heute ein Problem.',
       kid: 'Der Saugroboter hat eine Socke erwischt. Das passiert echten Saugrobotern ständig!' },

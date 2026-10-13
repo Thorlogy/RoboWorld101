@@ -26,6 +26,8 @@
     { text: 'Finde zwei Schwärme: einen aus Software und einen aus echten Robotern', ids: ['agentenschwarm', 'kilobots'], need: 2 },
     { text: 'Finde zwei Roboter auf dem Bauernhof, die ohne Mensch arbeiten', ids: ['melk', 'traktor', 'jaeter', 'schieber'], need: 2 },
     { text: 'Finde in Haus 104 drei Helfer für Menschen', ids: ['umlager', 'exoarbeit', 'prothese', 'pizza', 'softgreifer'], need: 3 },
+    { text: 'Finde drei Roboter, die dort arbeiten, wo es für Menschen gefährlich ist', ids: ['leitungsroboter', 'tim', 'telemanipulator', 'eod', 'such', 'loeschrob'], need: 3 },
+    { text: 'Finde am Flughafen den Schlepper, den Gepäckarm und den Lkw ohne Fahrer', ids: ['gepaeckschlepper', 'gepaeckarm', 'lkw'], need: 3 },
     { text: 'Finde den Menschen im Roboterkostüm', ids: ['kostuem'], need: 1 },
   ];
   let found = new Set();

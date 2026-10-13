@@ -165,3 +165,9 @@ registerRoom({
   - Magnetschwebebahn hinter allen Häusern (`drawMaglevBack` in himmel.js, aufgerufen in `drawSurroundings`): Stelzenstrecke bei `GROUND - 330`, drei Wagen, fährt einmal pro `RUN_P` von links nach rechts; am besten zwischen den Gebäuden und rechts von Haus 104 zu sehen.
   - Rakete steigt jetzt bis über die Dächer (Stufentrennung bei `RK_SEP = 3000`), Oberstufe öffnet die Spitze (Bild 204–214), Satellit treibt davon und klappt die Solarflügel aus (`rkUpper`, `rkSat`).
   - Insgesamt 48 Felder plus zwei geheime, 228 Figuren.
+- Ergänzung (13. Oktober 2026, Version 20261013d):
+  - Neue Außenfläche ganz links `flughafen` (`rooms/flughafen.js`): fahrerloser Gepäckschlepper, Roboterarm für Koffer, fahrerloser Lkw (zieht einmal pro `RUN_P` über die Zubringerstraße).
+  - Unter der Erde rechts (`rooms/tief.js`): Beschleunigertunnel mit Messroboter an der Deckenschiene (`cern`) und Heiße Zelle für den Kernkraftwerk-Rückbau mit fernbedientem Greifarm hinter Bleiglas (`heisszelle`).
+  - Solarpark: Freileitung mit zwei Masten und Leitungsroboter, der auf dem Seil entlangfährt.
+  - Didaktik: Plakat „Fühlen – Denken – Handeln“ in der Schulhalle (eigene Karte `grundidee`), Tour-Start erklärt dasselbe. Kindertexte jetzt auch für alle Tiere und Spielzeuge. Fehlende Quellen nachgetragen, Pepper-Karte in der Schule auf den Unterricht ausgerichtet (Empfangs-Pepper steht im Eingang), Forpheus-Rekord auf 2016 korrigiert.
+  - Insgesamt 51 Felder plus zwei geheime, 236 Figuren.
