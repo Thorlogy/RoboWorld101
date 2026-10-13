@@ -11,6 +11,12 @@ function plinth(x, w, label, y = 300) {
   text(label, x + w / 2, 346, 9.5, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center', color: '#f3f1ea' });
 }
 
+const MU_TICKER = ['1949 Schildkröten', '1961 Unimate', '1966 Shakey', '1973 WABOT-1', '1997 Sojourner', '1999 AIBO', '2000 ASIMO', '2002 Roomba', '2004 Spirit und Opportunity', '2008 NAO', '2012 Curiosity', '2013 Atlas', '2014 Pepper', '2019 Spot', '2021 Ingenuity', ''].join('  ·  ');
+const MU_LAWS = [
+  'Ein Roboter darf keinen Menschen verletzen und nicht zusehen, wie einem Menschen etwas passiert.',
+  'Ein Roboter gehorcht den Menschen, außer er müsste dafür Gesetz 1 brechen.',
+  'Ein Roboter schützt sich selbst, solange das nicht gegen Gesetz 1 oder 2 verstößt.',
+];
 function drawMuseum(f) {
   ctx.fillStyle = '#e4ddd0'; ctx.fillRect(0, 0, RW, RH);
   ctx.fillStyle = '#5f5b55'; ctx.fillRect(0, 0, RW, 8);
@@ -26,6 +32,25 @@ function drawMuseum(f) {
   text('1920', 302, 50, 14, chalk);
   text('Čapek, „R.U.R.“', 302, 68, 12, chalk);
   text('robota = Fronarbeit', 302, 86, 11, chalk);
+
+  // Laufschrift „Ruhmeshalle“ und Plakat mit Asimovs drei Gesetzen (ausgedacht, 1942)
+  withAlpha('ruhmeshalle', () => {
+    box(446, 82, 188, 40, '#1a1d22', 2, 2);
+    text('RUHMESHALLE', 540, 78, 9, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center' });
+    const font = { family: '"IBM Plex Mono", monospace', weight: 500, color: '#ffb347' };
+    ctx.font = `500 15px "IBM Plex Mono", monospace`;
+    const W = ctx.measureText(MU_TICKER).width, off = (state.g / 480) * W;
+    ctx.save(); ctx.beginPath(); ctx.rect(452, 86, 176, 32); ctx.clip();
+    for (const k of [0, 1]) text(MU_TICKER, 452 - off + k * W, 108, 15, font);
+    ctx.restore();
+  });
+  withAlpha('asimov', () => {
+    box(470, 132, 150, 150, '#f3ead2', 1, 1.5);
+    text('Die drei Robotergesetze', 545, 150, 12, { family: '"Saira Condensed", sans-serif', weight: 700, align: 'center' });
+    text('Isaac Asimov, 1942 · erfunden', 545, 162, 7, { family: '"IBM Plex Mono", monospace', align: 'center', color: '#5d5a55' });
+    MU_LAWS.forEach((t, i) => { text(String(i + 1), 480, 180 + i * 30, 12, { family: '"Saira Condensed", sans-serif', weight: 700, color: '#d9542b' }); wrap(t, 492, 179 + i * 30, 122, 9, 7.5, { family: '"IBM Plex Sans", sans-serif' }); });
+    text('Ausgedacht, nicht eingebaut.', 545, 276, 7, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center', color: '#d9542b' });
+  });
   // Spots
   for (const x of [80, 200, 320, 420]) { line(x, 8, x, 22, INK, 2); ctx.fillStyle = 'rgba(255,244,200,0.28)'; ctx.beginPath(); ctx.moveTo(x - 6, 24); ctx.lineTo(x + 6, 24); ctx.lineTo(x + 40, 300); ctx.lineTo(x - 40, 300); ctx.closePath(); ctx.fill(); circle(x, 22, 5, '#3b3d40'); }
 
@@ -142,8 +167,20 @@ function drawMuseum(f) {
 
 registerRoom({
   key: 'museum', offset: 28, name: 'Museum der Robotik', level: 'Ebene 3',
-  hitOrder: ['schildkroete', 'kind', 'blech', 'schach', 'shakey', 'unimate'],
+  hitOrder: ['schildkroete', 'kind', 'blech', 'schach', 'shakey', 'unimate', 'asimov', 'ruhmeshalle'],
   robots: [
+    { id: 'asimov', name: 'Die drei Robotergesetze', bereich: 'Geschichte', aera: '1942', typ: 'Plakat: Regeln aus einer Geschichte',
+      fakt: 'Der Schriftsteller Isaac Asimov hat sich 1942 für eine Kurzgeschichte drei Gesetze für Roboter ausgedacht. In seinen Büchern geht es oft gerade darum, wie die Gesetze zu Problemen führen, weil sie sich gegenseitig widersprechen.',
+      echt: 'Ausgedacht. Kein echter Roboter hat diese Gesetze eingebaut, ein Roboter versteht Wörter wie „Schaden“ gar nicht. Echte Roboter werden mit Sicherheitsnormen, Schutzfeldern und Not-Aus-Knöpfen sicher gemacht.',
+      note: 'Hängt hier, weil fast jeder sie kennt. Die Gesetze sind in eigenen Worten wiedergegeben.', color: '#f3ead2',
+      quelle: 'https://en.wikipedia.org/wiki/Three_Laws_of_Robotics',
+      box: () => [UX + 470, UY + 132, 150, 150] },
+    { id: 'ruhmeshalle', name: 'Ruhmeshalle', bereich: 'Geschichte', aera: '1949 bis heute', typ: 'Laufschrift mit berühmten Robotern',
+      fakt: 'Hier laufen berühmte Roboter mit ihrem Jahr durch: von den Licht-Schildkröten 1949 über den Industriearm Unimate, ASIMO und den Staubsauger Roomba bis zum Marshubschrauber Ingenuity 2021.',
+      echt: 'Alle gab es wirklich. Einige stehen sogar in diesem Haus: Unimate, Shakey und die Schildkröte im Museum, NAO und Pepper in der Schule.',
+      note: 'Die Liste läuft immer weiter. Jedes Jahr kämen neue dazu.', color: '#ffb347',
+      quelle: 'https://en.wikipedia.org/wiki/Timeline_of_robotics',
+      box: () => [UX + 446, UY + 70, 188, 52] },
     { id: 'schach', echt: 'In echt öffnete der Vorführer die Türen, um Zahnräder zu zeigen. Der versteckte Spieler rutschte dabei unbemerkt zur Seite.', name: 'Schachautomat', bereich: 'Geschichte', aera: '1770', typ: 'Scheinbarer Automat',
       fakt: 'Wolfgang von Kempelen stellte 1770 in Wien einen Schachautomaten vor, der jahrzehntelang durch Europa tourte und viele Partien gewann. Im Kasten saß ein versteckter Schachspieler, ein Roboter war es nie.',
       note: 'Die Tür geht jede Runde auf. Der Mensch drinnen winkt.', color: '#8e6233',

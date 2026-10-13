@@ -12,12 +12,55 @@ function pipetteX(f) {
 const pipetteY = f => (paused(f) ? 0 : (f % 5 < 2 ? 12 : 0));
 const mobileX = f => 420 + 120 * (0.5 - 0.5 * Math.cos(TAU * (f - 20) / 60));
 
+/* ---------- Sensorwand: fünf Sensoren schauen auf denselben rollenden Ball ---------- */
+const SN = ['lidar', 'ultraschall', 'sensorkamera', 'infrarot', 'radar'];
+const SN_NAME = ['LIDAR', 'ULTRASCHALL', 'KAMERA', 'WÄRMEBILD', 'RADAR'];
+const snX = i => 14 + i * 84;
+const snBall = (i, f) => snX(i) + 58 + 12 * Math.sin(TAU * f / 60);
+function drawSensors(f) {
+  const mono = { family: '"IBM Plex Mono", monospace', weight: 500 };
+  SN.forEach((id, i) => withAlpha(id, () => {
+    const x = snX(i), y = 80, sx = x + 14, sy = 124, bx = snBall(i, f), dist = (bx - sx) / 40;
+    box(x, y, 80, 84, '#f3f5f6', 2, 1.5);
+    text(SN_NAME[i], x + 40, y + 12, 7.5, Object.assign({ align: 'center' }, mono));
+    line(x + 4, 140, x + 76, 140, '#b9c2c6', 1);
+    // Ball als Ziel (beim Wärmebild eine warme Tasse)
+    if (i === 3) { box(bx - 6, 128, 12, 12, '#e6e3da', 2, 1.2); for (let k = 0; k < 2; k++) { const t = ((f * 2 + k * 30) % 60) / 60; ctx.save(); ctx.globalAlpha = 1 - t; line(bx - 2 + k * 4, 124 - t * 14, bx - 2 + k * 4, 120 - t * 14, '#d9542b', 1.5); ctx.restore(); } }
+    else circle(bx, 133, 7, '#d9542b', INK, 1.2);
+    if (i === 0) {
+      box(sx - 6, sy - 6, 12, 14, '#2d2f33', 3, 1.2);
+      for (let k = 0; k < 7; k++) { const a = -0.5 + k / 6 + Math.sin(TAU * f / 15) * 0.05; ctx.save(); ctx.globalAlpha = 0.5; line(sx + 6, sy, sx + 6 + Math.cos(a) * 60, sy + Math.sin(a) * 60, '#d94a4a', 0.8); ctx.restore(); }
+      for (let k = -2; k <= 2; k++) circle(bx - 7, 133 + k * 3, 1.2, '#d94a4a', null);
+      text(`${(dist * 0.4).toFixed(2).replace('.', ',')} m`, x + 40, y + 78, 8, Object.assign({ align: 'center' }, mono));
+    } else if (i === 1) {
+      for (const dy of [-5, 5]) circle(sx, sy + dy, 4.5, '#c9ccc8', INK, 1.2);
+      for (let k = 0; k < 3; k++) { const t = ((f + k * 6) % 18) / 18; const r = 6 + t * (bx - sx); ctx.save(); ctx.globalAlpha = 1 - t; ctx.beginPath(); ctx.arc(sx, sy, r, -0.45, 0.45); ctx.strokeStyle = '#3e6f9e'; ctx.lineWidth = 1.2; ctx.stroke(); ctx.restore(); }
+      text(`${Math.round(dist * 40)} cm`, x + 40, y + 78, 8, Object.assign({ align: 'center' }, mono));
+    } else if (i === 2) {
+      box(sx - 7, sy - 6, 14, 12, '#3b3d40', 2, 1.2); circle(sx + 7, sy, 3.5, '#7fd3ff', INK, 1);
+      ctx.save(); ctx.globalAlpha = 0.35; line(sx + 9, sy, x + 78, sy - 22, '#3b3d40', 0.8); line(sx + 9, sy, x + 78, sy + 22, '#3b3d40', 0.8); ctx.restore();
+      ctx.save(); ctx.setLineDash([2, 2]); ctx.strokeStyle = '#2f8f4e'; ctx.lineWidth = 1; ctx.strokeRect(bx - 10, 123, 20, 20); ctx.restore();
+      text('Ball 97 %', x + 40, y + 78, 8, Object.assign({ align: 'center', color: '#2f8f4e' }, mono));
+    } else if (i === 3) {
+      box(sx - 6, sy - 6, 12, 12, '#3b3d40', 2, 1.2); circle(sx + 6, sy, 3, '#5d1f1f', INK, 1);
+      const gr = ctx.createLinearGradient(x + 18, 0, x + 62, 0); gr.addColorStop(0, '#2b1a6b'); gr.addColorStop(0.5, '#d9342b'); gr.addColorStop(1, '#ffe08a');
+      ctx.fillStyle = gr; ctx.fillRect(x + 18, y + 68, 44, 4);
+      text('60 °C', x + 40, y + 80, 8, Object.assign({ align: 'center' }, mono));
+    } else {
+      box(sx - 4, sy - 9, 8, 18, '#e6e3da', 1, 1.2); for (let k = 0; k < 3; k++) circle(sx, sy - 5 + k * 5, 1.2, '#b8733a', null);
+      for (let k = 0; k < 3; k++) { const t = ((f * 2 + k * 10) % 30) / 30; ctx.save(); ctx.globalAlpha = 1 - t; ctx.beginPath(); ctx.arc(sx, sy, 8 + t * (bx - sx), -0.3, 0.3); ctx.strokeStyle = '#7b4b8e'; ctx.lineWidth = 1.5; ctx.stroke(); ctx.restore(); }
+      const v = Math.cos(TAU * f / 60) * 0.13;
+      text(`${v >= 0 ? '+' : '−'}${Math.abs(v).toFixed(2).replace('.', ',')} m/s`, x + 40, y + 78, 8, Object.assign({ align: 'center' }, mono));
+    }
+  }));
+}
 function drawLabor(f) {
   ctx.fillStyle = '#eaeef0'; ctx.fillRect(0, 0, RW, RH);
   ctx.fillStyle = '#d3dde2'; ctx.fillRect(0, 200, RW, 160);
   line(0, 200, RW, 200, INK, 2);
   ctx.fillStyle = '#5f5b55'; ctx.fillRect(0, 0, RW, 8);
-  text('LABOR', 300, 70, 40, { family: '"Saira Condensed", sans-serif', weight: 700, color: 'rgba(42,39,35,0.13)' });
+  text('LABOR', 450, 64, 40, { family: '"Saira Condensed", sans-serif', weight: 700, color: 'rgba(42,39,35,0.13)' });
+  text('SENSOREN', 14, 74, 10, { family: '"IBM Plex Mono", monospace', weight: 500 });
   ctx.fillStyle = '#b9c2c6'; ctx.fillRect(0, 360, RW, 40); line(0, 360, RW, 360, INK, 2);
   // Labortische
   box(20, 300, 270, 10, '#5d6064'); box(30, 310, 250, 50, '#d6d9dc', 0, 1.5);
@@ -81,12 +124,43 @@ function drawLabor(f) {
     box(tip.x - 8, tip.y, 16, 10, '#3e6f9e', 1, 1.2);
     for (let i = 0; i < 3; i++) box(tip.x - 6 + i * 5, tip.y - 8, 3, 9, '#7fd3ff', 0, 1);
   });
+  drawSensors(f);
 }
 
 registerRoom({
   key: 'labor', name: 'Labor', level: 'Ebene 5',
-  hitOrder: ['forscher', 'mikro', 'mobil', 'pipette'],
+  hitOrder: ['forscher', 'mikro', 'mobil', 'pipette', 'lidar', 'ultraschall', 'sensorkamera', 'infrarot', 'radar'],
   robots: [
+    { id: 'lidar', name: 'Lidar', bereich: 'Sensoren', aera: 'Sensorwand', typ: 'Laserscanner, der sich dreht',
+      fakt: 'Ein Lidar schickt sehr schnell Laserpulse in alle Richtungen und misst, wie lange das Licht bis zum Hindernis und zurück braucht. Daraus entsteht eine Punktwolke, eine Art Landkarte aus Punkten.',
+      echt: 'Echt. Robotaxis, Staubsaugerroboter und Lagerroboter nutzen Lidar. Der Laser ist so schwach, dass er den Augen nicht schadet; sichtbar ist er in echt gar nicht.',
+      note: 'Misst den Abstand zum Ball auf den Zentimeter.', color: '#f3f5f6',
+      quelle: 'https://en.wikipedia.org/wiki/Lidar',
+      box: () => [LBX + snX(0), LBY + 80, 80, 84] },
+    { id: 'ultraschall', name: 'Ultraschallsensor', bereich: 'Sensoren', aera: 'Sensorwand', typ: 'Zwei kleine Lautsprecher-Augen',
+      fakt: 'Der Sensor piept so hoch, dass Menschen es nicht hören, und lauscht auf das Echo. Je länger das Echo braucht, desto weiter ist das Hindernis weg. Fledermäuse machen es genauso.',
+      echt: 'Echt. Einparkhilfen im Auto und viele Schulroboter haben genau diese zwei runden Augen.',
+      note: 'Hört das Echo vom Ball.', color: '#f3f5f6',
+      quelle: 'https://en.wikipedia.org/wiki/Ultrasonic_transducer',
+      box: () => [LBX + snX(1), LBY + 80, 80, 84] },
+    { id: 'sensorkamera', name: 'Kamera mit Bilderkennung', bereich: 'Sensoren', aera: 'Sensorwand', typ: 'Kamera plus Erkennungsprogramm',
+      fakt: 'Die Kamera liefert nur Bilder. Ein trainiertes Programm sucht darin Dinge, malt einen Rahmen darum und sagt, wie sicher es sich ist.',
+      echt: 'Echt. 97 Prozent heißt aber nicht „sicher“: Bei schlechtem Licht oder ungewohnten Dingen irrt sich so ein Programm.',
+      note: 'Erkennt den Ball, meistens.', color: '#f3f5f6',
+      quelle: 'https://en.wikipedia.org/wiki/Object_detection',
+      box: () => [LBX + snX(2), LBY + 80, 80, 84] },
+    { id: 'infrarot', name: 'Wärmebildkamera', bereich: 'Sensoren', aera: 'Sensorwand', typ: 'Kamera für Infrarotlicht',
+      fakt: 'Warme Dinge leuchten im Infrarotlicht, das unsere Augen nicht sehen. Die Wärmebildkamera macht daraus Farben: dunkel ist kalt, gelb ist heiß. Rettungsroboter finden so Menschen im Rauch.',
+      echt: 'Echt. Einfache Infrarotsensoren melden nur, ob sich etwas Warmes bewegt, so gehen viele Lampen im Flur automatisch an.',
+      note: 'Sieht, dass der Tee noch heiß ist.', color: '#f3f5f6',
+      quelle: 'https://en.wikipedia.org/wiki/Thermography',
+      box: () => [LBX + snX(3), LBY + 80, 80, 84] },
+    { id: 'radar', name: 'Radar', bereich: 'Sensoren', aera: 'Sensorwand', typ: 'Funkwellen-Sensor',
+      fakt: 'Radar schickt Funkwellen los und misst das Echo. Damit sieht es auch bei Nebel, Regen und im Dunkeln und merkt sofort, wie schnell sich etwas nähert oder entfernt.',
+      echt: 'Echt. Fast jedes neue Auto hat vorne ein Radar für den Abstandshalter.',
+      note: 'Plus heißt: Der Ball rollt weg, minus: Er kommt näher.', color: '#f3f5f6',
+      quelle: 'https://en.wikipedia.org/wiki/Radar',
+      box: () => [LBX + snX(4), LBY + 80, 80, 84] },
     { id: 'pipette', name: 'Pipettierroboter', bereich: 'Forschung', aera: 'seit den 1980ern', typ: 'Flüssigkeitsroboter mit Portal',
       fakt: 'Pipettierroboter verteilen winzige Flüssigkeitsmengen auf Platten mit 96 oder mehr Vertiefungen. In einem Labor ersetzen sie Tausende Handgriffe am Tag und arbeiten dabei genauer als jede Hand.',
       echt: 'Genau so: Wird die Haube geöffnet, hält das Gerät sofort an. Kaffee hat im Arbeitsbereich trotzdem nichts zu suchen.',

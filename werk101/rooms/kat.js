@@ -16,7 +16,7 @@ function drawKat(f) {
   ctx.fillStyle = '#6a6359'; ctx.fillRect(0, 0, RW, RH);
   for (let i = 0; i < 40; i++) { ctx.fillStyle = i % 2 ? '#625b52' : '#736c62'; ctx.fillRect(rnd(i) * RW, rnd(i + 50) * 330, 40, 20); }
   ctx.fillStyle = '#5f5b55'; ctx.fillRect(0, 0, RW, 8);
-  text('ÜBUNG', 280, 70, 40, { family: '"Saira Condensed", sans-serif', weight: 700, color: 'rgba(243,241,234,0.14)' });
+  text('RETTUNGSÜBUNG', 200, 70, 40, { family: '"Saira Condensed", sans-serif', weight: 700, color: 'rgba(243,241,234,0.14)' });
   ctx.fillStyle = '#4e4840'; ctx.fillRect(0, 360, RW, 40); line(0, 360, RW, 360, INK, 2);
   // Trümmerhaufen mit Übungspuppe
   ctx.beginPath(); ctx.moveTo(0, 360); ctx.lineTo(20, 300); ctx.lineTo(60, 280); ctx.lineTo(120, 296); ctx.lineTo(180, 290); ctx.lineTo(220, 360); ctx.closePath(); paint('#8a8178');

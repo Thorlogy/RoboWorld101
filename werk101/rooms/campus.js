@@ -34,6 +34,57 @@ function c2StepVisible(s, hg) {
   const clean = 40 + 180 * clamp((s.x - 70 + 20) / 450, 0, 1);
   return hg >= s.lay || hg < clean;
 }
+/* ---------- Roboter-Regal in der 4b und Pepper in der Halle ---------- */
+function c2Nao(x, foot, f) {
+  // NAO, 58 cm: weiß-grau, runder Kopf mit Augenring; winkt in Bild 10–26
+  const wave = f >= 10 && f < 26 ? Math.sin((f - 10) * 1.2) * 0.4 : 0;
+  humanoid(x, foot, { s: 0.36, color: '#f3f1ea', armR: f >= 10 && f < 26 ? 2.7 + wave : 0.1, armL: -0.1 });
+  circle(x, foot - 36, 7, '#f3f1ea', INK, 1.2);
+  circle(x - 2.5, foot - 37, 1.6, '#3e9fd6', null); circle(x + 2.5, foot - 37, 1.6, '#3e9fd6', null);
+  circle(x, foot - 26, 1.4, '#3e9fd6', null);
+}
+function c2Brick(x, y, f) {
+  // Baustein-Roboter: Rechenstein mit 5x5-Lichtfeld, zwei Räder, Balken
+  const dx = Math.sin(TAU * f / 60) * 3;
+  ctx.save(); ctx.translate(dx, 0);
+  line(x - 13, y - 6, x + 13, y - 6, '#8a8f94', 3);
+  box(x - 9, y - 22, 18, 14, '#f3e3a0', 2, 1.2);
+  for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) { ctx.fillStyle = (i + j + Math.floor(f / 10)) % 3 ? '#fbfaf6' : '#f0b429'; ctx.fillRect(x - 5 + i * 3.5, y - 19 + j * 3.5, 2.5, 2.5); }
+  circle(x - 9, y - 4, 4.5, '#2d2f33', INK, 1); circle(x + 9, y - 4, 4.5, '#2d2f33', INK, 1);
+  circle(x - 9, y - 4, 1.5, '#e6e3da', null); circle(x + 9, y - 4, 1.5, '#e6e3da', null);
+  ctx.restore();
+}
+function c2Fischer(x, y, f) {
+  // Baukasten-Greifarm: graue Grundplatte, rote Bausteine, schwenkt langsam
+  box(x - 13, y - 5, 26, 5, '#8a8f94', 1, 1);
+  box(x - 4, y - 18, 8, 13, '#d9342b', 1, 1);
+  const a = -0.9 + 0.5 * Math.sin(TAU * f / 60);
+  const e = { x: x + Math.cos(a) * 14, y: y - 18 + Math.sin(a) * 14 };
+  line(x, y - 18, e.x, e.y, '#5d6064', 3); line(e.x, e.y, e.x + 4, e.y + 6, '#d9342b', 2.5); line(e.x, e.y, e.x - 2, e.y + 7, '#d9342b', 2.5);
+  circle(x, y - 18, 2, '#3e6f9e', null);
+}
+function c2Shelf(f) {
+  box(582, 172, 54, 188, '#c79a63', 1, 1.5);
+  for (const y of [232, 292]) box(582, y, 54, 5, '#a8763f', 0, 1.2);
+  withAlpha('nao', () => c2Nao(609, 232, f));
+  withAlpha('bausteinbot', () => c2Brick(609, 292, f));
+  withAlpha('fischertechnik', () => c2Fischer(609, 358, f));
+}
+function c2Pepper(x, f) {
+  // Pepper, 1,20 m: Rollsockel statt Beine, Tablet auf der Brust; begrüßt und winkt
+  const head = Math.sin(TAU * f / 60) * 2;
+  ctx.beginPath(); ctx.moveTo(x - 20, 360); ctx.lineTo(x - 12, 320); ctx.lineTo(x + 12, 320); ctx.lineTo(x + 20, 360); ctx.closePath(); paint('#f3f1ea', INK, 1.5);
+  box(x - 16, 280, 32, 42, '#f3f1ea', 8, 1.5);
+  box(x - 10, 290, 20, 15, '#23384d', 2, 1.2);
+  text(f < 30 ? 'Hallo!' : 'Hilfe?', x, 300, 6, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center', color: '#7fd3ff' });
+  limb(x - 16, 286, x - 22, 318, 5, '#f3f1ea');
+  const u = seg(f, 0, 4) - seg(f, 14, 18), w = Math.sin(f * 1.3) * 5 * u;
+  const el = mix({ x: x + 20, y: 302 }, { x: x + 26, y: 266 }, u), hd = mix({ x: x + 22, y: 318 }, { x: x + 30 + w, y: 250 }, u);
+  limb(x + 16, 286, el.x, el.y, 5, '#f3f1ea'); limb(el.x, el.y, hd.x, hd.y, 4, '#f3f1ea');
+  circle(x + head, 266, 13, '#f3f1ea', INK, 1.5);
+  circle(x - 5 + head, 265, 3.4, '#2a2723', null); circle(x + 5 + head, 265, 3.4, '#2a2723', null);
+  circle(x - 5 + head, 265, 1.4, '#7fd3ff', null); circle(x + 5 + head, 265, 1.4, '#7fd3ff', null);
+}
 function drawHalle2(f) {
   const hg = heldG('schrubber', state.g);
   c2Wall('#ece4d6');
@@ -54,6 +105,7 @@ function drawHalle2(f) {
   for (const s of C2_STEPS) if (c2StepVisible(s, hg)) { ctx.beginPath(); ctx.ellipse(s.x, s.y, 7, 3, 0, 0, TAU); ctx.fillStyle = 'rgba(110,82,52,0.55)'; ctx.fill(); }
   // Ladestation
   box(30, 330, 20, 30, '#3b3d40', 2, 1.2);
+  withAlpha('pepper', () => c2Pepper(470, f));
   withAlpha('schrubber', () => {
     const x = c2ScrubX(hg), work = hg >= 40 && hg < 220;
     if (work) { ctx.fillStyle = 'rgba(127,211,255,0.25)'; ctx.fillRect(70, 362, x - 70, 14); }
@@ -136,6 +188,7 @@ function drawKlasse2(f) {
   if (f >= 44 && f < 52) text('21', 470, 150, 30, { family: '"Saira Condensed", sans-serif', weight: 700, align: 'center', color: '#5f9a4a' });
   // Kinderbilder an der Wand
   [[574, 80, 0, '#f0b429'], [612, 86, 2, '#d9542b'], [592, 122, 1, '#3e6f9e']].forEach(([x, y, k, c]) => c2Art(x, y, k, c));
+  c2Shelf(f);
   withAlpha('lehrerin2', () => person({ x: 552, face: -1, shirt: '#7b4b8e', pants: '#3b3d40', hair: '#8a5a2b', hand: call ? { x: 528, y: 262 } : { x: 528 + (f % 8 < 4 ? 0 : 3), y: 196 } }));
   // Tischreihe
   c2Desk(40, 140); c2Desk(220, 140);
@@ -224,8 +277,14 @@ function drawInfo(f) {
 const C2Q = 'https://en.wikipedia.org/wiki/';
 registerRoom({
   key: 'halle2', name: 'Schule: Eingangshalle', level: 'Schule EG',
-  hitOrder: ['schrubber'],
+  hitOrder: ['schrubber', 'pepper'],
   robots: [
+    { id: 'pepper', name: 'Pepper', bereich: 'Bildung', aera: '2014 bis 2021 gebaut', typ: 'Empfangsroboter mit Tablet',
+      fakt: 'Pepper ist 1,20 Meter groß und rollt auf drei Rädern. Er erkennt Gesichter, spricht Besucher an und zeigt auf dem Tablet an seiner Brust Informationen. Schulen und Unis nutzen ihn auch, um Programmieren zu lernen.',
+      echt: 'Echt, aber Gespräche versteht Pepper nur in einfachen Bahnen. Gebaut wird er seit 2021 nicht mehr, viele sind aber noch im Einsatz.',
+      note: 'Begrüßt jeden in der Halle und winkt. Danach fragt er, ob jemand Hilfe braucht.', color: '#f3f1ea',
+      quelle: 'https://en.wikipedia.org/wiki/Pepper_(robot)',
+      box: () => [c2X('halle2') + 446, c2Y('halle2') + 250, 50, 112] },
     { id: 'schrubber', name: 'Reinigungsroboter', bereich: 'Service', aera: 'seit den 2010ern', typ: 'Fahrender Bodenreiniger',
       fakt: 'Große Reinigungsroboter wischen Flure in Flughäfen, Supermärkten und Schulen. Sie lernen den Grundriss einmal kennen, fahren ihn dann selbst ab und weichen Menschen mit Laserscannern und Kameras aus.',
       echt: 'Realistisch. Meist putzen sie nach Schulschluss, wenn die Flure leer sind; hier wischen sie gleich die Spur der Klasse weg.',
@@ -259,8 +318,26 @@ registerRoom({
 });
 registerRoom({
   key: 'klasse2', name: 'Schule: Klassenzimmer', level: 'Schule 1. OG',
-  hitOrder: ['beebot', 'av1', 'kinder2', 'lehrerin2'],
+  hitOrder: ['beebot', 'bausteinbot', 'fischertechnik', 'nao', 'av1', 'kinder2', 'lehrerin2'],
   robots: [
+    { id: 'nao', name: 'NAO', bereich: 'Bildung', aera: 'seit 2008', typ: 'Kleiner Humanoide, 58 cm',
+      fakt: 'NAO kann laufen, sprechen, Gesichter erkennen und nach einem Sturz selbst wieder aufstehen. Viele Unis und Schulen programmieren ihn. Beim RoboCup spielen ganze Mannschaften aus NAOs Fußball.',
+      echt: 'Echt. Ein NAO kostet so viel wie ein kleines Auto, deshalb steht er meist gut geschützt im Regal.',
+      note: 'Winkt der Klasse zwischendurch zu.', color: '#f3f1ea',
+      quelle: 'https://en.wikipedia.org/wiki/Nao_(robot)',
+      box: () => [c2X('klasse2') + 592, c2Y('klasse2') + 188, 34, 44] },
+    { id: 'bausteinbot', name: 'Baustein-Roboter', bereich: 'Bildung', aera: 'seit 1998', typ: 'Roboter aus Bausteinen mit Rechenstein',
+      fakt: 'Aus Bausteinen, Motoren, Sensoren und einem Rechenstein bauen Kinder eigene Roboter und programmieren sie mit Blöcken oder Python. Bekannt sind die Sets von LEGO Education, früher „Mindstorms“, heute „SPIKE“.',
+      echt: 'Echt. Viele Schulen und die First Lego League arbeiten damit. Das Lichtfeld vorn zeigt kleine Bilder oder Zahlen.',
+      note: 'Rollt ein Stück vor und zurück, ganz vorsichtig, damit er nicht vom Regal fällt.', color: '#f3e3a0',
+      quelle: 'https://en.wikipedia.org/wiki/Lego_Mindstorms',
+      box: () => [c2X('klasse2') + 588, c2Y('klasse2') + 262, 42, 32] },
+    { id: 'fischertechnik', name: 'Baukasten-Greifarm', bereich: 'Bildung', aera: 'seit 1965', typ: 'Roboter aus einem Konstruktionsbaukasten',
+      fakt: 'Mit fischertechnik, einem Baukasten aus dem Schwarzwald, bauen Schulen und Hochschulen kleine Industrieroboter: Greifarme, Förderbänder, ganze Fabriken. Ein Steuerrechner bewegt die Motoren.',
+      echt: 'Echt. Auch Ingenieure bauen damit Modelle, um eine Fabrik zu planen, bevor sie die echte bauen.',
+      note: 'Schwenkt seinen Greifer langsam hin und her.', color: '#d9342b',
+      quelle: 'https://en.wikipedia.org/wiki/Fischertechnik',
+      box: () => [c2X('klasse2') + 590, c2Y('klasse2') + 322, 40, 40] },
     { id: 'av1', name: 'Avatar-Roboter', bereich: 'Bildung', aera: 'seit den 2010ern', typ: 'Kleiner Telepräsenzroboter auf dem Tisch',
       fakt: 'Der Avatar-Roboter AV1 der norwegischen Firma No Isolation sitzt für ein Kind im Klassenzimmer, das lange krank ist. Das Kind sieht und hört über Kamera und Mikrofon mit, dreht den Kopf des Roboters und meldet sich, indem sein Kopf grün blinkt. Er wird in vielen europäischen Ländern eingesetzt.',
       echt: 'Realistisch. Gesteuert wird er zu Hause mit einer App auf dem Tablet oder Handy.',

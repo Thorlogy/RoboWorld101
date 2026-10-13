@@ -112,17 +112,29 @@ registerRoom({
 /* ---------- ELIZA zum Selberchatten: einfache Regeln wie 1966, auf Deutsch und kindgerecht ---------- */
 (() => {
   const css = document.createElement('style');
-  css.textContent = `.eliza{position:fixed;left:16px;bottom:16px;width:min(360px,calc(100% - 32px));background:#0f2a1a;color:#6eff82;border:2px solid #2a2723;box-shadow:6px 6px 0 #2a2723;font:500 13px "IBM Plex Mono",monospace;z-index:6}
-.eliza[hidden]{display:none}.eliza header{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:#d8d2bc;color:#2a2723}
-.eliza header button{font:inherit;background:none;border:1px solid #2a2723;cursor:pointer;padding:2px 8px}.eliza .log{height:220px;overflow-y:auto;padding:10px;white-space:pre-wrap}
-.eliza .log .du{color:#c9f7d3}.eliza form{display:flex;border-top:1px solid #2a5a3a}.eliza input{flex:1;background:#0b1f13;color:#6eff82;border:0;padding:10px;font:inherit}
-.eliza form button{background:#2a5a3a;color:#e8ffe8;border:0;padding:0 12px;font:inherit;cursor:pointer}`;
+  css.textContent = `.eliza{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(460px,calc(100% - 24px));background:#d8d2bc;border:3px solid #2a2723;box-shadow:8px 8px 0 #2a2723;padding:14px 14px 18px;z-index:30;font:500 14px "IBM Plex Mono",monospace}
+.eliza[hidden]{display:none}.eliza header{display:flex;justify-content:space-between;align-items:center;margin:0 0 10px;color:#2a2723}
+.eliza header b{font:700 18px "Saira Condensed",sans-serif;letter-spacing:.06em}.eliza header small{font-size:11px;opacity:.7;margin-left:8px}
+.eliza header button{font:inherit;background:#f3efe4;border:2px solid #2a2723;cursor:pointer;padding:2px 10px}
+.eliza .crt{background:#08130c;border:10px solid #3b3d40;border-radius:14px;box-shadow:inset 0 0 28px rgba(110,255,130,.18)}
+.eliza .log{height:min(260px,40vh);overflow-y:auto;padding:12px;white-space:pre-wrap;color:#6eff82;text-shadow:0 0 4px rgba(110,255,130,.55)}
+.eliza .log .du{color:#d4ffd9}.eliza .log .cur::after{content:"█";animation:elz 1s steps(1) infinite}@keyframes elz{50%{opacity:0}}
+.eliza form{display:flex;gap:8px;margin-top:10px}.eliza input{flex:1;min-width:0;background:#f3efe4;color:#2a2723;border:2px solid #2a2723;padding:10px;font:inherit}
+.eliza form button{background:#2a2723;color:#f3efe4;border:0;padding:0 14px;font:inherit;cursor:pointer}.eliza p{margin:8px 0 0;font-size:11px;color:#5d5a55}`;
   document.head.appendChild(css);
   const box = document.createElement('section'); box.className = 'eliza'; box.hidden = true; box.setAttribute('aria-label', 'Chat mit ELIZA');
-  box.innerHTML = '<header><span>ELIZA · 1966</span><button type="button" aria-label="Schließen">x</button></header><div class="log" aria-live="polite"></div><form><input type="text" maxlength="160" placeholder="Schreib etwas…" aria-label="Nachricht an ELIZA"><button type="submit">OK</button></form>';
+  box.innerHTML = '<header><span><b>ELIZA</b><small>Joseph Weizenbaum, MIT, 1966</small></span><button type="button" aria-label="Chat schließen">Ende</button></header><div class="crt"><div class="log" aria-live="polite"></div></div><form><input type="text" maxlength="160" placeholder="Schreib hier und drück Enter" aria-label="Nachricht an ELIZA" autocomplete="off"><button type="submit">Senden</button></form><p>ELIZA versteht nichts. Sie sucht Wörter in deinem Satz und dreht sie zu einer Frage um.</p>';
   document.body.appendChild(box);
   const log = box.querySelector('.log'), input = box.querySelector('input');
-  const say = (who, t) => { const p = document.createElement('div'); if (who === 'du') p.className = 'du'; p.textContent = (who === 'du' ? '> ' : '') + t; log.appendChild(p); log.scrollTop = log.scrollHeight; };
+  let typing = null;
+  const say = (who, t) => {
+    const p = document.createElement('div'); if (who === 'du') p.className = 'du'; log.appendChild(p);
+    if (who === 'du') { p.textContent = '> ' + t; log.scrollTop = log.scrollHeight; return; }
+    // ELIZA tippt Buchstabe für Buchstabe wie auf einem Fernschreiber
+    if (typing) { clearInterval(typing.id); typing.p.textContent = typing.t; }
+    log.querySelectorAll('.cur').forEach(c => c.classList.remove('cur')); p.className = 'cur'; let i = 0;
+    typing = { p, t, id: setInterval(() => { p.textContent = t.slice(0, ++i); log.scrollTop = log.scrollHeight; if (i >= t.length) { clearInterval(typing.id); typing = null; } }, 28) };
+  };
   const swap = t => t.replace(/\b(ich|mich|mir|mein|meine|meinen|meinem|bin|du|dich|dir|dein|deine)\b/gi, w => ({ ich: 'du', mich: 'dich', mir: 'dir', mein: 'dein', meine: 'deine', meinen: 'deinen', meinem: 'deinem', bin: 'bist', du: 'ich', dich: 'mich', dir: 'mir', dein: 'mein', deine: 'meine' })[w.toLowerCase()]);
   const pick = a => a[Math.floor(Math.random() * a.length)];
   const RULES = [
@@ -151,6 +163,9 @@ registerRoom({
     e.preventDefault(); const t = input.value.trim(); if (!t) return; input.value = '';
     say('du', t); setTimeout(() => say('eliza', answer(t)), 350);
   });
-  box.querySelector('header button').addEventListener('click', () => { box.hidden = true; });
+  const close = () => { box.hidden = true; if (state.sel === 'eliza') select(null, false); };
+  box.querySelector('header button').addEventListener('click', close);
+  // Tasten im Chat nicht an die Welt weitergeben (Leertaste würde sonst die Animation anhalten)
+  box.addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Escape') close(); });
   window.openEliza = () => { if (box.hidden) { box.hidden = false; if (!log.children.length) say('eliza', 'Hallo, ich bin ELIZA. Ich bin ein Programm von 1966. Wie geht es dir?'); } input.focus(); };
 })();

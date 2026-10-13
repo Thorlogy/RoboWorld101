@@ -9,7 +9,7 @@ const STX = rx(roomOf('strasse').c), STY = ry(roomOf('strasse').r);
 const PKX = rx(roomOf('park').c), PKY = ry(roomOf('park').r);
 
 /* ---------- Straße: Robotaxi wartet am Zebrastreifen (Bild 20–40), Lieferroboter kommt aus dem Haus ---------- */
-const taxiX = f => (f < 20 ? lerp(-160, 220, ease(seg(f, 0, 20))) : f < 40 ? 220 : lerp(220, 800, ease(seg(f, 40, 60))));
+const taxiX = f => (f < 20 ? lerp(-200, 170, ease(seg(f, 0, 20))) : f < 40 ? 170 : lerp(170, 900, ease(seg(f, 40, 60))));
 function walker(f) {
   if (f < 22) return { x: lerp(-30, 340, seg(f, 0, 22)), foot: 384, s: 1, walk: true };
   if (f < 38) return { x: 340, foot: lerp(384, 338, seg(f, 22, 38)), s: lerp(1, 0.86, seg(f, 22, 38)), walk: true };
@@ -32,8 +32,8 @@ function drawStrasse(f) {
   text('STRASSE', 470, 270, 34, { family: '"Saira Condensed", sans-serif', weight: 700, color: 'rgba(42,39,35,0.15)' });
 
   withAlpha('taxi2', () => {
-    ctx.save(); ctx.translate(taxiX(f), 336); ctx.scale(0.86, 0.86); car(0, 0, '#f3f1ea', { sensors: true }); ctx.fillStyle = '#ffd23f'; ctx.fillRect(-66, -16, 132, 4); ctx.restore();
-    if (f >= 22 && f < 38) { box(taxiX(f) - 34, 236, 68, 16, '#2a2723', 3, 1); text('WARTE', taxiX(f), 248, 9, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center', color: '#7fe08a' }); }
+    ctx.save(); ctx.translate(taxiX(f), 336); ctx.scale(0.86, 0.86); car(0, 0, '#f3f1ea', { sensors: true, stripe: '#ffd23f' }); ctx.restore();
+    if (f >= 22 && f < 38) { box(taxiX(f) - 34, 194, 68, 16, '#2a2723', 3, 1); text('WARTE', taxiX(f), 206, 9, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center', color: '#7fe08a' }); }
   });
   withAlpha('passant', () => {
     const w = walker(f), st = Math.sin(TAU * f / 8) * 4;
@@ -52,13 +52,13 @@ function drawStrasse(f) {
 
 /* ---------- Park: autonomer Shuttlebus öffnet die Tür noch einmal (Bild 34–48), Kehrmaschine auf dem Weg ---------- */
 function shuttleX(f) {
-  if (f < 12) return lerp(-140, 300, ease(seg(f, 0, 12)));
+  if (f < 12) return lerp(-180, 300, ease(seg(f, 0, 12)));
   if (f < 52) return 300;
-  return lerp(300, 820, ease(seg(f, 52, 60)));
+  return lerp(300, 840, ease(seg(f, 52, 60)));
 }
 const doorOpen = f => Math.max(f >= 14 && f < 34 ? Math.min(1, seg(f, 14, 18)) - seg(f, 30, 34) : 0, f >= 40 && f < 52 ? Math.min(1, seg(f, 40, 43)) - seg(f, 48, 52) : 0);
-function guest1(f) { if (f < 14) return { x: lerp(-30, 190, seg(f, 0, 14)), v: true }; if (f < 20) return { x: 190, v: true }; if (f < 28) return { x: lerp(190, 312, seg(f, 20, 28)), v: true, alpha: 1 - seg(f, 25, 28) }; return { v: false }; }
-function guest2(f) { if (f < 30) return { v: false }; if (f < 44) return { x: lerp(-30, 280, seg(f, 30, 44)), v: true, run: true }; if (f < 48) return { x: lerp(280, 312, seg(f, 44, 48)), v: true, alpha: 1 - seg(f, 45, 48) }; return { v: false }; }
+function guest1(f) { if (f < 14) return { x: lerp(-30, 190, seg(f, 0, 14)), v: true }; if (f < 20) return { x: 190, v: true }; if (f < 28) return { x: lerp(190, 340, seg(f, 20, 28)), v: true, alpha: 1 - seg(f, 25, 28) }; return { v: false }; }
+function guest2(f) { if (f < 30) return { v: false }; if (f < 44) return { x: lerp(-30, 280, seg(f, 30, 44)), v: true, run: true }; if (f < 48) return { x: lerp(280, 340, seg(f, 44, 48)), v: true, alpha: 1 - seg(f, 45, 48) }; return { v: false }; }
 const sweeperX = f => 120 + 360 * (0.5 - 0.5 * Math.cos(TAU * f / 60));
 
 // Gartenroboter am Hochbeet: fährt von Pflanze zu Pflanze, gießt, und drückt am Ende ein Unkraut in die Erde
@@ -102,20 +102,25 @@ function drawPark(f) {
 
   heldDraw('kehr', f, f => {
     const x = sweeperX(f);
+    ctx.save(); ctx.translate(x, 354); ctx.scale(1.9, 1.9); ctx.translate(-x, -354);
     box(x - 22, 330, 44, 18, '#e6e3da', 5);
     circle(x - 14, 350, 4, '#2d2f33'); circle(x + 14, 350, 4, '#2d2f33');
     for (const s of [-1, 1]) { ctx.save(); ctx.translate(x + s * 24, 348); ctx.rotate(TAU * f / 6 * s); for (let i = 0; i < 6; i++) line(0, 0, Math.cos(i) * 6, Math.sin(i) * 3, '#d9542b', 1.2); ctx.restore(); }
     box(x - 6, 320, 12, 10, '#3b3d40', 2, 1); circle(x, 318, 2, f % 6 < 3 ? '#ff8a24' : '#8a4a1c', null);
+    ctx.restore();
   });
   withAlpha('shuttle', () => {
+    // autonomer Kleinbus in echter Größe: 4 m lang, 2,75 m hoch, Platz für etwa 12 Fahrgäste
     const x = shuttleX(f), d = doorOpen(f);
-    box(x - 80, 270, 160, 92, '#3e6f9e', 14);
-    ctx.fillStyle = '#9fc4d6'; for (const wx of [-66, -28, 34]) ctx.fillRect(x + wx, 284, 30, 36);
-    box(x - 4, 284, 32 * (1 - d) + 2, 72, '#2f5880', 2, 1.2);
-    for (const dx of [-50, 50]) { circle(x + dx, 364, 12, '#2d2f33'); circle(x + dx, 364, 4, '#8a8f94', null); }
-    box(x - 14, 260, 28, 10, '#2a2723', 3, 1.2);
-    box(x + 62, 300, 14, 10, '#ffd23f', 2, 1);
-    if (f >= 38 && f < 44) text('Sensor: Person', x, 252, 10, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center', color: '#3e6f9e' });
+    box(x - 138, 184, 276, 178, '#3e6f9e', 24);
+    ctx.fillStyle = '#9fc4d6'; for (const [wx, ww] of [[-124, 64], [-54, 60]]) ctx.fillRect(x + wx, 204, ww, 92);
+    ctx.fillRect(x + 92, 204, 34, 92);
+    ctx.fillStyle = '#20384f'; ctx.fillRect(x + 14, 206, 72, 150);
+    box(x + 14 - 34 * d, 206, 36, 150, '#2f5880', 2, 1.2); box(x + 50 + 34 * d, 206, 36, 150, '#2f5880', 2, 1.2);
+    for (const dx of [-90, 90]) { circle(x + dx, 364, 20, '#2d2f33'); circle(x + dx, 364, 7, '#8a8f94', null); }
+    box(x - 18, 170, 36, 14, '#2a2723', 3, 1.2);
+    box(x + 124, 318, 14, 12, '#ffd23f', 2, 1); box(x - 138, 318, 8, 12, '#d9342b', 1, 1);
+    if (f >= 38 && f < 44) text('Sensor: Person', x, 160, 11, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center', color: '#3e6f9e' });
   });
   withAlpha('fahrgast', () => {
     const a = guest1(f), b = guest2(f);
@@ -133,7 +138,7 @@ registerRoom({
       echt: 'Realistisch. In Deutschland fahren Robotaxis bisher nur in Tests, meist mit einer Sicherheitsperson an Bord.',
       note: 'Wartet am Zebrastreifen geduldig, bis der Fußgänger drüben ist.', color: '#f3f1ea',
       quelle: 'https://en.wikipedia.org/wiki/Robotaxi',
-      box: f => [STX + taxiX(f) - 64, STY + 250, 128, 90] },
+      box: f => [STX + taxiX(f) - 138, STY + 222, 276, 118] },
     { id: 'gehweg', name: 'Lieferroboter auf dem Gehweg', bereich: 'Logistik', aera: 'seit den 2010ern', typ: 'Sechsrädriger Lieferroboter',
       fakt: 'Kleine Lieferroboter fahren im Schritttempo über Gehwege und bringen Pakete oder Essen. Der Paketdienst Hermes hat solche Roboter auch in Hamburg getestet.',
       echt: 'Realistisch. Ampeln und Bordsteine sind für sie die schwierigsten Stellen.',
@@ -147,8 +152,8 @@ registerRoom({
   draw: drawStrasse,
   glow(f) {
     glow(73, 156, 70, 'rgba(255,224,150,0.75)'); glow(395, f >= 20 && f < 40 ? 244 : 230, 18, f >= 20 && f < 40 ? 'rgba(127,224,138,0.9)' : 'rgba(255,80,60,0.9)');
-    const x = taxiX(f); ctx.save(); ctx.globalAlpha = 0.5; ctx.fillStyle = '#fff3c4'; ctx.beginPath(); ctx.moveTo(x + 52, 318); ctx.lineTo(x + 190, 300); ctx.lineTo(x + 190, 346); ctx.closePath(); ctx.fill(); ctx.restore();
-    glow(x + 54, 320, 14, 'rgba(255,243,196,0.95)');
+    const x = taxiX(f); ctx.save(); ctx.globalAlpha = 0.5; ctx.fillStyle = '#fff3c4'; ctx.beginPath(); ctx.moveTo(x + 134, 298); ctx.lineTo(x + 280, 284); ctx.lineTo(x + 280, 330); ctx.closePath(); ctx.fill(); ctx.restore();
+    glow(x + 134, 300, 14, 'rgba(255,243,196,0.95)');
   },
 });
 registerRoom({
@@ -160,12 +165,12 @@ registerRoom({
       echt: 'Realistisch, auch das Wiederöffnen der Tür. An Bord fährt eine Begleitperson mit, die im Notfall eingreifen kann.',
       note: 'Sieht den Nachzügler kommen und öffnet die Tür noch einmal.', color: '#3e6f9e',
       quelle: 'https://www.deutschebahn.com/de/Digitalisierung/Smart-Mobility/Erstes-autonomes-Fahrzeug-auf-oeffentlichen-Strassen-3244104',
-      box: f => [PKX + shuttleX(f) - 82, PKY + 258, 164, 112] },
+      box: f => [PKX + shuttleX(f) - 140, PKY + 168, 280, 216] },
     { id: 'kehr', quelle: 'https://en.wikipedia.org/wiki/Street_sweeper', name: 'Autonome Kehrmaschine', bereich: 'Umwelt', aera: 'Erprobung', typ: 'Kleine Kehrmaschine ohne Fahrer',
       fakt: 'Kleine autonome Kehrmaschinen werden in mehreren Städten erprobt. Sie fahren früh am Morgen über Wege und Plätze und kehren mit rotierenden Bürsten Laub und Müll zusammen.',
       echt: 'Bisher meist Pilotprojekte. Große Straßen kehren weiterhin Menschen mit Kehrfahrzeugen.',
       note: 'Fährt den Parkweg auf und ab.', color: '#e6e3da',
-      box: f => [PKX + sweeperX(f) - 30, PKY + 312, 60, 44] },
+      box: f => [PKX + sweeperX(f) - 58, PKY + 270, 116, 90] },
     { id: 'gartenbot', name: 'Gartenroboter', bereich: 'Landwirtschaft', aera: 'seit 2016', typ: 'Portalroboter über dem Hochbeet',
       quelle: 'https://agritechobservatory.review.fao.org/en/farmbot',
       fakt: 'FarmBot aus den USA ist ein Gartenroboter, dessen Baupläne und Software frei im Internet stehen. Ein Portal fährt auf Schienen über das Hochbeet, der Kopf darunter sät, gießt jede Pflanze einzeln und drückt Unkraut in die Erde. Es gibt ihn seit 2016, viele Schulen und Gemeinschaftsgärten bauen ihn selbst nach.',
@@ -179,7 +184,7 @@ registerRoom({
   draw: drawPark,
   glow(f) {
     for (const x of [190, 265, 340]) glow(x, 240, 40, 'rgba(255,224,150,0.6)');
-    const x = shuttleX(f); glow(x + 76, 330, 16, 'rgba(255,243,196,0.95)'); glow(x - 76, 330, 10, 'rgba(255,80,60,0.8)');
+    const x = shuttleX(f); glow(x + 132, 324, 18, 'rgba(255,243,196,0.95)'); glow(x - 134, 324, 12, 'rgba(255,80,60,0.8)');
     glow(gardenX(f) + 10, 236, 8, 'rgba(127,224,138,0.9)');
   },
 });

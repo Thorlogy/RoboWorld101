@@ -83,7 +83,7 @@ function drawTunnel(f) {
     box(TU_DOOR.x - 34, TU_DOOR.y - 30, 68, 22, '#2f8f4e', 2, 1.5);
     text('NOTAUSGANG', TU_DOOR.x, TU_DOOR.y - 15, 10, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center', color: '#ffffff' });
     const k = window.secretKnocks || 0;
-    for (let i = 0; i < k && !state.secret; i++) circle(TU_DOOR.x - 12 + i * 12, TU_DOOR.y + 20, 3, '#f0b429', null);
+    for (let i = 0; i < k; i++) circle(TU_DOOR.x - 12 + i * 12, TU_DOOR.y + 20, 3, state.secret ? '#7fd3ff' : '#f0b429', null);
   });
   // Signal: grün, solange der Zug durchfährt
   const go = gg >= 396 || gg < 20;
