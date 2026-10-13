@@ -178,7 +178,7 @@ registerRoom({
       fakt: 'Ein klassisches Hindernis für Mähroboter. Viele Geräte erkennen es per Stoßsensor, also erst nach dem Zusammenstoß.',
       note: 'Wackelt. Hält aber durch.', color: '#d9542b',
       box: () => [WX + 218, WY + 282, 30, 66] },
-    { id: 'fenster', echt: 'Realistisch, inklusive Sicherungsleine.', name: 'Fensterputzroboter', bereich: 'Haushalt', aera: 'seit den 2010ern', typ: 'Saugt sich an der Scheibe fest',
+    { id: 'fenster', quelle: 'https://de.wikipedia.org/wiki/Fensterputzroboter', echt: 'Realistisch, inklusive Sicherungsleine.', name: 'Fensterputzroboter', bereich: 'Haushalt', aera: 'seit den 2010ern', typ: 'Saugt sich an der Scheibe fest',
       fakt: 'Fensterputzroboter halten sich mit Unterdruck an der Scheibe fest und fahren sie in Bahnen ab. Eine Sicherungsleine fängt sie auf, falls der Strom ausfällt.',
       note: 'Putzt jede Runde dasselbe Fenster. Die Flecken bleiben trotzdem.', color: '#3b3d40',
       box: f => { const w = winBot(f); return [WX + w.x - 20, WY + w.y - 16, 40, 32]; } },

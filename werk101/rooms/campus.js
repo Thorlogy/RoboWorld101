@@ -94,6 +94,24 @@ function drawHalle2(f) {
   [[160, '#d9542b'], [240, '#3e6f9e'], [320, '#f0b429']].forEach(([x, c]) => { ctx.beginPath(); ctx.moveTo(x - 10, 218); ctx.lineTo(x + 10, 218); ctx.lineTo(x + 14, 262); ctx.lineTo(x - 14, 262); ctx.closePath(); paint(c, INK, 1.2); });
   box(380, 110, 200, 54, '#f3f1ea', 3, 1.5); text('Willkommen', 480, 136, 20, { family: '"Saira Condensed", sans-serif', weight: 700, align: 'center' }); text('Schule 102', 480, 156, 13, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center', color: '#5d5a55' });
   c2Title('HALLE', 470);
+  // Plakat: Fühlen – Denken – Handeln
+  withAlpha('grundidee', () => {
+    const M = { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center' }, S = { family: '"Saira Condensed", sans-serif', weight: 700, align: 'center' };
+    box(108, 84, 256, 108, '#fbfaf6', 2, 1.5);
+    for (const [x, y] of [[112, 84], [356, 84]]) { ctx.fillStyle = 'rgba(240,180,41,0.6)'; ctx.fillRect(x - 6, y - 5, 14, 9); }
+    text('So arbeitet jeder Roboter', 236, 100, 11, M);
+    const lit = Math.floor(f / 20);
+    [['FÜHLEN', '#3e6f9e', 'Sensoren'], ['DENKEN', '#f0b429', 'Rechner'], ['HANDELN', '#5f9a4a', 'Motoren']].forEach(([t, c], i) => {
+      const x = 152 + i * 84;
+      box(x - 34, 108, 68, 66, i === lit ? c : '#ece4d6', 3, 1.2);
+      if (i === 0) { ctx.beginPath(); ctx.ellipse(x, 132, 16, 9, 0, 0, TAU); paint('#f3f1ea', INK, 1.2); circle(x, 132, 5, '#23384d', null); }
+      if (i === 1) { box(x - 12, 120, 24, 24, '#3b3d40', 2, 1); for (let k = 0; k < 3; k++) { line(x - 8 + k * 8, 116, x - 8 + k * 8, 120, INK, 1.5); line(x - 8 + k * 8, 144, x - 8 + k * 8, 148, INK, 1.5); } }
+      if (i === 2) { circle(x - 6, 140, 8, '#3b3d40', INK, 1); line(x - 6, 140, x + 6 + 4 * Math.sin(f * TAU / 20), 122, INK, 3); circle(x + 6 + 4 * Math.sin(f * TAU / 20), 122, 3, '#d9542b', INK, 1); }
+      text(t, x, 162, 12, S);
+      if (i < 2) { line(x + 36, 141, x + 48, 141, INK, 2); ctx.beginPath(); ctx.moveTo(x + 50, 141); ctx.lineTo(x + 44, 137); ctx.lineTo(x + 44, 145); ctx.closePath(); paint(INK, null); }
+    });
+    text('Sensoren  ·  Rechner  ·  Motoren', 236, 186, 9, M);
+  });
   // Uhr, Bilderwand „Unsere Roboter“, Pflanze, Schließfächer
   c2Clock(60, 150);
   text('Unsere Roboter', 470, 196, 12, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center' });
@@ -277,10 +295,16 @@ function drawInfo(f) {
 const C2Q = 'https://en.wikipedia.org/wiki/';
 registerRoom({
   key: 'halle2', name: 'Schule: Eingangshalle', level: 'Schule EG',
-  hitOrder: ['schrubber', 'pepper'],
+  hitOrder: ['schrubber', 'pepper', 'grundidee'],
   robots: [
+    { id: 'grundidee', name: 'Plakat: Fühlen, Denken, Handeln', bereich: 'Wissen', aera: 'Grundidee', typ: 'Wie ein Roboter funktioniert',
+      fakt: 'Jeder Roboter in dieser Welt macht dieselben drei Dinge immer wieder. Fühlen: Sensoren wie Kameras, Lidar oder Tastschalter messen, was um ihn herum los ist. Denken: Ein Rechner entscheidet, was als Nächstes passieren soll. Handeln: Motoren drehen Räder, bewegen Arme oder Greifer. Dann beginnt alles von vorn, oft viele Male pro Sekunde.',
+      echt: 'So erklären es auch Lehrbücher. Ein Toaster misst und schaltet zwar auch, aber erst wenn ein Gerät sich selbst in der Welt bewegt oder etwas greift, nennt man es meist Roboter. Probier es aus: Bei jedem Roboter hier kannst du suchen, wo seine Sensoren sitzen.',
+      note: 'Das farbige Feld wandert: erst fühlen, dann denken, dann handeln.', color: '#3e6f9e',
+      quelle: 'https://en.wikipedia.org/wiki/Robotic_paradigm',
+      box: () => [c2X('halle2') + 104, c2Y('halle2') + 78, 264, 116] },
     { id: 'pepper', name: 'Pepper', bereich: 'Bildung', aera: '2014 bis 2021 gebaut', typ: 'Empfangsroboter mit Tablet',
-      fakt: 'Pepper ist 1,20 Meter groß und rollt auf drei Rädern. Er erkennt Gesichter, spricht Besucher an und zeigt auf dem Tablet an seiner Brust Informationen. Schulen und Unis nutzen ihn auch, um Programmieren zu lernen.',
+      fakt: 'Derselbe Robotertyp wie am Empfang im Erdgeschoss, hier aber im Unterricht: Schülerinnen und Schüler programmieren ihm am Laptop Begrüßungen, Gesten und kleine Quizfragen. So sieht man sofort, ob das eigene Programm funktioniert.',
       echt: 'Echt, aber Gespräche versteht Pepper nur in einfachen Bahnen. Gebaut wird er seit 2021 nicht mehr, viele sind aber noch im Einsatz.',
       note: 'Begrüßt jeden in der Halle und winkt. Danach fragt er, ob jemand Hilfe braucht.', color: '#f3f1ea',
       quelle: 'https://en.wikipedia.org/wiki/Pepper_(robot)',

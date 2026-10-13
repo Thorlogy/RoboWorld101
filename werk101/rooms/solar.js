@@ -32,10 +32,35 @@ function spModule(x, y, w) {
   ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + w, y); ctx.lineTo(x + w - 6, y + 12); ctx.lineTo(x - 6, y + 12); ctx.closePath(); paint('#23384d', INK, 1.2);
   line(x + w / 2, y, x + w / 2 - 3, y + 12, 'rgba(127,211,255,0.45)', 1);
 }
+/* ---------- Hochspannungsleitung mit Leitungsroboter: fährt auf dem Seil und prüft es (läuft mit state.g) ---------- */
+const PY_A = 70, PY_B = 570, PY_TOP = 44;
+const sagY = x => PY_TOP + 16 + 28 * Math.sin(Math.PI * (x - PY_A) / (PY_B - PY_A));
+function pylon(x) {
+  const b = 330;
+  line(x - 26, b, x - 6, PY_TOP + 10, '#7d8285', 3); line(x + 26, b, x + 6, PY_TOP + 10, '#7d8285', 3);
+  for (let y = b - 30; y > PY_TOP + 30; y -= 36) { const w = 6 + 20 * (y - PY_TOP) / (b - PY_TOP); line(x - w, y, x + w, y - 36, '#7d8285', 1.2); line(x + w, y, x - w, y - 36, '#7d8285', 1.2); }
+  line(x - 34, PY_TOP + 14, x + 34, PY_TOP + 14, '#7d8285', 3); line(x, PY_TOP + 14, x, PY_TOP - 8, '#7d8285', 2);
+  for (const dx of [-30, 30]) line(x + dx, PY_TOP + 14, x + dx, PY_TOP + 22, '#c9ccc8', 3);
+}
+const lineBotX = g => { const t = (g % 480) / 480; return PY_A + 40 + (PY_B - PY_A - 80) * (0.5 - 0.5 * Math.cos(TAU * t)); };
+function drawPowerLine(g) {
+  pylon(PY_A); pylon(PY_B);
+  for (const dx of [-30, 30]) {
+    ctx.beginPath(); for (let x = PY_A; x <= PY_B; x += 10) { const y = sagY(x) + 6; x === PY_A ? ctx.moveTo(x + dx, y) : ctx.lineTo(x + dx, y); }
+    ctx.strokeStyle = '#4a4d52'; ctx.lineWidth = 1.5; ctx.stroke();
+  }
+  withAlpha('leitungsroboter', () => {
+    const x = lineBotX(g), y = sagY(x - 30) + 6;
+    circle(x - 38, y - 2, 4, '#3b3d40', INK, 1); circle(x - 22, y - 2, 4, '#3b3d40', INK, 1);
+    box(x - 44, y + 2, 28, 14, '#f0b429', 3, 1.2); circle(x - 30, y + 18, 3, '#23384d', INK, 1);
+    if (Math.floor(g / 4) % 2) circle(x - 18, y + 8, 1.6, '#ff3b30', null);
+  });
+}
 function drawSolar(f) {
   const g = state.g, gg = g % 480;
   ctx.fillStyle = '#8fbf6c'; ctx.fillRect(0, 330, RW, 70); line(0, 330, RW, 330, INK, 1.5);
   ctx.fillStyle = '#7aae5a'; for (let i = 0; i < 40; i++) { const x = rnd(i + 50) * RW, y = 340 + rnd(i + 55) * 55; ctx.fillRect(x, y, 2, 5); }
+  drawPowerLine(state.g);
   text('SOLARPARK', 300, 70, 34, { family: '"Saira Condensed", sans-serif', weight: 700, color: 'rgba(42,39,35,0.15)' });
   // Senkrechte Module mit Feldstreifen dazwischen (Agri-PV)
   withAlpha('agripv', () => {
@@ -95,7 +120,7 @@ function drawSolar(f) {
 
 registerRoom({
   key: 'solar', name: 'Solarpark', level: 'Außengelände',
-  hitOrder: ['taube', 'thermo', 'maximo', 'speicher', 'agripv'],
+  hitOrder: ['leitungsroboter', 'taube', 'thermo', 'maximo', 'speicher', 'agripv'],
   draw: drawSolar,
   glow(f) {
     glow(240, 300, 18, 'rgba(110,255,130,0.7)');
@@ -103,6 +128,12 @@ registerRoom({
     if (state.wetter !== 'regen') { const d = spDrone(state.g); glow(d.x + 6, d.y - 3, 14, 'rgba(110,255,130,0.8)'); glow(spInsetX(d) + 32, d.y - 39, 34, 'rgba(120,150,255,0.5)'); }
   },
   robots: [
+    { id: 'leitungsroboter', name: 'Leitungsroboter', bereich: 'Energie', aera: 'seit 2006', typ: 'Roboter, der auf dem Stromkabel fährt',
+      fakt: 'Der Roboter rollt auf Rädern über ein Seil der Hochspannungsleitung, während Strom fließt. Mit Kameras und Sensoren findet er gerissene Drähte und Rost und kann kleine Schäden sogar reparieren. Hindernisse wie Halterungen überklettert er.',
+      echt: 'Echt. Ein Stromversorger in Kanada hat ihn entwickelt. Ein Team setzt ihn auf die Leitung, danach steuert ein Mensch ihn aus sicherer Entfernung. Für Menschen wäre diese Arbeit auf dem Seil gefährlich.',
+      note: 'Fährt langsam die Leitung entlang und zurück. Das rote Licht blinkt, damit Hubschrauber ihn sehen.', color: '#f0b429',
+      quelle: 'https://spectrum.ieee.org/linescout-robot-climbs-on-live-power-lines-to-inspect-them',
+      box: () => { const x = lineBotX(state.g); return [SPX + x - 50, SPY + sagY(x - 30) - 10, 40, 36]; } },
     { id: 'maximo', name: 'Installationsroboter für Solarmodule', bereich: 'Energie', aera: 'seit 2024', typ: 'Kettenfahrzeug mit Roboterarm',
       fakt: 'Solarmodule für große Parks wiegen über 30 Kilo, und ein Park braucht Hunderttausende davon. Seit 2024 hebt ein Roboter auf Ketten sie vom Stapel auf seinem Rücken und setzt sie auf das Gestell. Eine Kamera mit KI findet die genaue Stelle. Menschen schrauben die Module danach fest.',
       echt: 'Realistisch, der Roboter wird in den USA eingesetzt. Hier ist er kleiner gezeichnet als in echt.',
@@ -120,12 +151,12 @@ registerRoom({
       echt: 'Echt. Wo ein Vogel sitzt oder etwas fallen lässt, kommt weniger Licht an. Die Stelle wird wärmer, das zeigt die Drohne.',
       note: 'Sitzt seelenruhig auf der hinteren Reihe.', color: '#9aa3ad',
       box: () => [SPX + SP_TAUBE - 12, SPY + 200, 30, 22] },
-    { id: 'speicher', name: 'Batteriespeicher', bereich: 'Energie', aera: 'Technik', typ: 'Container voller Akkus',
+    { id: 'speicher', quelle: 'https://de.wikipedia.org/wiki/Batterie-Speicherkraftwerk', name: 'Batteriespeicher', bereich: 'Energie', aera: 'Technik', typ: 'Container voller Akkus',
       fakt: 'Mittags liefert ein Solarpark oft mehr Strom, als gerade gebraucht wird. Der Speicher nimmt ihn auf und gibt ihn abends wieder ab.',
       echt: 'Echt. Die Anzeige füllt sich tagsüber und leert sich abends.',
       note: 'Kein Roboter, aber ohne ihn gäbe es abends keinen Solarstrom.', color: '#e8e6e0',
       box: () => [SPX + 174, SPY + 278, 78, 54] },
-    { id: 'agripv', name: 'Senkrechte Solarmodule', bereich: 'Landwirtschaft', aera: 'Technik', typ: 'Agri-PV: Strom und Acker auf einer Fläche',
+    { id: 'agripv', quelle: 'https://de.wikipedia.org/wiki/Agri-Photovoltaik', name: 'Senkrechte Solarmodule', bereich: 'Landwirtschaft', aera: 'Technik', typ: 'Agri-PV: Strom und Acker auf einer Fläche',
       fakt: 'Diese Module stehen senkrecht wie ein Zaun und fangen auf beiden Seiten Licht ein. Zwischen den Reihen wächst weiter Getreide, und die Landmaschinen passen hindurch.',
       echt: 'Echt. In Deutschland gibt es solche Anlagen auf Äckern und Weiden.',
       note: 'Steht am Rand zum Feld hin. Daneben wächst das Getreide.', color: '#2a3f55',

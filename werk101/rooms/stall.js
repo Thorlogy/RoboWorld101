@@ -143,7 +143,7 @@ registerRoom({
   key: 'stall', name: 'Gewächshaus und Stall', level: 'EG',
   hitOrder: ['hummel', 'schieber', 'ernte', 'buerste', 'melk', 'kuh'],
   robots: [
-    { id: 'buerste', name: 'Kuhbürste', bereich: 'Landwirtschaft', aera: 'seit den 2000ern', typ: 'Automatische Drehbürste',
+    { id: 'buerste', quelle: 'https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11512368/', name: 'Kuhbürste', bereich: 'Landwirtschaft', aera: 'seit den 2000ern', typ: 'Automatische Drehbürste',
       fakt: 'Automatische Kuhbürsten beginnen sich zu drehen, sobald eine Kuh sie berührt, und hören von selbst wieder auf. Die Kühe schrubben sich damit Rücken, Hals und Kopf.',
       echt: 'Realistisch. Studien zeigen, dass Kühe die Bürste oft und gern benutzen, ähnlich wie Weidetiere sich an Bäumen reiben.',
       note: 'Dreht sich, sobald die Kuh sich dagegen lehnt. Die Kuh schließt dabei die Augen.', color: '#d9542b',

@@ -116,7 +116,7 @@ registerRoom({
       quelle: 'https://en.wikipedia.org/wiki/RoboCup',
       box: () => [SX + 10, SY + 290, 250, 70] },
     { id: 'pingpong', quelle: 'https://www.guinnessworldrecords.com/world-records/411700-first-robot-table-tennis-tutor', echt: 'Tischtennis-Roboter spielen inzwischen gegen Hobbyspieler und gewinnen manche Partie. Gegen Profis verlieren sie noch.', name: 'Tischtennis-Roboter', bereich: 'Forschung', aera: 'seit den 2010ern', typ: 'Roboterarm mit Kamera',
-      fakt: 'Der Tischtennis-Roboter Forpheus des japanischen Herstellers Omron steht seit 2015 als erster Roboter-Tischtennistrainer im Guinness-Buch. Kameras verfolgen den Ball, der Arm stellt den Schläger in Millisekunden ein.',
+      fakt: 'Der Tischtennis-Roboter Forpheus des japanischen Herstellers Omron steht seit 2016 als erster Roboter-Tischtennistrainer im Guinness-Buch. Kameras verfolgen den Ball, der Arm stellt den Schläger in Millisekunden ein.',
       note: 'Verliert keinen Ballwechsel. Gewinnt aber auch keinen.', color: '#e6e3da',
       box: () => [SX + 284, SY + 260, 50, 100] },
     { id: 'spieler', name: 'Tischtennisspieler', bereich: 'Mensch', aera: 'Maßstab', typ: 'Mensch',

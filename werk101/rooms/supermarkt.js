@@ -46,7 +46,7 @@ registerRoom({
   key: 'supermarkt', name: 'Supermarkt', level: 'Ebene 4',
   hitOrder: ['kunde', 'scanner'],
   robots: [
-    { id: 'scanner', name: 'Regal-Scanroboter', bereich: 'Service', aera: 'seit den 2010ern', typ: 'Schmaler Roboter mit vielen Kameras',
+    { id: 'scanner', quelle: 'https://en.wikipedia.org/wiki/Bossa_Nova_Robotics', name: 'Regal-Scanroboter', bereich: 'Service', aera: 'seit den 2010ern', typ: 'Schmaler Roboter mit vielen Kameras',
       fakt: 'Regal-Scanroboter fahren durch die Gänge und fotografieren die Regale von oben bis unten. Eine Software findet leere Fächer, falsch einsortierte Ware und falsche Preisschilder und schickt eine Liste an das Personal.',
       echt: 'Realistisch. Auffüllen muss weiterhin ein Mensch, der Roboter meldet nur.',
       note: 'Findet die Lücke, die der Lieferroboter beim Einkaufen gerissen hat.', color: '#f3f1ea',
