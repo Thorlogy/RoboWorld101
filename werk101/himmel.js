@@ -253,11 +253,11 @@ registerRunner({
 });
 const issPos = g => { g %= RUN_P; if (g < 120 || g >= 260) return null; const t = seg(g, 120, 260); return { x: lerp(6200, -4200, t), y: -520 - 20 * Math.sin(Math.PI * t) }; };
 registerRunner({
-  room: 'iss',
+  room: 'satellit',
   draw() {},
   glow(g) { const p = issPos(g); if (p) { glow(p.x, p.y, 40, 'rgba(255,255,255,0.95)'); circle(p.x, p.y, 6, '#ffffff', null); } },
   robot: { id: 'issflug', name: 'Raumstation am Abendhimmel', bereich: 'Raumfahrt', aera: 'seit 1998', typ: 'Internationale Raumstation ISS',
-    fakt: 'Die Internationale Raumstation umrundet die Erde in etwa 90 Minuten. Abends sieht man sie als hellen Punkt, der nicht blinkt und gleichmäßig über den Himmel zieht. An Bord arbeiten Roboterarme und kleine fliegende Roboter, wie unten in der Raumstation-Übungshalle.',
+    fakt: 'Die Internationale Raumstation umrundet die Erde in etwa 90 Minuten. Abends sieht man sie als hellen Punkt, der nicht blinkt und gleichmäßig über den Himmel zieht. An Bord arbeiten ein großer Roboterarm und kleine fliegende Würfelroboter.',
     echt: 'Echt, nur viel langsamer: In echt dauert ein Überflug einige Minuten. Flugzeuge blinken, die Raumstation nicht.',
     note: 'Zieht ab und zu als heller Punkt vorbei, nur bei „Abend“.', color: '#ffffff',
     quelle: 'https://en.wikipedia.org/wiki/International_Space_Station',

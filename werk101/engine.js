@@ -31,7 +31,36 @@ function drawHolds() {
 const H2 = { x: rx(4) - WALL, y: ry(5) - WALL, w: 2 * (RW + WALL) + WALL, h: 2 * (RH + WALL) + WALL };
 // Haus 3: Halle 103, eine fensterlose Fabrikhalle mit einem Raum
 const H3 = { x: rx(6.5) - WALL, y: ry(6) - WALL, w: RW + 2 * WALL, h: RH + 2 * WALL };
-const HOUSES = [{ x: 0, y: TOP - 140, w: BW, h: GROUND - TOP + 140 }, { x: H2.x, y: H2.y - 120, w: H2.w, h: GROUND - H2.y + 120 }, { x: H3.x - 12, y: H3.y - 60, w: H3.w + 24, h: GROUND - H3.y + 60 }];
+const H4 = { x: rx(8) - WALL, y: ry(6) - WALL, w: 2 * (RW + WALL) + WALL, h: RH + 2 * WALL };
+const RZ_MAST = { x: (rx(6.5) + RW + WALL + H4.x) / 2, top: GROUND - 420 }, RZ_DISH = { x: H4.x + 70, y: H4.y - 40 };
+const HOUSES = [{ x: 0, y: TOP - 140, w: BW, h: GROUND - TOP + 140 }, { x: H2.x, y: H2.y - 120, w: H2.w, h: GROUND - H2.y + 120 }, { x: H3.x - 12, y: H3.y - 60, w: H3.w + 24, h: GROUND - H3.y + 60 }, { x: H4.x - 12, y: H4.y - 70, w: H4.w + 24, h: GROUND - H4.y + 70 }];
+// Haus 4: Rechenzentrum ohne Fenster, Rückkühler auf dem Dach, Satellitenschüssel; daneben ein Funkmast
+function drawRZ(f) {
+  ctx.fillStyle = '#a3a8a6'; ctx.fillRect(H4.x, H4.y, H4.w, H4.h);
+  for (let x = H4.x + 40; x < H4.x + H4.w; x += 80) line(x, H4.y, x, H4.y + H4.h, 'rgba(42,39,35,0.12)', 2);
+  ctx.strokeStyle = INK; ctx.lineWidth = 3; ctx.strokeRect(H4.x, H4.y, H4.w, H4.h);
+  ctx.fillStyle = '#5f5b55'; ctx.fillRect(H4.x - 12, H4.y - 10, H4.w + 24, 14);
+  for (let i = 0; i < 4; i++) {
+    const x = H4.x + 220 + i * 230;
+    box(x, H4.y - 44, 170, 34, '#8a8f94', 2, 1.5);
+    for (const dx of [42, 128]) {
+      circle(x + dx, H4.y - 27, 13, '#3b3d40', INK, 1.5);
+      ctx.save(); ctx.translate(x + dx, H4.y - 27); ctx.rotate(f * 0.8 + i); for (let b = 0; b < 4; b++) { ctx.rotate(TAU / 4); line(0, 0, 11, 0, '#c9ccc8', 2); } ctx.restore();
+    }
+  }
+  // Satellitenschüssel
+  line(RZ_DISH.x, H4.y - 10, RZ_DISH.x, RZ_DISH.y + 6, INK, 3);
+  ctx.save(); ctx.translate(RZ_DISH.x, RZ_DISH.y); ctx.rotate(-0.6); ctx.beginPath(); ctx.ellipse(0, 0, 26, 9, 0, 0, Math.PI); ctx.closePath(); paint('#e6e3da'); line(0, 0, 0, -22, INK, 1.5); ctx.restore();
+  box(H4.x + H4.w - 236, H4.y - 58, 216, 40, '#2a2723');
+  text('RECHENZENTRUM', H4.x + H4.w - 128, H4.y - 28, 28, { family: '"Saira Condensed", sans-serif', weight: 700, align: 'center', color: '#f3efe4' });
+  // Funkmast (Gittermast mit Antennen)
+  const m = RZ_MAST, b = GROUND;
+  line(m.x - 26, b, m.x - 5, m.top + 30, '#5d6064', 4); line(m.x + 26, b, m.x + 5, m.top + 30, '#5d6064', 4);
+  for (let y = b - 30; y > m.top + 40; y -= 34) { const w = 5 + 21 * (y - m.top) / (b - m.top); line(m.x - w, y, m.x + w, y - 34, '#5d6064', 1.5); line(m.x + w, y, m.x - w, y - 34, '#5d6064', 1.5); }
+  line(m.x, m.top + 30, m.x, m.top, '#5d6064', 3);
+  for (const dx of [-14, 0, 14]) box(m.x + dx - 4, m.top + 6, 8, 26, '#e6e3da', 1, 1.2);
+  circle(m.x, m.top - 2, 3.5, '#d9342b', null);
+}
 function drawHalle() {
   ctx.fillStyle = '#7f8a8f'; ctx.fillRect(H3.x, H3.y, H3.w, H3.h);
   ctx.strokeStyle = INK; ctx.lineWidth = 3; ctx.strokeRect(H3.x, H3.y, H3.w, H3.h);
@@ -236,6 +265,17 @@ function draw() {
       ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.strokeRect(x, y, RW, RH);
     }
   }
+  // Haus 4: Rechenzentrum
+  if (visible(RZ_MAST.x - 40, H4.y - 420, H4.x + H4.w - RZ_MAST.x + 60, H4.h + 420)) {
+    drawRZ(f);
+    for (const room of ROOMS) {
+      if (room.haus !== 4) continue;
+      const x = rx(room.c), y = ry(room.r), def = BUILT.find(d => d.key === room.built);
+      if (!def || !visible(x, y, RW, RH)) continue;
+      ctx.save(); ctx.beginPath(); ctx.rect(x, y, RW, RH); ctx.clip(); ctx.translate(x, y); def.draw(f); ctx.restore();
+      ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.strokeRect(x, y, RW, RH);
+    }
+  }
   if (visible(SHAFT_X, ry(0), SHAFT, BOTTOM)) drawShaft(f);
   RUNNERS.forEach(r => r.draw(state.g));
   drawHolds();
@@ -250,6 +290,7 @@ function draw() {
     }
     RUNNERS.forEach(r => r.glow && r.glow(state.g));
   }
+  if (state.netz && typeof drawNetz === 'function') drawNetz(vx0, vy0, vx1, vy1);
 
   const sel = state.sel && byId[state.sel];
   if (sel) {
@@ -346,6 +387,7 @@ canvas.addEventListener('pointerdown', e => { state.ptr = { x: (e.clientX - stat
 canvas.addEventListener('wheel', e => { e.preventDefault(); zoomAt(Math.exp(-e.deltaY * 0.0015), e.clientX, e.clientY); }, { passive: false });
 window.addEventListener('keydown', e => {
   if (e.target.closest && e.target.closest('button') && (e.key === ' ' || e.key === 'Enter')) return;
+  if (e.target.closest && e.target.closest('input, textarea')) return;
   const cx = (canvas.clientWidth - panelWidth()) / 2, cy = canvas.clientHeight / 2;
   if (e.key === '+' || e.key === '=') zoomAt(1.25, cx, cy);
   else if (e.key === '-') zoomAt(0.8, cx, cy);
@@ -370,7 +412,7 @@ BUILT.forEach(o => {
 });
 const OPEN_ROOMS = ROOMS.filter(o => !o.secret), OPEN_BUILT = BUILT.filter(d => !roomOf(d.key) || !roomOf(d.key).secret);
 document.querySelector('.bar i').style.width = (OPEN_BUILT.length / OPEN_ROOMS.length * 100).toFixed(1) + '%';
-document.getElementById('progressText').textContent = OPEN_BUILT.length === OPEN_ROOMS.length ? `Alle ${OPEN_ROOMS.length} Räume gebaut. Unterwegs sind außerdem Lieferroboter, Fassadendrohne, Rohrpost und ein Paket vom Hafen bis in den Wohnbereich. Draußen: Straße, Park, Feld, Energiepark, Solarpark, Schulweg, U-Bahn mit Tunnel und eine Tunnelbaustelle. Rechts stehen die Schule 102 und die Halle 103, eine Fabrik, in der das Licht aus ist. Am Himmel fliegen Flugtaxis und Lieferdrohnen.` : `${OPEN_BUILT.length} von ${OPEN_ROOMS.length} Räumen gebaut. Der Rest ist Baustelle.`;
+document.getElementById('progressText').textContent = OPEN_BUILT.length === OPEN_ROOMS.length ? `Alle ${OPEN_ROOMS.length} Räume gebaut. Unterwegs sind außerdem Lieferroboter, Fassadendrohne, Rohrpost und ein Paket vom Hafen bis in den Wohnbereich. Draußen: Straße, Park, Feld, Energiepark, Solarpark, Schulweg, U-Bahn mit Tunnel und eine Tunnelbaustelle. Rechts stehen die Schule 102, die Halle 103, eine Fabrik, in der das Licht aus ist, und das Rechenzentrum. Am Himmel fliegen Flugtaxis und Lieferdrohnen. Der Knopf „Datennetz“ zeigt, wie die Häuser Daten austauschen.` : `${OPEN_BUILT.length} von ${OPEN_ROOMS.length} Räumen gebaut. Der Rest ist Baustelle.`;
 FILTERS.forEach(name => {
   const b = document.createElement('button'); b.type = 'button'; b.textContent = name;
   b.setAttribute('aria-pressed', String(name === 'Alle'));
@@ -520,9 +562,18 @@ function unlockSecret() {
   if (t) { t.textContent = 'Geheimer Raum entdeckt!'; t.classList.add('on'); setTimeout(() => t.classList.remove('on'), 2600); }
   if (key) setTimeout(() => { state.room = key; state.sel = null; renderPanel(); fitRoom(key, true); }, 700);
 }
+// noch einmal dreimal klopfen: die geheimen Räume verschwinden wieder
+function lockSecret() {
+  state.secret = false; state.dirty = true; window.secretKnocks = 0;
+  try { localStorage.removeItem('werk101-geheim'); } catch (e) {}
+  ROOMS.filter(o => o.secret).forEach(o => { const b = document.querySelector(`#rooms button[data-key="${o.built}"]`); if (b) b.hidden = true; });
+  if (state.sel && byId[state.sel] && roomOf(byId[state.sel].room) && roomOf(byId[state.sel].room).secret) select(null, false);
+  const t = document.querySelector('.toast');
+  if (t) { t.textContent = 'Geheime Räume sind wieder versteckt.'; t.classList.add('on'); setTimeout(() => t.classList.remove('on'), 2600); }
+  const r = roomOf(state.room); if (r && r.secret) { state.room = 'tunnel'; renderPanel(); }
+}
 function knock() {
-  if (state.secret) return;
   window.secretKnocks = (window.secretKnocks || 0) + 1; state.dirty = true;
-  if (window.secretKnocks >= 3) unlockSecret();
+  if (window.secretKnocks >= 3) { window.secretKnocks = 0; if (state.secret) lockSecret(); else unlockSecret(); }
 }
 if (state.secret) document.querySelectorAll('#rooms button').forEach(b => { b.hidden = false; });

@@ -7,7 +7,7 @@
     { text: 'Finde vier Tiere', ids: ['katze', 'moewe', 'hafenmoewe', 'kanarie', 'ratte', 'hummel', 'kuh', 'fisch', 'kraehe', 'schaf', 'igel', 'motte', 'taube', 'ammonit'], need: 4 },
     { text: 'Finde zwei Fahrzeuge, die Menschen ohne Fahrer befördern', ids: ['shuttle', 'robotaxi', 'taxi2', 'ubahn', 'flugtaxi', 'flugtaxi2'], need: 2 },
     { text: 'Finde die Schulklasse', ids: ['klasse'], need: 1 },
-    { text: 'Finde drei Roboter in der Schule 102', ids: ['schrubber', 'robocup', 'av1', 'calliope', 'beebot', 'schuldrucker', 'codeon'], need: 3 },
+    { text: 'Finde drei Roboter in der Schule 102', ids: ['schrubber', 'robocup', 'av1', 'calliope', 'beebot', 'schuldrucker', 'codeon', 'nao', 'bausteinbot', 'fischertechnik', 'pepper'], need: 3 },
     { text: 'Finde drei Roboter, die draußen für Essen oder Strom arbeiten', ids: ['jaeter', 'putz', 'blatt', 'ernte', 'schieber', 'gartenbot', 'maximo'], need: 3 },
     { text: 'Mach in der dunklen Fabrik das Licht an', ids: ['lichtschalter'], need: 1 },
     { text: 'Stell den Abend ein und finde die Raumstation und die Satellitenkette', ids: ['issflug', 'satkette'], need: 2 },
@@ -18,6 +18,10 @@
     { text: 'Finde beide Stellen mit der roten Socke', ids: ['saug', 'sortierer'], need: 2 },
     { text: 'Finde drei Roboter, die Pakete oder Waren bringen', ids: ['liefer', 'gehweg', 'paket', 'regal', 'sortier', 'transporter', 'automat', 'pflege', 'paketbote', 'entlader'], need: 3 },
     { text: 'Folge dem Paket: Finde den Roboter, der es vom Stapel hebt, den, der es bringt, und wer es bekommt', ids: ['entlader', 'paketbote', 'opa'], need: 3 },
+    { text: 'Finde drei Sensoren, mit denen Roboter ihre Umgebung messen', ids: ['lidar', 'ultraschall', 'sensorkamera', 'infrarot', 'radar'], need: 3 },
+    { text: 'Finde drei Arten, wie Roboter lernen', ids: ['greiffarm', 'laufsim', 'vierbeiner', 'aloha'], need: 3 },
+    { text: 'Finde im Rechenzentrum den Agenten-Schwarm und den Bandroboter', ids: ['agentenschwarm', 'bandroboter'], need: 2 },
+    { text: 'Finde die drei Robotergesetze, die sich ein Schriftsteller ausgedacht hat', ids: ['asimov'], need: 1 },
     { text: 'Finde den Menschen im Roboterkostüm', ids: ['kostuem'], need: 1 },
   ];
   let found = new Set();
