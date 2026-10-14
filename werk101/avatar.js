@@ -54,6 +54,8 @@ cabinY = g => {
 };
 const avKabine = r => ry(r) + 360 - (CAB_H - 8);
 function avLift(s, dt) {
+  if (!AV.lift && typeof WD !== 'undefined' && (WD.lift || WD.blend)) { if (!AV.wartet) { AV.wartet = 1; avSag('Aufzug besetzt, ich warte kurz.'); } return; }
+  AV.wartet = 0;
   const L = AV.lift || (AV.lift = { ph: 'ruf', y: _cabinY(state.g) });
   const zu = (y, v) => { const d = y - L.y; if (Math.abs(d) <= v * dt) { L.y = y; return true; } L.y += Math.sign(d) * v * dt; return false; };
   if (L.ph === 'ruf') { if (zu(avKabine(AV.row), 900)) L.ph = 'rein'; }
