@@ -129,7 +129,8 @@ registerRunner({
       line(TUBE2_A + 16, TUBE2_Y, TUBE2_A + 16, ry(1) + 36, INK, 1.5);
       box(TUBE2_B - 18, TUBE2_Y - 12, 16, 24, '#8a8f94', 2, 1.5);
       const t = (g + 30) % 60;
-      if (t < 34) box(capsule2X(g) - 10, TUBE2_Y - 5, 20, 10, '#5f9a4a', 5, 1.2);
+      // nachts nur eine Notfall-Sendung pro Runde (welt.js zeigt dazu die Anforderung)
+      if (t < 34 && (typeof istNacht !== 'function' || !istNacht() || (g >= 210 && g < 270))) box(capsule2X(g) - 10, TUBE2_Y - 5, 20, 10, '#5f9a4a', 5, 1.2);
     });
   },
   robot: { id: 'rohrpost2', name: 'Rohrpost für Medikamente', bereich: 'Medizin', aera: 'seit dem 19. Jh.', typ: 'Druckluftrohr mit Kapsel',

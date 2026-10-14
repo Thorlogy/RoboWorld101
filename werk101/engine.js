@@ -400,7 +400,7 @@ function endPointer(e) {
   if (pointers.size < 2) pinch = null;
   if (drag && pointers.size === 0) {
     if (drag.moved <= 4 && typeof avClick === 'function' && avClick(e.clientX, e.clientY, hitAt(e.clientX, e.clientY))) { /* Figur übernimmt den Klick */ }
-    else if (drag.moved <= 4) { const id = hitAt(e.clientX, e.clientY); if (id === 'lichtschalter') state.licht = !state.licht; if (id === 'notausgang') knock(); select(id, false); }
+    else if (drag.moved <= 4) { const id = hitAt(e.clientX, e.clientY); if (id === 'lichtschalter') { state.licht = !state.licht; if (typeof WELT !== 'undefined') WELT.emit('licht', state.licht); } if (id === 'notausgang') knock(); select(id, false); }
     drag = null; canvas.classList.remove('dragging');
   }
 }

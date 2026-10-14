@@ -117,8 +117,8 @@ function avDingeStart() {
 function avSpeichern() { try { localStorage.setItem('rw101-botengaenge', JSON.stringify(AUFTRAEGE.filter(a => avDinge[a.id].ok).map(a => a.id))); } catch (e) {} }
 const KNOEPFE = [
   { id: 'nothalt', room: 'fertigung', x: 34, name: 'Not-Halt', tu() {
-      WELT.halt.fertigung = { bis: performance.now() + 4000, f: state.f }; WELT.emit('nothalt', 'fertigung');
-      avToast('Not-Halt! Alle Roboter in der Halle bleiben sofort stehen. Solche roten Knöpfe hat in echt jede Industrieanlage.'); } },
+      WELT.emit('nothalt', 'fertigung');
+      avToast('Not-Halt! Alle Roboter in der Halle bleiben sofort stehen, und das Lager darunter wartet auf Teile. Solche roten Knöpfe hat in echt jede Industrieanlage.'); } },
   { id: 'glocke', room: 'eingang', x: 600, name: 'Schichtglocke', tu() {
       WELT.emit('schichtwechsel'); avToast('Schichtwechsel! In allen Hallen gehen die Rundumleuchten an.'); } },
   { id: 'lichtschalter', name: 'Lichtschalter', tu() { state.licht = !state.licht; WELT.emit('licht', state.licht); } },

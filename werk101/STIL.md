@@ -179,3 +179,8 @@ registerRoom({
   - `avatar.js`: R-101 (Vorbild TIAGo), Knopf „Selbst steuern“. Pfeiltasten/AD fahren, ▲▼ Aufzug, E drücken, G greifen, F fragen; Klick ins Bild fährt hin (engine.js reicht Klicks über `avClick` weiter). Befehle als Text oder Kacheln („gehe zum Lager, greife, gehe zur Garage, lege ab“). Wege: jede Etage von Werk 101 über den Aufzug, EG und UG 1 durchgehend; obere Stockwerke der anderen Häuser haben noch keinen Zugang. Der Aufzug wird für R-101 gerufen (`cabinY` ist umhüllt), danach gleitet die Kabine zurück in ihren Fahrplan.
   - Sechs Botengänge (`AUFTRAEGE`) verbinden Räume (Fertigung → Prüfstand, Lager → Garage, Apotheke → Krankenstation, Hafen → Supermarkt, Bücherspeicher → Schule, Recyclinghof → Wohnbereich); Fortschritt in `rw101-botengaenge`. Knöpfe: Not-Halt (Fertigung), Schichtglocke (Eingang), Lichtschalter (Dunkle Fabrik), Notausgang (Tunnel).
   - `tools/check.py` lädt jetzt mit `?phase=mittag&stunde=10`, damit das Ergebnis nicht von der Uhrzeit abhängt.
+- Reaktionen zwischen Räumen (14. Oktober 2026, Version 20261014b), alles in `reaktionen(key)` in welt.js:
+  - Bauteil auf den Prüfstand geliefert → Schild „Prüfung läuft“, dann „In Ordnung ✓“ (10 s, Ereignis `geliefert:teil`).
+  - Lichtschalter in der Dunklen Fabrik (Klick oder R-101) → Leitwarte im Rechenzentrum meldet „Licht an · etwa +40 kW“ bzw. „Strom gespart“ (Ereignis `licht`).
+  - Not-Halt in der Fertigung → kurz danach steht auch das Lager („wartet auf Teile“), `WELT.halt[raum].grund` für eigenen Text.
+  - Nachts: Krankenstation fordert ein Medikament an (Bild 150–250), die Apotheke schickt genau eine Rohrpost-Kapsel (Bild 210–270, runners.js); tagsüber fährt die Rohrpost wie bisher alle 5 s.

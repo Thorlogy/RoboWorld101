@@ -134,7 +134,8 @@ function raumOverlay(def, room) {
   if (key === 'eingang' && WELT.wtag === 5 && WELT.stunde >= 15 && WELT.stunde < 22) schild('SCHÖNES WOCHENENDE! (DIE ROBOTER BLEIBEN DA)', RW / 2, 10, '#f0b429', INK);
   if (SIGNAL.has(key) && schichtwechsel()) { rundumleuchte(RW - 40, 14); if (key === 'fertigung') schild('SCHICHTWECHSEL', RW / 2, 40, '#f08a24', INK); }
   const h = WELT.halt[key];
-  if (h && performance.now() < h.bis) { ctx.fillStyle = 'rgba(240,180,41,0.12)'; ctx.fillRect(0, 0, RW, RH); schild('NOT-HALT · ALLE ROBOTER STEHEN', RW / 2, 64, '#f0b429', INK); }
+  if (h && performance.now() < h.bis) { ctx.fillStyle = 'rgba(240,180,41,0.12)'; ctx.fillRect(0, 0, RW, RH); schild(h.grund || 'NOT-HALT · ALLE ROBOTER STEHEN', RW / 2, 64, '#f0b429', INK); }
+  reaktionen(key);
 }
 // draw und Klickflächen aller Räume einhüllen
 for (const def of BUILT) {
@@ -147,6 +148,29 @@ RUNNERS.forEach(r => { const b = r.robot.box; r.robot.box = (...a) => (WELT.vers
 // versteckte Figuren werden nicht gezeichnet
 const _withAlpha = withAlpha;
 withAlpha = (id, fn) => { if (WELT.versteckt(id)) return; _withAlpha(id, fn); };
+
+/* ---------- Reaktionen zwischen Räumen (über den Ereignisbus) ---------- */
+WELT.on('geliefert', id => { WELT.zuletzt['geliefert:' + id] = performance.now(); });
+// Not-Halt in der Fertigung: das Lager darunter bekommt keine Teile mehr und hält kurz danach ebenfalls an
+WELT.on('nothalt', key => {
+  const jetzt = performance.now();
+  WELT.halt[key] = { bis: jetzt + 4000, f: state.f };
+  if (key === 'fertigung') setTimeout(() => { WELT.halt.lager = { bis: performance.now() + 3500, f: state.f, grund: 'FERTIGUNG STEHT · LAGER WARTET AUF TEILE' }; state.dirty = true; }, 700);
+});
+function reaktionen(key) {
+  // Prüfstand testet das gelieferte Bauteil
+  const s = WELT.seit('geliefert:teil');
+  if (key === 'pruef' && s < 10) schild(s < 5 ? 'NEUES BAUTEIL · PRÜFUNG LÄUFT ' + '▮'.repeat(1 + Math.floor(s * 2) % 6) : 'BAUTEIL GEPRÜFT · IN ORDNUNG ✓', RW / 2, 40, s < 5 ? '#23384d' : '#2e7d32');
+  // Lichtschalter in der Dunklen Fabrik: die Leitwarte sieht den Stromverbrauch
+  const l = WELT.seit('licht');
+  if (key === 'rz2' && l < 8) schild(state.licht ? 'HALLE 103: LICHT AN · ETWA +40 KW' : 'HALLE 103: LICHT AUS · STROM GESPART', RW / 2, 40, state.licht ? '#f0b429' : '#2e7d32', state.licht ? INK : '#f3efe4');
+  // Notdienst: nachts fordert die Krankenstation ein Medikament an, die Apotheke schickt es per Rohrpost
+  if (istNacht()) {
+    const g = state.g;
+    if (key === 'kranken' && g >= 150 && g < 250) schild('ANFORDERUNG AN DIE APOTHEKE', 518, 66, '#d9342b');
+    if (key === 'apotheke' && g >= 190 && g < 260) schild('NOTFALL-SENDUNG PER ROHRPOST', RW / 2, 62, '#2a2723');
+  }
+}
 
 /* ---------- Nachtstreife: Sicherheitsroboter zwischen Halle 103 und Rechenzentrum ---------- */
 const K5_A = rx(6.5) + RW + WALL + 56, K5_B = rx(8) - WALL - 50, K5_FOOT = GROUND - 2;
