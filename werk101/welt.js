@@ -9,7 +9,7 @@ const W_AUS = [-99999, -99999, 1, 1];
 
 const WELT = {
   modus: 'auto', phase: 'mittag', stunde: 12, minute: 30, wtag: 3,
-  test: {}, hoerer: {}, zuletzt: {}, halt: {},
+  test: {}, hoerer: {}, zuletzt: {}, halt: {}, runde: 0,
   /* Ereignisbus: Räume und Figur melden etwas, andere reagieren darauf */
   on(ev, fn) { (this.hoerer[ev] = this.hoerer[ev] || []).push(fn); },
   emit(ev, daten) { this.zuletzt[ev] = performance.now(); (this.hoerer[ev] || []).forEach(fn => fn(daten)); state.dirty = true; },
@@ -42,18 +42,24 @@ function setTageszeit(m) {
 function setWetter(w) {
   if (w === 'abend') { state.wetter = 'sonne'; setTageszeit('abend'); }
   else state.wetter = w;
-  const b = document.getElementById('wetter'); if (b) b.textContent = 'Wetter: ' + (state.wetter === 'regen' ? 'Regen' : 'Sonne');
+  const b = document.getElementById('wetter'); if (b) b.textContent = 'Wetter: ' + (WETTER_NAMEN[state.wetter] || 'Sonne');
   state.dirty = true;
 }
 
 /* ---------- Himmel je Tageszeit (engine.js fragt hier nach) ---------- */
 function himmelFarben() {
-  if (state.wetter === 'regen') return istNacht() ? ['#1c2430', '#2b3540', '#45494c'] : istDunkel() ? ['#2a3248', '#4a4f66', '#7c6f6a'] : ['#6f7f86', '#8f9ca0', '#b3b1a8'];
+  const w = state.wetter;
+  if (w !== 'sonne' && istDunkel()) return istNacht() ? ['#141a26', '#232c38', '#3c4146'] : ['#2a3248', '#4a4f66', '#7c6f6a'];
+  if (w === 'regen') return ['#6f7f86', '#8f9ca0', '#b3b1a8'];
+  if (w === 'wolken') return ['#93a6af', '#bcc8cb', '#ddd9cf'];
+  if (w === 'nebel') return ['#b4babb', '#c9cdcc', '#d8d7d1'];
+  if (w === 'schnee') return ['#a6b1b8', '#c9d1d4', '#e6e8e5'];
   return { morgen: ['#7d8db4', '#e3a98c', '#f2d4a8'], mittag: ['#8fb1bd', '#bfd2d4', '#e3dccb'], abend: ['#131b36', '#3a3d63', '#b8705a'], nacht: ['#060a1a', '#11173a', '#262a4e'] }[WELT.phase];
 }
-function silhouetteFarbe() { return istNacht() ? '#1d2440' : WELT.phase === 'abend' ? '#3b4566' : state.wetter === 'regen' ? '#8b989c' : WELT.phase === 'morgen' ? '#a7a5b8' : '#9eb6bb'; }
+function silhouetteFarbe() { return istNacht() ? '#1d2440' : WELT.phase === 'abend' ? '#3b4566' : state.wetter === 'nebel' ? '#c3c8c7' : state.wetter !== 'sonne' ? '#8b989c' : WELT.phase === 'morgen' ? '#a7a5b8' : '#9eb6bb'; }
 function aussenSchatten() { return { morgen: 'rgba(255,150,80,0.08)', mittag: null, abend: 'rgba(12,18,48,0.45)', nacht: 'rgba(4,8,26,0.62)' }[WELT.phase]; }
 function himmelExtras() {
+  wolken();
   if (istDunkel()) {
     ctx.fillStyle = '#f3efe4';
     const n = istNacht() ? 260 : 160;
@@ -66,6 +72,54 @@ function himmelExtras() {
     circle(mx + 20, my - 10, 42, '#0b1029', null);
   }
   if (WELT.phase === 'morgen' && state.wetter !== 'regen') { glow(-700, GROUND - 260, 260, 'rgba(255,214,150,0.75)'); circle(-700, GROUND - 260, 40, '#ffd79a', null); }
+}
+
+/* ---------- Wetter: Wolken, Nebel, Schnee (engine.js ruft wetterEffekte nach dem Zeichnen) ---------- */
+const WETTER_NAMEN = { sonne: 'Sonne', wolken: 'Wolken', regen: 'Regen', nebel: 'Nebel', schnee: 'Schnee' };
+const schlechtesWetter = () => ['regen', 'schnee', 'nebel'].includes(state.wetter);
+function wolke(x, y, s, farbe) {
+  ctx.fillStyle = farbe; ctx.beginPath();
+  for (const [dx, dy, r] of [[0, 0, 60], [70, -24, 70], [150, -6, 58], [210, 12, 44], [-60, 14, 42], [90, 20, 56]]) { ctx.moveTo(x + (dx + r) * s, y + dy * s); ctx.arc(x + dx * s, y + dy * s, r * s, 0, TAU); }
+  ctx.fill();
+}
+function wolken() {
+  const w = state.wetter, n = { sonne: 7, wolken: 28, regen: 32, schnee: 30, nebel: 12 }[w] || 7;
+  const farbe = istNacht() ? 'rgba(60,66,86,0.75)' : istDunkel() ? 'rgba(120,110,130,0.7)' : w === 'regen' ? 'rgba(130,140,146,0.9)' : w === 'schnee' ? 'rgba(220,226,230,0.9)' : 'rgba(246,246,242,0.85)';
+  for (let i = 0; i < n; i++) {
+    const breite = 14000, x = ((i * 2311 + state.g * (1.2 + (i % 3) * 0.4) + WELT.runde * 480 * (1.2 + (i % 3) * 0.4)) % breite) - 7500;
+    wolke(x, TOP - 760 + ((i * 397) % 900), 0.9 + (i % 4) * 0.35, farbe);
+  }
+}
+function draussenClip(x0, y0, x1, y1, bisY) {
+  ctx.beginPath(); ctx.rect(x0, y0, x1 - x0, Math.max(0, bisY - y0));
+  for (const h of HOUSES) ctx.rect(h.x, h.y, h.w, h.h);
+  ctx.clip('evenodd');
+}
+function wetterEffekte(x0, y0, x1, y1) {
+  const w = state.wetter;
+  if (w === 'schnee') {
+    ctx.save(); draussenClip(x0, y0, x1, y1, GROUND + 4);
+    const step = 52 / Math.min(1, state.z), t = state.g * 1.6;
+    ctx.fillStyle = 'rgba(250,250,250,0.9)';
+    for (let x = Math.floor(x0 / step) * step; x < x1; x += step) for (let y = Math.floor(Math.max(y0, -4000) / step) * step; y < Math.min(y1, GROUND); y += step) {
+      const k = (x * 7 + y * 13) % 97, yy = y + ((t + k * 5) % step), xx = x + k % 30 + Math.sin((yy + k) / 30) * 6;
+      ctx.beginPath(); ctx.arc(xx, yy, 2.6 / Math.min(1, state.z), 0, TAU); ctx.fill();
+    }
+    ctx.restore();
+    // Schneedecke: auf dem Boden draußen, auf den Außenfeldern und auf den Dächern
+    ctx.fillStyle = '#f4f6f6';
+    ctx.save(); draussenClip(x0, y0, x1, y1, GROUND + 6); ctx.fillRect(x0, GROUND - 8, x1 - x0, 12); ctx.restore();
+    for (const o of ROOMS) if (o.outdoor && o.r === 6 && isOpen(o)) ctx.fillRect(rx(o.c), ry(6) + 380, RW, 6);
+    HOUSES.forEach((h, i) => ctx.fillRect(h.x + 6, h.y + [126, 106, 46, 56, 46][i], h.w - 12, 8));
+    shadeOutside(x0, y0, x1, y1, 'rgba(230,236,240,0.12)');
+  }
+  if (w === 'nebel') {
+    shadeOutside(x0, y0, x1, y1, istDunkel() ? 'rgba(90,96,110,0.4)' : 'rgba(226,229,227,0.5)');
+    ctx.save(); draussenClip(x0, y0, x1, y1, GROUND);
+    const gr = ctx.createLinearGradient(0, GROUND - 420, 0, GROUND); gr.addColorStop(0, 'rgba(235,237,235,0)'); gr.addColorStop(1, istDunkel() ? 'rgba(110,116,128,0.5)' : 'rgba(235,237,235,0.6)');
+    ctx.fillStyle = gr; ctx.fillRect(x0, GROUND - 420, x1 - x0, 420); ctx.restore();
+  }
+  if (w === 'wolken') shadeOutside(x0, y0, x1, y1, 'rgba(60,70,80,0.06)');
 }
 
 /* ---------- Räume je Tageszeit ---------- */
@@ -219,6 +273,9 @@ if (typeof KINDER !== 'undefined') KINDER.k5 = 'Dieser Roboter passt nachts auf 
 
 /* ---------- Start und Uhr ---------- */
 weltUhr(); state.phase = WELT.phase;
+// lange Uhr: zählt, wie oft state.g von 479 auf 0 gesprungen ist (für Abläufe über mehrere Runden)
+(function weltRunde(last) { if (state.g < last - 200) WELT.runde++; requestAnimationFrame(() => weltRunde(state.g)); })(0);
+const langeUhr = n => (WELT.runde % n) * 480 + state.g;
 setInterval(() => { weltUhr(); if (WELT.modus === 'auto') setTageszeit('auto'); }, 30000);
 const tageszeitBtn = document.getElementById('tageszeit');
 if (tageszeitBtn) tageszeitBtn.addEventListener('click', () => {

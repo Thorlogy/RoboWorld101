@@ -2,7 +2,7 @@
 const WX = rx(roomOf('wohnen').c), WY = ry(roomOf('wohnen').r);
 
 // Bei Regen und abends bleibt der Mähroboter in seiner Station (abends wegen der Igel)
-const mowerParked = () => (state.wetter === 'regen' || istDunkel());
+const mowerParked = () => (state.wetter !== 'sonne' && state.wetter !== 'wolken') || istDunkel();
 function mowerX(f) {
   if (mowerParked()) return 40;
   if (f < 22) return lerp(50, 176, ease(seg(f, 0, 22)));

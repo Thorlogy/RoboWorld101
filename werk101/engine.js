@@ -96,7 +96,7 @@ function drawSchool(f) {
 
 /* ---------- Wetter und Tageszeit ---------- */
 const SKY = { sonne: ['#8fb1bd', '#bfd2d4', '#e3dccb'], regen: ['#6f7f86', '#8f9ca0', '#b3b1a8'], abend: ['#131b36', '#3a3d63', '#b8705a'] };
-const WETTER = ['sonne', 'regen'], WETTER_NAME = { sonne: 'Sonne', regen: 'Regen' };
+const WETTER = ['sonne', 'wolken', 'regen', 'nebel', 'schnee'];
 // Regen: schräge Striche überall draußen oberhalb des Bodens; Dichte folgt dem Bildschirm, nicht der Welt
 function drawRain(x0, y0, x1, y1) {
   const step = 46 / Math.min(1, state.z), len = 18, t = state.g * 9;
@@ -304,6 +304,7 @@ function draw() {
   RUNNERS.forEach(r => r.draw(state.g));
   drawHolds();
   if (state.wetter === 'regen') { drawRain(vx0, vy0, vx1, vy1); shadeOutside(vx0, vy0, vx1, vy1, 'rgba(40,52,62,0.16)'); }
+  wetterEffekte(vx0, vy0, vx1, vy1);
   if (aussenSchatten()) shadeOutside(vx0, vy0, vx1, vy1, aussenSchatten());
   if (istDunkel()) {
     // Lichter der Außenfelder nach dem Abdunkeln, damit sie leuchten

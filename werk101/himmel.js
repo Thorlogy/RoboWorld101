@@ -3,7 +3,7 @@
    Paketdrohne: kommt von rechts und setzt Ersatzteile in die Paketstation auf dem Dach der Schule 102.
    Bei Regen bleiben alle Fluggeräte am Boden. Wird nach runners.js geladen. */
 const HIDE = [-99999, -99999, 1, 1];
-const regen = () => state.wetter === 'regen';
+const regen = () => schlechtesWetter();   // bei Regen, Schnee und Nebel fliegt nichts
 
 /* ---------- Flugtaxis ---------- */
 const TX_L = -4300, TX_R = 5600, TX_A = -115, TX_B = -175;
@@ -366,13 +366,15 @@ registerRunner({
 
 /* ---------- Magnetschwebebahn hinter den Häusern: fährt auf einer Stelzenstrecke einmal pro langer Runde von links nach rechts ---------- */
 const MG_Y = GROUND - 330, MG_CAR = 560, MG_N = 3;
-const mgX = g => lerp(-6200, 10400, (g % RUN_P) / RUN_P);
+// fährt von links an, hält 80 Bilder am Bahnhof (MG_HALT aus rooms/bahn.js) und fährt dann nach rechts weiter
+const MG_LEN = MG_N * (MG_CAR + 10);
+const mgX = g => { g %= RUN_P; const h = (typeof MG_HALT !== 'undefined' ? MG_HALT : 0) + MG_LEN / 2; if (g < 150) return lerp(-7800, h, 1 - Math.pow(1 - seg(g, 0, 150), 2)); if (g < 230) return h; return lerp(h, 13500, Math.pow(seg(g, 230, 480), 2)); };
 function drawMaglevBack(g) {
   const ab = istDunkel();
   // Fahrweg: Betonträger auf Stelzen
-  ctx.fillStyle = ab ? '#4a5470' : '#b9c3c4'; ctx.fillRect(-7000, MG_Y + 6, 18000, 26);
-  ctx.strokeStyle = ab ? '#2f3650' : '#8f9a9c'; ctx.lineWidth = 2; ctx.strokeRect(-7000, MG_Y + 6, 18000, 26);
-  for (let x = -6900; x < 11000; x += 420) { ctx.fillStyle = ab ? '#424b66' : '#aab5b6'; ctx.fillRect(x, MG_Y + 32, 22, GROUND - MG_Y - 32); }
+  ctx.fillStyle = ab ? '#4a5470' : '#b9c3c4'; ctx.fillRect(-9500, MG_Y + 6, 23500, 26);
+  ctx.strokeStyle = ab ? '#2f3650' : '#8f9a9c'; ctx.lineWidth = 2; ctx.strokeRect(-9500, MG_Y + 6, 23500, 26);
+  for (let x = -9400; x < 14000; x += 420) { ctx.fillStyle = ab ? '#424b66' : '#aab5b6'; ctx.fillRect(x, MG_Y + 32, 22, GROUND - MG_Y - 32); }
   if (regen() && false) return;
   const head = mgX(g);
   for (let k = 0; k < MG_N; k++) {
@@ -389,14 +391,15 @@ function drawMaglevBack(g) {
     // Schürze umgreift den Fahrweg
     ctx.fillStyle = ab ? '#9aa3ad' : '#c6ccce'; ctx.fillRect(x0 + 10, MG_Y + 6, MG_CAR - 20, 16);
   }
+  if (typeof mgStation === 'function') mgStation(ab);
 }
 registerRunner({
   room: 'schulweg',
   draw() {},
   robot: { id: 'magnetbahn', name: 'Magnetschwebebahn', bereich: 'Mobilität', aera: 'seit 2004 im Linienbetrieb', typ: 'Zug, der über der Schiene schwebt',
     fakt: 'Die Bahn hat keine Räder. Magnete heben sie einen Zentimeter über den Fahrweg und ziehen sie vorwärts. Ohne Reibung schafft sie über 400 Kilometer pro Stunde. Gesteuert wird sie aus einer Leitzentrale, im Zug sitzt kein Fahrer.',
-    echt: 'Echt. Die deutsche Magnetbahn Transrapid wurde im Emsland getestet und fährt seit 2004 in Shanghai zum Flughafen. In Japan entsteht eine Strecke für über 500 Kilometer pro Stunde. Hinter unseren Häusern fährt sie nur zum Spaß.',
-    note: 'Saust auf ihrer Stelzenstrecke hinter den Häusern vorbei. Am besten sieht man sie zwischen den Gebäuden.', color: '#eef1ef',
+    echt: 'Echt. Die deutsche Magnetbahn Transrapid wurde im Emsland getestet und fährt seit 2004 in Shanghai zum Flughafen. In Japan entsteht eine Strecke für über 500 Kilometer pro Stunde. Hinter unseren Häusern fährt sie nur zum Spaß, und der Halt über dem Bahnhof zum Umsteigen in den Schnellzug ist ausgedacht.',
+    note: 'Hält ganz links über dem Bahnhof und saust dann auf ihrer Stelzenstrecke hinter den Häusern vorbei.', color: '#eef1ef',
     quelle: 'https://en.wikipedia.org/wiki/Transrapid',
     box: () => { const h = mgX(state.g); return [h - MG_N * (MG_CAR + 10), MG_Y - 70, MG_N * (MG_CAR + 10), 96]; } },
 });
