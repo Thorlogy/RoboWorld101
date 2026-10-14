@@ -32,7 +32,7 @@ async def main(rooms):
         pg = await br.new_page(viewport={'width': 1400, 'height': 860})
         errs = []
         pg.on('pageerror', lambda e: errs.append(str(e)))
-        await pg.goto('file://' + os.path.join(ROOT, 'index.html'))
+        await pg.goto('file://' + os.path.join(ROOT, 'index.html') + '?phase=mittag&stunde=10')
         await pg.wait_for_timeout(600)
         await pg.evaluate(TEXT_HOOK)
         keys = rooms or await pg.evaluate('BUILT.map(d => d.key)')

@@ -2,7 +2,7 @@
 const WX = rx(roomOf('wohnen').c), WY = ry(roomOf('wohnen').r);
 
 // Bei Regen und abends bleibt der Mähroboter in seiner Station (abends wegen der Igel)
-const mowerParked = () => state.wetter !== 'sonne';
+const mowerParked = () => (state.wetter === 'regen' || istDunkel());
 function mowerX(f) {
   if (mowerParked()) return 40;
   if (f < 22) return lerp(50, 176, ease(seg(f, 0, 22)));
@@ -52,8 +52,8 @@ function drawWohnen(f) {
   text('WOHNEN', 440, 120, 40, { family: '"Saira Condensed", sans-serif', weight: 700, color: 'rgba(42,39,35,0.13)' });
   ctx.fillStyle = '#a07a58'; ctx.fillRect(280, 360, 360, 40);
   // Terrasse mit Rasen hinter Glastür
-  ctx.fillStyle = state.wetter === 'abend' ? '#2c3458' : state.wetter === 'regen' ? '#9aa8ad' : '#c8dde3'; ctx.fillRect(0, 8, 280, 352);
-  ctx.fillStyle = state.wetter === 'abend' ? '#3b4566' : '#b8cfd6'; for (const [x, h] of [[10, 120], [80, 180], [170, 90]]) ctx.fillRect(x, 300 - h, 60, h);
+  ctx.fillStyle = istDunkel() ? '#2c3458' : state.wetter === 'regen' ? '#9aa8ad' : '#c8dde3'; ctx.fillRect(0, 8, 280, 352);
+  ctx.fillStyle = istDunkel() ? '#3b4566' : '#b8cfd6'; for (const [x, h] of [[10, 120], [80, 180], [170, 90]]) ctx.fillRect(x, 300 - h, 60, h);
   ctx.fillStyle = '#5f9a4a'; ctx.fillRect(0, 344, 280, 56);
   ctx.strokeStyle = '#4e8a3c'; ctx.lineWidth = 1.5; ctx.beginPath();
   for (let x = 2; x < 280; x += 5) { ctx.moveTo(x, 346); ctx.lineTo(x + 2, 340); }
@@ -61,7 +61,7 @@ function drawWohnen(f) {
   // Ladestation des Mähroboters
   box(4, 318, 18, 28, '#3b3d40', 2, 1.2); ctx.beginPath(); ctx.moveTo(2, 320); ctx.lineTo(70, 312); ctx.lineTo(70, 318); ctx.lineTo(2, 326); ctx.closePath(); paint('#8a8f94', INK, 1.2);
   if (state.wetter === 'regen') { ctx.strokeStyle = 'rgba(230,240,245,0.7)'; ctx.lineWidth = 1.4; ctx.beginPath(); for (let i = 0; i < 40; i++) { const x = (i * 53) % 280, y = 10 + ((i * 89 + state.g * 9) % 330); ctx.moveTo(x, y); ctx.lineTo(x - 4, y + 14); } ctx.stroke(); }
-  if (state.wetter === 'abend') withAlpha('igel', () => {
+  if (istDunkel()) withAlpha('igel', () => {
     const x = 90 + 120 * (0.5 - 0.5 * Math.cos(TAU * f / 60)), dir = Math.sin(TAU * f / 60) >= 0 ? 1 : -1;
     ctx.save(); ctx.translate(x, 346); ctx.scale(dir, 1);
     ctx.beginPath(); ctx.ellipse(0, -8, 16, 9, 0, Math.PI, 0); paint('#6b4a2a', INK, 1.2);
@@ -173,7 +173,7 @@ registerRoom({
       fakt: 'Igel sind nachts unterwegs und rollen sich bei Gefahr zusammen, statt wegzulaufen. Naturschützer raten deshalb, Mähroboter nachts nicht fahren zu lassen.',
       echt: 'Stimmt so. Erscheint nur, wenn oben „Wetter: Abend“ eingestellt ist.',
       note: 'Spaziert über den Rasen, solange der Mähroboter in seiner Station steht.', color: '#6b4a2a',
-      box: f => state.wetter === 'abend' ? [WX + 90 + 120 * (0.5 - 0.5 * Math.cos(TAU * f / 60)) - 26, WY + 326, 52, 24] : [-9999, 0, 0, 0] },
+      box: f => istDunkel() ? [WX + 90 + 120 * (0.5 - 0.5 * Math.cos(TAU * f / 60)) - 26, WY + 326, 52, 24] : [-9999, 0, 0, 0] },
     { id: 'zwerg', echt: 'Gartenzwerge sind tatsächlich ein bekanntes Hindernis für Mähroboter. Wackeln tun sie meist nicht, sie fallen um.', name: 'Gartenzwerg', bereich: 'Spielzeug', aera: 'kein Roboter', typ: 'Hindernis',
       fakt: 'Ein klassisches Hindernis für Mähroboter. Viele Geräte erkennen es per Stoßsensor, also erst nach dem Zusammenstoß.',
       note: 'Wackelt. Hält aber durch.', color: '#d9542b',

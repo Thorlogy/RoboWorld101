@@ -70,17 +70,13 @@
   document.body.appendChild(boxEl);
   const stepEl = boxEl.querySelector('.tour-step'), titleEl = boxEl.querySelector('h2'), textEl = boxEl.querySelector('p');
   const prevB = boxEl.querySelector('.tb-prev'), nextB = boxEl.querySelector('.tb-next');
-  let i = -1, wetterVorher = null;
+  let i = -1, wetterVorher = null, zeitVorher = null;
 
-  function setWetter(w) {
-    state.wetter = w; const b = document.getElementById('wetter');
-    if (b) b.textContent = 'Wetter: ' + ({ sonne: 'Sonne', regen: 'Regen', abend: 'Abend' })[w];
-  }
   function show(n) {
     i = Math.max(0, Math.min(STEPS.length - 1, n));
     const s = STEPS[i];
     if (typeof setFollow === 'function') setFollow(false);
-    if (s.wetter) setWetter(s.wetter);
+    if (s.wetter) { setWetter(s.wetter); if (s.wetter !== 'abend' && WELT.modus !== zeitVorher) setTageszeit(zeitVorher); }
     if (s.g != null) { state.g = s.g; state.f = s.g % 60; acc = s.g / 12; }
     if (s.all) { window.select(null, true); fitAll(true); }
     else {
@@ -96,14 +92,14 @@
     state.dirty = true;
   }
   function start() {
-    wetterVorher = state.wetter; boxEl.hidden = false; btn.setAttribute('aria-pressed', 'true');
+    wetterVorher = state.wetter; zeitVorher = WELT.modus; boxEl.hidden = false; btn.setAttribute('aria-pressed', 'true');
     if (window.innerWidth <= 760 && typeof toggleCollapse === 'function') toggleCollapse(true);
     if (!state.playing && typeof setPlaying === 'function') setPlaying(true);
     show(0); nextB.focus();
   }
   function end() {
     boxEl.hidden = true; btn.setAttribute('aria-pressed', 'false'); i = -1;
-    if (wetterVorher && state.wetter !== wetterVorher) setWetter(wetterVorher);
+    if (wetterVorher) setWetter(wetterVorher); if (zeitVorher && WELT.modus !== zeitVorher) setTageszeit(zeitVorher);
     state.dirty = true; btn.focus();
   }
   btn.addEventListener('click', () => (boxEl.hidden ? start() : end()));

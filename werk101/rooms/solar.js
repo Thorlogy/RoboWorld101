@@ -71,7 +71,7 @@ function drawSolar(f) {
   // Batteriespeicher
   withAlpha('speicher', () => {
     box(176, 280, 74, 50, '#e8e6e0', 2, 1.8); for (let i = 0; i < 3; i++) line(190 + i * 22, 284, 190 + i * 22, 326, 'rgba(42,39,35,0.3)', 1);
-    const lvl = 0.25 + 0.7 * (state.wetter === 'abend' ? 1 - seg(gg, 0, 480) * 0.5 : seg(gg, 0, 480));
+    const lvl = 0.25 + 0.7 * (istDunkel() ? 1 - seg(gg, 0, 480) * 0.5 : seg(gg, 0, 480));
     box(234, 288, 10, 30, '#2a2723', 1, 1); ctx.fillStyle = '#7fe08a'; ctx.fillRect(236, 316 - 26 * lvl, 6, 26 * lvl);
     text('SPEICHER', 205, 300, 9, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center' });
   });

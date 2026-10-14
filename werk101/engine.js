@@ -96,7 +96,7 @@ function drawSchool(f) {
 
 /* ---------- Wetter und Tageszeit ---------- */
 const SKY = { sonne: ['#8fb1bd', '#bfd2d4', '#e3dccb'], regen: ['#6f7f86', '#8f9ca0', '#b3b1a8'], abend: ['#131b36', '#3a3d63', '#b8705a'] };
-const WETTER = ['sonne', 'regen', 'abend'], WETTER_NAME = { sonne: 'Sonne', regen: 'Regen', abend: 'Abend' };
+const WETTER = ['sonne', 'regen'], WETTER_NAME = { sonne: 'Sonne', regen: 'Regen' };
 // Regen: schräge Striche überall draußen oberhalb des Bodens; Dichte folgt dem Bildschirm, nicht der Welt
 function drawRain(x0, y0, x1, y1) {
   const step = 46 / Math.min(1, state.z), len = 18, t = state.g * 9;
@@ -122,12 +122,12 @@ function glow(x, y, r, color) {
 
 /* ---------- Zeichnen: Umgebung ---------- */
 function drawSurroundings(f) {
-  const g = ctx.createLinearGradient(0, TOP - 700, 0, GROUND), sky = SKY[state.wetter] || SKY.sonne;
+  const g = ctx.createLinearGradient(0, TOP - 700, 0, GROUND), sky = himmelFarben();
   g.addColorStop(0, sky[0]); g.addColorStop(0.55, sky[1]); g.addColorStop(1, sky[2]);
   ctx.fillStyle = g; ctx.fillRect(-9000, -6000, BW + 18000, GROUND + 6000);
-  if (state.wetter === 'abend') { ctx.fillStyle = '#f3efe4'; for (let i = 0; i < 160; i++) { const x = ((i * 733) % 9000) - 3200, y = TOP - 680 + ((i * 397) % 1500); ctx.fillRect(x, y, 3, 3); } }
+  himmelExtras();
   // Hintergrund-Silhouetten
-  ctx.fillStyle = state.wetter === 'abend' ? '#3b4566' : state.wetter === 'regen' ? '#8b989c' : '#9eb6bb';
+  ctx.fillStyle = silhouetteFarbe();
   [[-900, 600], [-620, 380], [-420, 860], [BW + 120, 700], [BW + 420, 420], [BW + 700, 980]].forEach(([x, h]) => ctx.fillRect(x, GROUND - h, 240, h));
   ctx.fillStyle = '#b4c7c9';
   [[-1300, 420], [BW + 1000, 520]].forEach(([x, h]) => ctx.fillRect(x, GROUND - h, 300, h));
@@ -304,8 +304,8 @@ function draw() {
   RUNNERS.forEach(r => r.draw(state.g));
   drawHolds();
   if (state.wetter === 'regen') { drawRain(vx0, vy0, vx1, vy1); shadeOutside(vx0, vy0, vx1, vy1, 'rgba(40,52,62,0.16)'); }
-  if (state.wetter === 'abend') {
-    shadeOutside(vx0, vy0, vx1, vy1, 'rgba(12,18,48,0.45)');
+  if (aussenSchatten()) shadeOutside(vx0, vy0, vx1, vy1, aussenSchatten());
+  if (istDunkel()) {
     // Lichter der Außenfelder nach dem Abdunkeln, damit sie leuchten
     for (const room of ROOMS) {
       const def = room.outdoor && isOpen(room) && BUILT.find(d => d.key === room.built);
@@ -314,6 +314,7 @@ function draw() {
     }
     RUNNERS.forEach(r => r.glow && r.glow(state.g));
   }
+  if (typeof avDraw === 'function') avDraw();
   if (state.netz && typeof drawNetz === 'function') drawNetz(vx0, vy0, vx1, vy1);
 
   const sel = state.sel && byId[state.sel];
@@ -398,7 +399,8 @@ function endPointer(e) {
   pointers.delete(e.pointerId);
   if (pointers.size < 2) pinch = null;
   if (drag && pointers.size === 0) {
-    if (drag.moved <= 4) { const id = hitAt(e.clientX, e.clientY); if (id === 'lichtschalter') state.licht = !state.licht; if (id === 'notausgang') knock(); select(id, false); }
+    if (drag.moved <= 4 && typeof avClick === 'function' && avClick(e.clientX, e.clientY, hitAt(e.clientX, e.clientY))) { /* Figur übernimmt den Klick */ }
+    else if (drag.moved <= 4) { const id = hitAt(e.clientX, e.clientY); if (id === 'lichtschalter') state.licht = !state.licht; if (id === 'notausgang') knock(); select(id, false); }
     drag = null; canvas.classList.remove('dragging');
   }
 }
@@ -542,8 +544,7 @@ function followView(k) {
 if (followBtn) followBtn.addEventListener('click', () => setFollow(!state.follow));
 const wetterBtn = document.getElementById('wetter');
 if (wetterBtn) wetterBtn.addEventListener('click', () => {
-  state.wetter = WETTER[(WETTER.indexOf(state.wetter) + 1) % WETTER.length];
-  wetterBtn.textContent = 'Wetter: ' + WETTER_NAME[state.wetter]; state.dirty = true;
+  setWetter(WETTER[(WETTER.indexOf(state.wetter) + 1) % WETTER.length]);
 });
 if (reduce) document.getElementById('hint').textContent = 'Die Bewegung ist angehalten, weil dein System reduzierte Bewegung wünscht. Mit „Abspielen“ läuft sie trotzdem.';
 

@@ -235,7 +235,7 @@ registerRunner({
 });
 
 /* ---------- Abendhimmel: Satellitenkette und Raumstation, nur bei „Abend“ zu sehen ---------- */
-const abend = () => state.wetter === 'abend';
+const abend = () => istDunkel();
 const SL_N = 22;
 const slPos = (g, i) => { const t = ((g % RUN_P) / RUN_P) - i * 0.006; return { x: lerp(-4600, 6600, t), y: lerp(-470, -420, t) }; };
 registerRunner({
@@ -368,7 +368,7 @@ registerRunner({
 const MG_Y = GROUND - 330, MG_CAR = 560, MG_N = 3;
 const mgX = g => lerp(-6200, 10400, (g % RUN_P) / RUN_P);
 function drawMaglevBack(g) {
-  const ab = state.wetter === 'abend';
+  const ab = istDunkel();
   // Fahrweg: Betonträger auf Stelzen
   ctx.fillStyle = ab ? '#4a5470' : '#b9c3c4'; ctx.fillRect(-7000, MG_Y + 6, 18000, 26);
   ctx.strokeStyle = ab ? '#2f3650' : '#8f9a9c'; ctx.lineWidth = 2; ctx.strokeRect(-7000, MG_Y + 6, 18000, 26);
