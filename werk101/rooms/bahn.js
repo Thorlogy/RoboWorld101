@@ -1,5 +1,5 @@
-/* Außenfelder links vom Flughafen: Bahnhof (c −7) mit Halt der Magnetschwebebahn darüber, Zugwerk (c −8)
-   Bahnhof: Schnellzug in echter Größe (3,8 m hoch) fährt aus der Halle ein, hält, fährt weiter. Läuft auf state.g.
+/* Außenfelder links vom Flughafen: Magnetbahn-Bahnhof (c −7), Zugwerk (c −8)
+   Magnetbahn-Bahnhof: Halle unten, Rolltreppe zum Bahnsteig am Fahrweg; die Bahn (himmel.js) hält dort Bild 150–230.
    Zugwerk: Vorbild E-Check der Bahn in Köln-Nippes: Kameratore, Cobots mit zwei Armen, Unterflur-Prüfgerät. */
 const BHX = rx(roomOf('bahnhof').c), BHY = ry(roomOf('bahnhof').r);
 const ZWX = rx(roomOf('zugwerk').c), ZWY = ry(roomOf('zugwerk').r);
@@ -26,39 +26,40 @@ function zugKasten(x0, x1, nase, offen, muster = 0) {
   ctx.fillStyle = '#3b3d40'; ctx.fillRect(x0, ZUG_UNTEN, (nase != null ? nase - 60 : x1) - x0, 8);
 }
 
-/* ---------- Bahnhof ---------- */
-function bhNase(g) {
-  if (g < 60) return null;
-  if (g < 150) return lerp(-260, 600, 1 - Math.pow(1 - seg(g, 60, 150), 3));
-  if (g < 330) return 600;
-  if (g < 430) return lerp(600, 1500, Math.pow(seg(g, 330, 430), 2));
-  return null;
-}
+/* ---------- Magnetbahn-Bahnhof: Halle unten, Rolltreppe hinauf zum Bahnsteig am Fahrweg (der Zug selbst kommt aus himmel.js) ---------- */
+const MB_STEIG = GROUND - 330 + 8 - BHY;      // Bahnsteig-Oberkante in Raumkoordinaten (≈ 86)
+const mbHalt = g => { g %= RUN_P; return g >= 150 && g < 230; };
+function mbRolltreppe(t) { return { x: lerp(560, 330, t), y: lerp(384, MB_STEIG, t) }; }
+function mbScrubberX(f) { return 60 + 220 * (0.5 - 0.5 * Math.cos(TAU * f / 60)); }
 function drawBahnhof(f) {
-  const g = state.g, nase = bhNase(g), offen = g >= 170 && g < 310;
-  // Gleis, Bahnsteigkante vorn
-  ctx.fillStyle = '#6d6a64'; ctx.fillRect(0, 372, RW, 12);
-  for (let x = 6; x < RW; x += 24) ctx.fillRect(x, 380, 12, 4);
-  if (nase != null) zugKasten(-20, RW + 20, nase, offen);
-  // Halle: Dach, Stützen, Stirnwand links mit Einfahrt
-  ctx.fillStyle = '#5f5b55'; ctx.fillRect(0, 84, RW, 14); line(0, 98, RW, 98, INK, 2);
-  for (const x of [200, 420]) { ctx.fillStyle = '#8a8f94'; ctx.fillRect(x - 5, 98, 10, 286); }
-  box(-10, 84, 40, 300, '#7d7972', 0, 2);
-  // Bahnsteig
+  const g = state.g % RUN_P;
+  // Halle unten: Boden, Stützen, Decke unter dem Bahnsteig
   ctx.fillStyle = '#c9c4b8'; ctx.fillRect(0, 384, RW, 24); line(0, 384, RW, 384, INK, 2);
-  ctx.fillStyle = '#f0b429'; ctx.fillRect(0, 386, RW, 3);
-  text('BAHNHOF', 250, 70, 34, { family: '"Saira Condensed", sans-serif', weight: 700, color: 'rgba(42,39,35,0.15)' });
+  ctx.fillStyle = '#e6e3da'; ctx.fillRect(0, MB_STEIG + 24, RW, 384 - MB_STEIG - 24);
+  for (const x of [20, 300, 620]) { ctx.fillStyle = '#8a8f94'; ctx.fillRect(x - 6, MB_STEIG + 24, 12, 384 - MB_STEIG - 24); }
+  ctx.fillStyle = '#5f5b55'; ctx.fillRect(0, MB_STEIG + 22, RW, 8);
+  for (let x = 40; x < RW; x += 120) box(x, 150, 70, 120, '#9fc4d6', 0, 1.2);
+  text('MAGNETBAHN', 30, 300, 34, { family: '"Saira Condensed", sans-serif', weight: 700, color: 'rgba(42,39,35,0.15)' });
   // Anzeige
-  line(310, 98, 310, 112, INK, 2);
-  box(232, 112, 156, 34, '#23384d', 2, 2);
-  const txt = nase == null || g < 150 ? 'SCHNELLZUG · GLEICH' : g < 330 ? 'SCHNELLZUG · HÄLT' : 'SCHNELLZUG · ABFAHRT';
-  text(txt, 310, 134, 12, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center', color: '#f0b429' });
-  // Reisende: zwei warten, steigen ein; einer steigt aus
-  const ein = seg(g, 200, 260);
+  box(150, 300, 150, 34, '#23384d', 2, 2);
+  const warte = g < 150 ? Math.ceil((150 - g) / 12) : 0;
+  text(mbHalt(g) ? 'BITTE EINSTEIGEN' : g < 150 ? 'ANKUNFT IN ' + warte + ' S' : 'NÄCHSTE IN ' + Math.ceil((RUN_P - g + 150) / 12) + ' S', 225, 322, 12, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center', color: '#f0b429' });
+  // Rolltreppe hinauf zum Bahnsteig
+  const a = mbRolltreppe(0), b = mbRolltreppe(1);
+  ctx.beginPath(); ctx.moveTo(a.x + 30, a.y); ctx.lineTo(b.x + 30, b.y); ctx.lineTo(b.x - 10, b.y); ctx.lineTo(a.x - 10, a.y); ctx.closePath(); paint('#5d6064', INK, 2);
+  for (let i = 0; i < 14; i++) { const p = mbRolltreppe(((i / 14) + f / 60 / 14 * 3) % 1); line(p.x - 8, p.y, p.x + 28, p.y, '#8a8f94', 2); }
+  line(a.x + 30, a.y - 40, b.x + 30, b.y - 40, INK, 3);
+  // Reisende fahren hinauf (zwei Figuren, versetzt)
   withAlpha('reisende', () => {
-    if (g < 200 || g >= 440) { person({ x: 480, foot: 396, face: -1, shirt: '#5f9a4a', pants: '#3b3d40' }); person({ x: 520, foot: 396, face: -1, shirt: '#d9542b', s: 0.8 }); }
-    else if (g < 260) { ctx.save(); ctx.globalAlpha *= 1 - ein; person({ x: lerp(480, 470, ein), foot: 396, face: -1, shirt: '#5f9a4a', pants: '#3b3d40' }); person({ x: lerp(520, 480, ein), foot: 396, face: -1, shirt: '#d9542b', s: 0.8 }); ctx.restore(); }
-    if (g >= 190 && g < 330) person({ x: lerp(250, 130, seg(g, 190, 330)), foot: 396, face: -1, shirt: '#3e6f9e', hat: true });
+    for (const [d, sh] of [[0, '#5f9a4a'], [0.5, '#d9542b']]) { const p = mbRolltreppe((f / 60 + d) % 1); person({ x: p.x + 10, foot: p.y, face: -1, shirt: sh, s: 0.85 }); }
+  });
+  // Reinigungsroboter in der Halle
+  withAlpha('scrubber', () => {
+    const x = mbScrubberX(f), dir = Math.sin(TAU * f / 60) >= 0 ? 1 : -1;
+    box(x - 30, 344, 60, 34, '#e9e9e6', 6, 2); box(x - 30, 368, 60, 10, '#3e6f9e', 3, 1.5);
+    box(x - 10, 330, 20, 14, '#3b3d40', 3, 1.5); circle(x + dir * 6, 337, 2.5, '#7fd3ff', null);
+    circle(x - 18, 380, 4, '#2a2723', null); circle(x + 18, 380, 4, '#2a2723', null);
+    ctx.fillStyle = 'rgba(159,210,255,0.35)'; ctx.fillRect(x - dir * 30 - (dir > 0 ? 40 : 0), 382, 40, 3);
   });
 }
 
@@ -111,18 +112,18 @@ function drawZugwerk(f) {
 
 const ZW_QUELLE = 'https://www.baslerweb.com/de-de/use-cases/e-check-deutsche-bahn/';
 registerRoom({
-  key: 'bahnhof', name: 'Bahnhof', level: 'Außengelände',
-  hitOrder: ['reisende', 'schnellzug'],
+  key: 'bahnhof', name: 'Magnetbahn-Bahnhof', level: 'Außengelände',
+  hitOrder: ['scrubber', 'reisende'],
   draw: drawBahnhof,
   robots: [
-    { id: 'schnellzug', name: 'Schnellzug', bereich: 'Mobilität', aera: 'seit 1991', typ: 'Hochgeschwindigkeitszug', color: '#f3f3f0',
-      fakt: 'Vorbild ist der ICE der Deutschen Bahn. Er ist knapp 4 Meter hoch, ein langer Zug misst über 200 Meter. Anders als die U-Bahn fährt er noch mit Lokführerin oder Lokführer; fahrerlos fahren bisher vor allem U-Bahnen, in Nürnberg seit 2008.',
-      echt: 'Echt in Größe und Form, der Name steht nur auf der Karte. Oben über dem Bahnsteig hält die Magnetschwebebahn zum Umsteigen, das ist ausgedacht.',
-      note: 'Rollt aus der Halle ein, hält, die Türen gehen auf, zwei Reisende steigen ein.',
-      box: () => { const n = bhNase(state.g); return n == null ? [-99999, -99999, 1, 1] : [BHX + Math.max(0, n - 700), BHY + ZUG_OBEN + 10, Math.min(RW, n) - Math.max(0, n - 700), ZUG_UNTEN - ZUG_OBEN]; } },
-    { id: 'reisende', name: 'Reisende', bereich: 'Mensch', aera: 'Maßstab', typ: 'Menschen am Bahnsteig', color: '#5f9a4a',
-      fakt: 'Ein Mensch ist hier etwa 1,70 Meter groß. So sieht man, wie hoch ein Schnellzug wirklich ist.', note: 'Steigen ein, wenn die Türen offen sind.',
-      box: () => [BHX + 450, BHY + 270, 100, 126] },
+    { id: 'scrubber', name: 'Reinigungsroboter', bereich: 'Service', aera: 'seit 2019', typ: 'Fahrender Bodenschrubber', color: '#e9e9e6',
+      fakt: 'Vorbild ist Neo von Avidbots aus Kanada. Er lernt einmal den Grundriss und schrubbt danach allein, bis zu sechs Stunden mit einer Akkuladung. 3D-Sensoren und Kameras sehen Menschen und Hindernisse. Am Flughafen Cincinnati fährt er seit 2020.',
+      echt: 'Echt. Solche Roboter putzen Flughäfen, Bahnhöfe und Lagerhallen, oft nachts.', note: 'Schrubbt die Halle unter dem Bahnsteig, hinter ihm glänzt der Boden.',
+      quelle: 'https://www.therobotreport.com/cvg-first-us-airport-avidbots-neo-robot/',
+      box: () => [BHX + mbScrubberX(state.f) - 32, BHY + 326, 64, 58] },
+    { id: 'reisende', name: 'Reisende', bereich: 'Mensch', aera: 'Maßstab', typ: 'auf der Rolltreppe', color: '#5f9a4a',
+      fakt: 'Die Magnetschwebebahn fährt auf Stelzen. Darum geht es mit der Rolltreppe hinauf zum Bahnsteig.', note: 'Fahren hinauf, oben hält gleich die Bahn.',
+      box: () => [BHX + 320, BHY + MB_STEIG - 110, 260, 384 - MB_STEIG + 110] },
   ],
 });
 registerRoom({
@@ -151,22 +152,21 @@ registerRoom({
 /* ---------- Halt der Magnetschwebebahn über dem Bahnhof (himmel.js ruft mgStation) ---------- */
 const MG_HALT = BHX + RW / 2;
 function mgStation(ab) {
-  const y = GROUND - 330, x0 = MG_HALT - 900, x1 = MG_HALT + 900;
+  const y = GROUND - 330, x0 = BHX - 60, x1 = BHX + RW + 60;
   // Bahnsteig vor dem Fahrweg, Dach, Treppe nach unten
   ctx.fillStyle = ab ? '#5a6280' : '#c9c4b8'; ctx.fillRect(x0, y + 8, x1 - x0, 22); ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.strokeRect(x0, y + 8, x1 - x0, 22);
   ctx.fillStyle = '#f0b429'; ctx.fillRect(x0, y + 8, x1 - x0, 3);
   ctx.fillStyle = ab ? '#3b4566' : '#5f5b55'; ctx.fillRect(x0 - 20, y - 150, x1 - x0 + 40, 14);
-  for (let x = x0; x <= x1; x += 300) { ctx.fillStyle = ab ? '#424b66' : '#8a8f94'; ctx.fillRect(x - 4, y - 136, 8, 144); }
-  ctx.strokeStyle = ab ? '#424b66' : '#8a8f94'; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(x1, y + 30); ctx.lineTo(x1 + 220, GROUND); ctx.stroke();
+  for (let x = x0 + 20; x <= x1; x += 190) { ctx.fillStyle = ab ? '#424b66' : '#8a8f94'; ctx.fillRect(x - 4, y - 136, 8, 144); }
   box(MG_HALT - 110, y - 132, 220, 30, '#2a2723', 0, 2);
-  text('UMSTEIGEN · SCHNELLZUG', MG_HALT, y - 112, 13, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center', color: '#f3efe4' });
+  text('MAGNETBAHN · BAHNHOF', MG_HALT, y - 112, 13, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center', color: '#f3efe4' });
   // Wartende, solange die Bahn nicht da ist
   const g = state.g % RUN_P;
-  if (g < 130 || g > 250) for (const [dx, sh] of [[-300, '#7b4b8e'], [-240, '#3e6f9e'], [260, '#5f9a4a']]) person({ x: MG_HALT + dx, foot: y + 8, face: 1, shirt: sh });
+  if (g < 130 || g > 250) for (const [dx, sh] of [[-260, '#7b4b8e'], [-200, '#3e6f9e'], [-120, '#5f9a4a']]) person({ x: MG_HALT + dx, foot: y + 8, face: 1, shirt: sh });
 }
 document.addEventListener('DOMContentLoaded', () => typeof KINDER !== 'undefined' && Object.assign(KINDER, {
-  schnellzug: 'Ein Schnellzug ist so hoch wie zwei Erwachsene übereinander. Vorne sitzt noch ein Mensch und fährt ihn.',
-  reisende: 'Diese Menschen warten auf den Zug und steigen ein.',
+  scrubber: 'Dieser Roboter schrubbt den Boden ganz allein. Er weiß, wo die Wände sind, und weicht Menschen aus.',
+  reisende: 'Die Menschen fahren mit der Rolltreppe hinauf, denn die Magnetbahn fährt hoch oben auf Stelzen.',
   kamerator: 'Durch dieses Tor fährt der Zug ganz langsam. 32 Kameras machen Fotos, und ein Computer sucht nach losen Schrauben.',
   echeck: 'Dieser Roboter füllt frisches Wasser in den Zug, damit man sich dort die Hände waschen kann.',
   mufig: 'Dieser kleine Wagen fährt unter dem Zug durch die Grube und fotografiert ihn von unten.',

@@ -398,8 +398,8 @@ registerRunner({
   draw() {},
   robot: { id: 'magnetbahn', name: 'Magnetschwebebahn', bereich: 'Mobilität', aera: 'seit 2004 im Linienbetrieb', typ: 'Zug, der über der Schiene schwebt',
     fakt: 'Die Bahn hat keine Räder. Magnete heben sie einen Zentimeter über den Fahrweg und ziehen sie vorwärts. Ohne Reibung schafft sie über 400 Kilometer pro Stunde. Gesteuert wird sie aus einer Leitzentrale, im Zug sitzt kein Fahrer.',
-    echt: 'Echt. Die deutsche Magnetbahn Transrapid wurde im Emsland getestet und fährt seit 2004 in Shanghai zum Flughafen. In Japan entsteht eine Strecke für über 500 Kilometer pro Stunde. Hinter unseren Häusern fährt sie nur zum Spaß, und der Halt über dem Bahnhof zum Umsteigen in den Schnellzug ist ausgedacht.',
-    note: 'Hält ganz links über dem Bahnhof und saust dann auf ihrer Stelzenstrecke hinter den Häusern vorbei.', color: '#eef1ef',
+    echt: 'Echt. Die deutsche Magnetbahn Transrapid wurde im Emsland getestet und fährt seit 2004 in Shanghai zum Flughafen. In Japan entsteht eine Strecke für über 500 Kilometer pro Stunde. Hinter unseren Häusern und am Magnetbahn-Bahnhof ganz links fährt sie nur zum Spaß.',
+    note: 'Hält ganz links am Magnetbahn-Bahnhof und saust dann auf ihrer Stelzenstrecke hinter den Häusern vorbei.', color: '#eef1ef',
     quelle: 'https://en.wikipedia.org/wiki/Transrapid',
     box: () => { const h = mgX(state.g); return [h - MG_N * (MG_CAR + 10), MG_Y - 70, MG_N * (MG_CAR + 10), 96]; } },
 });
