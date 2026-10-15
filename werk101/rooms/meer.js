@@ -1,4 +1,4 @@
-/* Hohe See rechts hinter der Hafeneinfahrt (c 20–23, Wasserfelder) und Müllsammel-Roboter im Hafenbecken.
+/* Ozean (früher „Hohe See“) rechts hinter der Hafeneinfahrt (c 20–23, Wasserfelder) und Müllsammel-Roboter im Hafenbecken.
    Draußen auf See ist alles weit weg: Maßstab 1 : 12 (1 m ≈ 5,75 Einheiten). Der Hafen davor ist 1 : 4.
    Gezeichnet in Läufern ohne Zuschnitt; die Felder bleiben leer. Die Schiffe stehen im Bild, die Wellen ziehen vorbei. */
 const MR_X0 = rx(roomOf('see1').c) + 140, MR_X1 = rx(roomOf('see5').c) + RW + 900;
@@ -115,7 +115,7 @@ function mrMeer(g) {
   ctx.fillStyle = ab ? 'rgba(20,45,70,0.4)' : 'rgba(70,120,150,0.35)'; ctx.fillRect(MR_X0, SH_WY + 8, MR_X1 - MR_X0, SH_BOT - SH_WY - 28);
   mrUnterwasser(g);
   mrWellen(MR_X0, MR_X1, SH_WY, g, 'rgba(230,245,255,0.7)');
-  text('HOHE SEE', MR_X0 + 1600, SH_WY + 150, 40, { family: '"Saira Condensed", sans-serif', weight: 700, color: 'rgba(230,245,255,0.25)' });
+  text('OZEAN', MR_X0 + 1600, SH_WY + 150, 40, { family: '"Saira Condensed", sans-serif', weight: 700, color: 'rgba(230,245,255,0.25)' });
 }
 registerRunner({
   room: 'see2', draw(g) { mrMeer(g); },
@@ -192,7 +192,7 @@ registerRunner({
     quelle: 'https://www.ranmarine.io/news/the-plastic-gobbling-water-robot/',
     box: () => { const x = mrHaiX(state.g); return [x - 20, SH_WY - 22, 40, 30]; } },
 });
-for (const [key, name] of [['see1', 'Hohe See'], ['see2', 'Hohe See: Frachter'], ['see3', 'Hohe See: Plastik sammeln'], ['see4', 'Hohe See: Barriere'], ['see5', 'Hohe See: Algenfarm']])
+for (const [key, name] of [['see1', 'Ozean'], ['see2', 'Ozean: Frachter'], ['see3', 'Ozean: Plastik sammeln'], ['see4', 'Ozean: Barriere'], ['see5', 'Ozean: Algenfarm']])
   registerRoom({ key, name, level: 'Außengelände', hitOrder: [], robots: [], draw() {} });
 registerRunner({ room: 'see1', draw() {}, robot: { id: 'schildkroete', name: 'Meeresschildkröte', bereich: 'Tier', aera: 'Maßstab', typ: 'Tier im Meer', color: '#5f7a3a',
   fakt: 'Meeresschildkröten fressen gern Quallen. Eine treibende Plastiktüte sieht unter Wasser ähnlich aus, darum verschlucken Schildkröten manchmal Plastik. Auch deshalb wird Plastik aus dem Meer gefischt.',

@@ -209,3 +209,17 @@ Object.assign(KINDER, {
   highlander: 'Der rote H1ghlander ist beim zweiten Rennen Dritter geworden.',
   ghostrider: 'Dieses Motorrad fährt ohne Fahrer. Beim Start ist es umgefallen, weil jemand vergessen hatte, das Gleichgewicht einzuschalten.',
 });
+// Marianengraben (rooms/graben.js)
+Object.assign(KINDER, {
+  marianengraben: 'Das ist die tiefste Stelle im Meer, fast 11 Kilometer tief. Da unten ist es immer dunkel und sehr kalt.',
+  okeanos: 'Von diesem Schiff aus wird der Tauchroboter an einem Kabel ins Meer gelassen. Die Bilder kann man live im Internet sehen.',
+  d2: 'Dieser Tauchroboter hat starke Lampen und Kameras. Er taucht bis 6 Kilometer tief und filmt Tiere, die noch niemand kannte.',
+  crossota: 'Diese rote Qualle wurde 2016 entdeckt. Sie breitet ihre langen Fangarme aus wie ein Netz.',
+  dumbo: 'Diese Krake hat Flossen, die aussehen wie Ohren. Damit schwimmt sie ganz langsam.',
+  tiefseelander: 'Dieses Gestell sinkt ganz allein auf den Meeresboden und filmt dort. Danach wirft es Gewichte ab und schwimmt wieder nach oben.',
+  schneckenfisch: 'Dieser rosa Fisch lebt tiefer als fast alle anderen Fische. Er ist ganz weich und fast durchsichtig.',
+  flohkrebse: 'Ganz unten wimmeln kleine Krebse. Sie finden Futter sehr schnell.',
+  nereus: 'Nereus ist bis ganz nach unten getaucht, fast 11 Kilometer tief. Mit seinem Greifarm hat er Steine und Schlamm geholt.',
+  xeno: 'Diese Knollen sehen aus wie Steine, sind aber Lebewesen aus nur einer einzigen Zelle.',
+  tuete: 'Sogar ganz unten in der tiefsten Stelle des Meeres lag eine Plastiktüte. Plastik gehört nicht ins Meer.',
+});
