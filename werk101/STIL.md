@@ -252,3 +252,4 @@ registerRoom({
   - Arktis: Wasser endet am Ufer, darunter normales Erdreich; Schnee läuft am rechten Rand aus. Polarstern steht jetzt sichtbar hinter der Camp-Scholle (rechts vom Eiscamp).
   - Wüste: Tafelberge und Dünen laufen an beiden Rändern flach aus, Sandboden blendet über 360 Einheiten ins Nachbarfeld.
   - Muster für Übergänge: Rand-Gradient in der Farbe des Nachbarn statt harter Kante; eigene Erdflächen vermeiden, wo engine.js schon Erde zeichnet.
+- Mehr Meldungen (15. Oktober 2026, Version 20261015z): zehn weitere Einträge in `MELDUNGEN` – Landung der ersten Raketenstufe, Magnetbahn hält, Lieferauto fährt los (`alle: 4`, passend zu `langeUhr(4)`), Staubwolke im Energiepark, Krähe auf dem Jäteroboter, dazu die kurzen Raum-Gags (Filmstudio, Eingangshalle, Schule, Mars-Testgelände, Katastrophenschutz). Neues Feld `alle` (Rundenzyklus, Standard 6), Hilfsfunktion `mlRaum(key)` für die Raummitte.
