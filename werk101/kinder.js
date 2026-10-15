@@ -201,3 +201,11 @@ const KINDER = {
   kraehe: 'Die Krähe fährt auf dem Feldroboter mit. Er ist so langsam, dass das geht.',
   schaf: 'Schafe halten das Gras unter den Solarmodulen kurz. Dafür braucht man keinen Roboter.',
 };
+// Wüste (rooms/wueste.js)
+Object.assign(KINDER, {
+  darpa: 'Hier fahren Autos ganz ohne Fahrer durch die Wüste um die Wette. Beim ersten Mal ist keins angekommen. Ein Jahr später haben es fünf geschafft.',
+  stanley: 'Stanley hat das Rennen gewonnen. Er schaut mit Lasern auf dem Dach nach vorn und hat geübt, welcher Weg gut zu fahren ist.',
+  sandstorm: 'Sandstorm ist beim ersten Rennen auf einem Felsen hängen geblieben. Beim zweiten Mal wurde er Zweiter.',
+  highlander: 'Der rote H1ghlander ist beim zweiten Rennen Dritter geworden.',
+  ghostrider: 'Dieses Motorrad fährt ohne Fahrer. Beim Start ist es umgefallen, weil jemand vergessen hatte, das Gleichgewicht einzuschalten.',
+});
