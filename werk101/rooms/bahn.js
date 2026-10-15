@@ -97,8 +97,8 @@ function drawTiefPaar(f, off) {
   ctx.fillStyle = '#bfb9ab'; ctx.fillRect(-20, 360, PAAR_W + 40, 48); line(-20, 360, PAAR_W + 20, 360, INK, 2);
   ctx.fillStyle = '#f3f1ea'; ctx.fillRect(-20, 362, PAAR_W + 40, 3);
   // Anzeige
-  line(660, 34, 660, 60, INK, 2); box(560, 60, 200, 34, '#23384d', 2, 2);
-  text(nase == null || g < 150 ? 'SCHNELLZUG · GLEICH' : g < 330 ? 'SCHNELLZUG · HÄLT' : 'ABFAHRT', 660, 82, 12, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center', color: '#f0b429' });
+  line(480, 34, 480, 60, INK, 2); box(380, 60, 200, 34, '#23384d', 2, 2);
+  text(nase == null || g < 150 ? 'SCHNELLZUG · GLEICH' : g < 330 ? 'SCHNELLZUG · HÄLT' : 'ABFAHRT', 480, 82, 12, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center', color: '#f0b429' });
   // Reisende steigen ein, eine Reisende steigt aus
   const ein = seg(g, 200, 260);
   withAlpha('tbreisende', () => {

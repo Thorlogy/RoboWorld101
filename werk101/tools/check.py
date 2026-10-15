@@ -67,7 +67,11 @@ async def main(rooms):
                         return { x: x * state.z + state.ox, y: y * state.z + state.oy, w: w * state.z, h: h * state.z }; }''', [r['id'], f])
                     if bx['w'] < 2 or bx['x'] < rect['x'] - 50 or bx['x'] > rect['x'] + rect['w']:
                         continue
-                    c = {'x': max(0, round(bx['x'])), 'y': max(0, round(bx['y'])), 'width': max(2, round(bx['w'])), 'height': max(2, round(bx['h']))}
+                    x0, y0 = max(0, round(bx['x'])), max(0, round(bx['y']))
+                    x1, y1 = min(1400, round(bx['x'] + bx['w'])), min(860, round(bx['y'] + bx['h']))
+                    if x1 - x0 < 2 or y1 - y0 < 2:
+                        continue
+                    c = {'x': x0, 'y': y0, 'width': x1 - x0, 'height': y1 - y0}
                     await pg.evaluate('f => { window.__hide = null; state.f = f; draw(); }', f)
                     a = Image.open(io.BytesIO(await pg.screenshot(clip=c)))
                     await pg.evaluate('([id, f]) => { window.__hide = id; state.f = f; draw(); }', [r['id'], f])
