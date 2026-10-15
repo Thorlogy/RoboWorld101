@@ -85,13 +85,13 @@ function wuBild(g) {
   const sand = nacht ? '#4e4a5e' : ab ? '#9a7462' : '#dcbf86', fern = nacht ? '#2e3150' : ab ? '#6e5468' : '#c99a6a';
   ctx.save(); ctx.beginPath(); ctx.rect(WU_X0, WU_G - 1400, WU_X1 - WU_X0, 1440); ctx.clip();
   // Tafelberge in der Ferne
-  ctx.fillStyle = fern; ctx.beginPath(); ctx.moveTo(WU_X0, WU_G - 120);
-  for (const [dx, dy] of [[300, -140], [380, -330], [760, -330], [830, -170], [1300, -150], [1360, -260], [1600, -260], [1660, -150], [2100, -180], [2200, -380], [2624, -420]]) ctx.lineTo(WU_X0 + dx, WU_G + dy);
+  ctx.fillStyle = fern; ctx.beginPath(); ctx.moveTo(WU_X0, WU_G - 10);
+  for (const [dx, dy] of [[300, -140], [380, -330], [760, -330], [830, -170], [1300, -150], [1360, -260], [1600, -260], [1660, -150], [2100, -180], [2200, -380], [2420, -330], [2624, -40]]) ctx.lineTo(WU_X0 + dx, WU_G + dy);
   ctx.lineTo(WU_X1, WU_G); ctx.lineTo(WU_X0, WU_G); ctx.closePath(); ctx.fill();
   // Dünen und Boden
-  ctx.fillStyle = sand; ctx.beginPath(); ctx.moveTo(WU_X0, WU_G + 40);
-  for (let x = 0; x <= 2624; x += 40) ctx.lineTo(WU_X0 + x, WU_G - 40 - 26 * Math.sin(x / 210) - 12 * Math.sin(x / 67));
-  ctx.lineTo(WU_X1, WU_G + 40); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = sand; ctx.beginPath(); ctx.moveTo(WU_X0, WU_G);
+  for (let x = 0; x <= 2624; x += 40) { const r = Math.min(1, x / 300, (2624 - x) / 300); ctx.lineTo(WU_X0 + x, WU_G - r * (40 + 26 * Math.sin(x / 210) + 12 * Math.sin(x / 67))); }
+  ctx.lineTo(WU_X1, WU_G); ctx.closePath(); ctx.fill();
   ctx.fillStyle = nacht ? '#5a566c' : ab ? '#a8806a' : '#e6cc98'; ctx.fillRect(WU_X0, WU_G - 18, WU_X1 - WU_X0, 18);
   // Fahrspur
   ctx.strokeStyle = 'rgba(120,90,60,0.35)'; ctx.lineWidth = 3; ctx.setLineDash([22, 14]);
@@ -149,6 +149,12 @@ function wuBild(g) {
     }
   }
   ctx.restore();
+  // weicher Übergang: Sandboden läuft links ins Gras und rechts ins Gebirge aus
+  const bodenFarbe = nacht ? '90,86,108' : ab ? '168,128,106' : '230,204,152';
+  for (const [x0, x1] of [[WU_X0, WU_X0 - 360], [WU_X1, WU_X1 + 360]]) {
+    const gr = ctx.createLinearGradient(x0, 0, x1, 0); gr.addColorStop(0, `rgba(${bodenFarbe},1)`); gr.addColorStop(1, `rgba(${bodenFarbe},0)`);
+    ctx.fillStyle = gr; ctx.fillRect(Math.min(x0, x1), WU_G - 18, 360, 24);
+  }
 }
 
 registerRunner({

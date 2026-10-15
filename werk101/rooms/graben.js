@@ -96,7 +96,13 @@ function grBild(g) {
   // Wasser oben, nach unten dunkler
   for (let d = 0; d < 6000; d += 500) { ctx.fillStyle = grFarbe(d, ab); ctx.fillRect(GR_X0, grTiefe(d), GR_X1 - GR_X0, grTiefe(d + 500) - grTiefe(d) + 1); }
   // Gestein um den Graben, dann das Wasser im Graben
-  ctx.fillStyle = '#3d3630'; ctx.fillRect(GR_X0, SH_BOT - 20, GR_X1 - GR_X0, GR_BOT - SH_BOT + 64);
+  // weiche Übergänge zum Ozean links und zur Arktis rechts
+  for (const [x0, x1, farbe] of [[GR_X0, GR_X0 + 320, ab ? '21,47,72' : '65,114,145'], [GR_X1, GR_X1 - 320, ab ? '16,34,54' : '47,86,112']]) {
+    const gr = ctx.createLinearGradient(x0, 0, x1, 0); gr.addColorStop(0, `rgba(${farbe},1)`); gr.addColorStop(1, `rgba(${farbe},0)`);
+    ctx.fillStyle = gr; ctx.fillRect(Math.min(x0, x1), SH_WY, 320, SH_BOT - SH_WY);
+  }
+  // Meeresboden als Band wie beim Ozean; um den Graben liegt das normale Erdreich
+  ctx.fillStyle = '#5b4f45'; ctx.fillRect(GR_X0 - WALL, SH_BOT - 20, GR_X1 - GR_X0 + 2 * WALL, 20);
   ctx.beginPath(); GR_WAND.forEach(([t, y], i) => (i ? ctx.lineTo(grWandX(-1, t), y) : ctx.moveTo(grWandX(-1, t), y)));
   for (let i = GR_WAND.length - 1; i >= 0; i--) ctx.lineTo(grWandX(1, GR_WAND[i][0]), GR_WAND[i][1]);
   ctx.closePath(); ctx.fillStyle = ab ? '#040810' : '#081018'; ctx.fill();

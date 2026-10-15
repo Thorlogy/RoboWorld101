@@ -52,17 +52,21 @@ function akBild(g) {
   ctx.fillStyle = himmelFarben()[2]; ctx.fillRect(AK_X0 - WALL, GROUND - 8, AK_LAND - AK_X0 + WALL, SH_WY - GROUND + 9);
   // Polarstern weit hinten im Eis (klein, weil weit weg)
   withAlpha('polarstern', () => {
-    const x = AK_X0 + 200, y = SH_WY - 14;
+    const x = rx(30) + 640, y = AK_EIS_O - 4;
     ctx.beginPath(); ctx.moveTo(x, y - 26); ctx.lineTo(x + 230, y - 26); ctx.lineTo(x + 220, y); ctx.lineTo(x + 12, y); ctx.closePath(); paint('#b4322a', INK, 1.5);
     box(x + 30, y - 58, 70, 32, '#ecebe6', 0, 1.2); box(x + 46, y - 74, 34, 16, '#ecebe6', 0, 1.2); line(x + 63, y - 74, x + 63, y - 96, INK, 2);
     box(x + 150, y - 44, 10, 18, '#3b3d40', 0, 1); line(x + 120, y - 26, x + 140, y - 60, INK, 2);
   });
   // Wasser unter dem Eis
-  ctx.fillStyle = ab ? '#102236' : '#2f5670'; ctx.fillRect(AK_X0 - WALL, SH_WY, AK_X1 - AK_X0 + WALL, SH_BOT - SH_WY);
-  ctx.fillStyle = '#5b4f45'; ctx.fillRect(AK_X0 - WALL, SH_BOT - 20, AK_X1 - AK_X0 + WALL, 20);
+  ctx.fillStyle = ab ? '#102236' : '#2f5670'; ctx.fillRect(AK_X0 - WALL, SH_WY, AK_LAND - AK_X0 + WALL, SH_BOT - SH_WY);
+  ctx.fillStyle = '#5b4f45'; ctx.fillRect(AK_X0 - WALL, SH_BOT - 20, AK_LAND - AK_X0 + WALL, 20);
   // Land: Fels mit Dauerfrost, Schnee obenauf
-  ctx.beginPath(); ctx.moveTo(AK_LAND - 120, SH_BOT); ctx.lineTo(AK_LAND - 40, SH_WY + 20); ctx.lineTo(AK_LAND, GROUND); ctx.lineTo(AK_X1, GROUND); ctx.lineTo(AK_X1, SH_BOT); ctx.closePath(); paint('#4a4642', INK, 2);
-  ctx.fillStyle = '#f4f6f6'; ctx.fillRect(AK_LAND, GROUND - 8, AK_X1 - AK_LAND, 10);
+  // Ufer in der Farbe des Erdreichs; dahinter zeigt sich das normale Erdreich mit seinen Schichten. Schnee läuft am Rand aus
+  const erde = ctx.createLinearGradient(0, GROUND, 0, BOTTOM + 400); erde.addColorStop(0, '#7a6450'); erde.addColorStop(1, '#4d3e31');
+  ctx.beginPath(); ctx.moveTo(AK_LAND - 140, SH_BOT); ctx.lineTo(AK_LAND - 40, SH_WY + 20); ctx.lineTo(AK_LAND, GROUND); ctx.lineTo(AK_LAND + 60, GROUND); ctx.lineTo(AK_LAND + 60, SH_BOT); ctx.closePath();
+  ctx.fillStyle = erde; ctx.fill(); ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(AK_LAND - 140, SH_BOT); ctx.lineTo(AK_LAND - 40, SH_WY + 20); ctx.lineTo(AK_LAND, GROUND); ctx.stroke();
+  const schnee = ctx.createLinearGradient(AK_X1 - 100, 0, AK_X1 + 400, 0); schnee.addColorStop(0, 'rgba(244,246,246,1)'); schnee.addColorStop(1, 'rgba(244,246,246,0)');
+  ctx.fillStyle = '#f4f6f6'; ctx.fillRect(AK_LAND, GROUND - 8, AK_X1 - 100 - AK_LAND, 14); ctx.fillStyle = schnee; ctx.fillRect(AK_X1 - 100, GROUND - 8, 500, 14);
   // Eisschollen: offene Rinne links, große Scholle mit Camp
   const eis = ab ? '#c9d4e2' : '#eef4f8', eisU = ab ? '#8fa6bf' : '#b9d0de';
   // Eisberg: vom Gletscher abgebrochen, etwa neun Zehntel liegen unter Wasser und laufen nach unten spitz zu
@@ -158,7 +162,7 @@ akReg('arktis1', { id: 'polarstern', name: 'Polarstern', bereich: 'Forschung', a
   fakt: 'Die Polarstern ist der Forschungs-Eisbrecher des Alfred-Wegener-Instituts aus Bremerhaven, 118 Meter lang. Für die MOSAiC-Expedition ließ sie sich im Herbst 2019 in einer Eisscholle einfrieren und driftete fast ein Jahr mit dem Eis durch das Nordpolarmeer. Um das Schiff herum entstand ein Eiscamp mit Messstationen.',
   echt: 'Echt. Hier klein, weil sie weit hinten im Eis liegt.', note: 'Liegt weit draußen eingefroren im Eis.',
   quelle: 'https://en.wikipedia.org/wiki/RV_Polarstern',
-  box: () => [AK_X0 + 200, SH_WY - 110, 240, 100] });
+  box: () => [rx(30) + 640, AK_EIS_O - 100, 240, 100] });
 akReg('arktis1', { id: 'robbe', name: 'Ringelrobbe', bereich: 'Tier', aera: 'Arktis', typ: 'Robbe auf dem Eis', color: '#7d7a72',
   fakt: 'Ringelrobben leben im arktischen Meereis. Sie halten sich mit ihren Krallen Atemlöcher im Eis offen und ruhen auf den Schollen. Sie sind die wichtigste Beute der Eisbären.',
   echt: 'Echt.', note: 'Ruht auf der kleinen Scholle.',

@@ -247,3 +247,8 @@ registerRoom({
   - Arktis: die kleine Scholle ist jetzt ein Eisberg (Karte `eisberg`), unter Wasser spitz zulaufend und etwa neunmal so groß wie der sichtbare Teil; Robbe liegt auf dem Meereis. Lücke zwischen Graben und Arktis mit Wasser gefüllt.
   - `meldungen.js`: zentrale Liste `MELDUNGEN` für den Ticker (Runde `WELT.runde % 6`, Zeitpunkt `g`, optional `wenn()`, Ort zum Hinfahren). Acht Meldungen: DARPA 2004/2005, Raketenstart, Lander, Nereus, Ballonstart, Polarlicht (nachts), Raumstation (abends). Neue Meldung = eine Zeile in der Liste.
   - stoerung.js ruft `ticker()` direkt auf; `WELT.emit('ticker', …)` reicht nur ein Argument weiter, dann fehlt der Ort zum Hinfahren.
+- Weichere Übergänge (15. Oktober 2026, Version 20261015y):
+  - Marianengraben: kein Felsblock mehr um den Graben, dort zeigt sich das normale Erdreich mit Schichten; Wasser geht links und rechts über 320 Einheiten in die Farbe von Ozean und Arktis über; Meeresboden-Band durchgehend.
+  - Arktis: Wasser endet am Ufer, darunter normales Erdreich; Schnee läuft am rechten Rand aus. Polarstern steht jetzt sichtbar hinter der Camp-Scholle (rechts vom Eiscamp).
+  - Wüste: Tafelberge und Dünen laufen an beiden Rändern flach aus, Sandboden blendet über 360 Einheiten ins Nachbarfeld.
+  - Muster für Übergänge: Rand-Gradient in der Farbe des Nachbarn statt harter Kante; eigene Erdflächen vermeiden, wo engine.js schon Erde zeichnet.
