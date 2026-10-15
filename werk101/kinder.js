@@ -223,3 +223,15 @@ Object.assign(KINDER, {
   xeno: 'Diese Knollen sehen aus wie Steine, sind aber Lebewesen aus nur einer einzigen Zelle.',
   tuete: 'Sogar ganz unten in der tiefsten Stelle des Meeres lag eine Plastiktüte. Plastik gehört nicht ins Meer.',
 });
+// Arktis (rooms/arktis.js)
+Object.assign(KINDER, {
+  arktis: 'Ganz im Norden ist das Meer zugefroren. Hier messen Forscher und Roboter, wie es dem Eis und dem Wetter geht.',
+  polarstern: 'Dieses rote Schiff kann durchs Eis fahren. Einmal ist es sogar ein ganzes Jahr lang im Eis eingefroren geblieben, mit Absicht.',
+  robbe: 'Die Robbe ruht sich auf dem Eis aus. Unter dem Eis fängt sie Fische.',
+  beast: 'Dieser kleine Roboter taucht durch ein Loch im Eis und filmt, was unter dem Eis wächst.',
+  itp: 'Die gelbe Boje bleibt auf dem Eis. Darunter klettert ein Messgerät ganz allein an einem Draht hinauf und hinunter.',
+  eisbaer: 'Eisbären sind stark und gefährlich. Darum passt im Camp immer jemand auf.',
+  wettermast: 'Dieser Mast misst ganz allein den Wind und die Kälte, auch wenn kein Mensch da ist.',
+  autosonde: 'In diesem Kasten wohnt ein Roboter, der Wetterballons aufbläst und fliegen lässt. Der Ballon steigt so hoch, bis er platzt.',
+  polarfuchs: 'Der Polarfuchs ist im Winter weiß wie der Schnee. So sieht man ihn kaum.',
+});

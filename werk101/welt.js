@@ -66,8 +66,8 @@ function himmelExtras() {
   wolken();
   if (istDunkel()) {
     ctx.fillStyle = '#f3efe4';
-    const n = istNacht() ? 260 : 160;
-    for (let i = 0; i < n; i++) { const x = ((i * 733) % 30000) - 10000, y = TOP - 680 + ((i * 397) % 1500); ctx.fillRect(x, y, 3, 3); }
+    const n = istNacht() ? 360 : 220;
+    for (let i = 0; i < n; i++) { const x = ((i * 733) % 42000) - 18000, y = TOP - 680 + ((i * 397) % 1500); ctx.fillRect(x, y, 3, 3); }
   }
   if (istNacht() && state.wetter !== 'regen') {
     // Mond: Sichel als Kreis mit verschobenem Himmelskreis darüber
@@ -90,7 +90,7 @@ function wolken() {
   const w = state.wetter, n = { sonne: 11, wolken: 46, regen: 52, schnee: 50, nebel: 20 }[w] || 11;
   const farbe = istNacht() ? 'rgba(60,66,86,0.75)' : istDunkel() ? 'rgba(120,110,130,0.7)' : w === 'regen' ? 'rgba(130,140,146,0.9)' : w === 'schnee' ? 'rgba(220,226,230,0.9)' : 'rgba(246,246,242,0.85)';
   for (let i = 0; i < n; i++) {
-    const breite = 32000, x = ((i * 2311 + state.g * (1.2 + (i % 3) * 0.4) + WELT.runde * 480 * (1.2 + (i % 3) * 0.4)) % breite) - 10000;
+    const breite = 44000, x = ((i * 2311 + state.g * (1.2 + (i % 3) * 0.4) + WELT.runde * 480 * (1.2 + (i % 3) * 0.4)) % breite) - 18000;
     wolke(x, TOP - 760 + ((i * 397) % 900), 0.9 + (i % 4) * 0.35, farbe);
   }
 }

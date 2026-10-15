@@ -124,7 +124,8 @@ function glow(x, y, r, color) {
 function drawSurroundings(f) {
   const g = ctx.createLinearGradient(0, TOP - 700, 0, GROUND), sky = himmelFarben();
   g.addColorStop(0, sky[0]); g.addColorStop(0.55, sky[1]); g.addColorStop(1, sky[2]);
-  ctx.fillStyle = g; ctx.fillRect(-20000, -6000, BW + 38000, GROUND + 6000);
+  const WX0 = Math.min(-20000, ...ROOMS.map(o => rx(o.c) - 3000)), WX1 = Math.max(BW + 18000, ...ROOMS.map(o => rx(o.c) + RW + 3000));
+  ctx.fillStyle = g; ctx.fillRect(WX0, -6000, WX1 - WX0, GROUND + 6000);
   himmelExtras();
   // Hintergrund-Silhouetten
   ctx.fillStyle = silhouetteFarbe();
@@ -136,8 +137,8 @@ function drawSurroundings(f) {
   // Erde
   const e = ctx.createLinearGradient(0, GROUND, 0, BOTTOM + 400);
   e.addColorStop(0, '#7a6450'); e.addColorStop(1, '#4d3e31');
-  ctx.fillStyle = e; ctx.fillRect(-20000, GROUND, BW + 38000, 6000);
-  ctx.fillStyle = '#6f8f5a'; ctx.fillRect(-20000, GROUND - 6, BW + 38000, 12);
+  ctx.fillStyle = e; ctx.fillRect(WX0, GROUND, WX1 - WX0, 6000);
+  ctx.fillStyle = '#6f8f5a'; ctx.fillRect(WX0, GROUND - 6, WX1 - WX0, 12);
   ctx.fillStyle = 'rgba(0,0,0,0.12)';
   for (let i = 0; i < 90; i++) { const x = ((i * 377) % (BW + 2400)) - 1200, y = GROUND + 40 + ((i * 211) % 1400); ctx.beginPath(); ctx.arc(x, y, 3 + (i % 4), 0, TAU); ctx.fill(); }
   if (typeof erdreich === 'function') erdreich();   // Schichten, Steine, Leitungen (welt.js); Räume liegen darüber
