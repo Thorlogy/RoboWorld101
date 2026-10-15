@@ -133,12 +133,24 @@ function stFischtreppe(g) {
     text('FISCHE HEUTE: ' + (118 + stRunde() * 8 + Math.floor(g / 60)), p.x + 76, p.y - 54, 9, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center', color: '#7fe08a' });
   });
 }
+// Schneekappe: unten ausgefranst mit Rinnen, Schattenseite links bläulich (vorher in die Bergform clippen)
+function schneeKappe(x, y, ab, b = 190) {
+  ctx.beginPath(); ctx.moveTo(x - b, y - 20);
+  for (let i = 0; i <= 12; i++) { const dx = -b + i * b / 6, rinne = (i * 7) % 3 === 0 ? 70 : 0; ctx.lineTo(x + dx, y + 90 + 40 * Math.abs(Math.sin(i * 1.7 + x)) + rinne); }
+  ctx.lineTo(x + b, y - 20); ctx.closePath();
+  ctx.fillStyle = ab ? '#bfc4d4' : '#f6f7f4'; ctx.fill();
+  ctx.save(); ctx.clip(); ctx.fillStyle = ab ? 'rgba(60,70,110,0.35)' : 'rgba(150,172,200,0.45)';
+  ctx.beginPath(); ctx.moveTo(x, y - 5); ctx.lineTo(x - 30, y + 60); ctx.lineTo(x - 12, y + 110); ctx.lineTo(x - 40, y + 260); ctx.lineTo(x - b - 10, y + 260); ctx.lineTo(x - b - 10, y - 30); ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
 function stBild(g) {
   const ab = istDunkel();
   // Berge im Hintergrund, Hang bis zum Ufer
   ctx.fillStyle = ab ? '#2c3458' : '#9aa7a2';
   ctx.beginPath(); ctx.moveTo(SEEX0 - 1600, ST_GW); ctx.lineTo(SEEX0 - 1300, ST_GW - 900); ctx.lineTo(SEEX0 - 900, ST_GW - 640); ctx.lineTo(SEEX0 - 500, ST_GW - 1050); ctx.lineTo(SEEX0, ST_GW - 620); ctx.lineTo(SEEX0 + 400, ST_GW - 820); ctx.lineTo(SEEX0 + 900, ST_GW - 420); ctx.lineTo(ST_XD, ST_GW - 300); ctx.lineTo(ST_XD, ST_GW); ctx.closePath(); ctx.fill();
-  ctx.fillStyle = '#f3f1ea'; for (const [x, y] of [[SEEX0 - 1300, ST_GW - 900], [SEEX0 - 500, ST_GW - 1050], [SEEX0 + 400, ST_GW - 820]]) { ctx.beginPath(); ctx.moveTo(x - 60, y + 80); ctx.lineTo(x, y); ctx.lineTo(x + 60, y + 80); ctx.closePath(); ctx.fill(); }
+  ctx.save(); ctx.clip();
+  for (const [x, y] of [[SEEX0 - 1300, ST_GW - 900], [SEEX0 - 500, ST_GW - 1050], [SEEX0 + 400, ST_GW - 820]]) schneeKappe(x, y, ab);
+  ctx.restore();
   // Erdreich um den See (Hang links), dann das Wasser
   ctx.fillStyle = '#6b5a48';
   ctx.beginPath(); ctx.moveTo(SEEX0 - 1600, ST_GW + 700); ctx.lineTo(SEEX0 - 1600, ST_GW - 300); ctx.lineTo(SEEX0 - 200, ST_WS - 60); ctx.lineTo(ST_XL, ST_WS);

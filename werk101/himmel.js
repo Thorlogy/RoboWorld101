@@ -368,13 +368,13 @@ registerRunner({
 const MG_Y = GROUND - 330, MG_CAR = 560, MG_N = 3;
 // fährt von links an, hält 80 Bilder am Bahnhof (MG_HALT aus rooms/bahn.js) und fährt dann nach rechts weiter
 const MG_LEN = MG_N * (MG_CAR + 10);
-const mgX = g => { g %= RUN_P; const h = (typeof MG_HALT !== 'undefined' ? MG_HALT : 0) + MG_LEN / 2; if (g < 150) return lerp(-7800, h, 1 - Math.pow(1 - seg(g, 0, 150), 2)); if (g < 230) return h; return lerp(h, 13500, Math.pow(seg(g, 230, 480), 2)); };
+const mgX = g => { g %= RUN_P; const h = (typeof MG_HALT !== 'undefined' ? MG_HALT : 0) + MG_LEN / 2; if (g < 150) return lerp(-15000, h, 1 - Math.pow(1 - seg(g, 0, 150), 2)); if (g < 230) return h; return lerp(h, 13500, Math.pow(seg(g, 230, 480), 2)); };
 function drawMaglevBack(g) {
   const ab = istDunkel();
   // Fahrweg: Betonträger auf Stelzen
-  ctx.fillStyle = ab ? '#4a5470' : '#b9c3c4'; ctx.fillRect(-9500, MG_Y + 6, 23500, 26);
-  ctx.strokeStyle = ab ? '#2f3650' : '#8f9a9c'; ctx.lineWidth = 2; ctx.strokeRect(-9500, MG_Y + 6, 23500, 26);
-  for (let x = -9400; x < 14000; x += 420) { ctx.fillStyle = ab ? '#424b66' : '#aab5b6'; ctx.fillRect(x, MG_Y + 32, 22, GROUND - MG_Y - 32); }
+  ctx.fillStyle = ab ? '#4a5470' : '#b9c3c4'; ctx.fillRect(-17500, MG_Y + 6, 31500, 26);
+  ctx.strokeStyle = ab ? '#2f3650' : '#8f9a9c'; ctx.lineWidth = 2; ctx.strokeRect(-17500, MG_Y + 6, 31500, 26);
+  for (let x = -17400; x < 14000; x += 420) { ctx.fillStyle = ab ? '#424b66' : '#aab5b6'; ctx.fillRect(x, MG_Y + 32, 22, GROUND - MG_Y - 32); }
   if (regen() && false) return;
   const head = mgX(g);
   for (let k = 0; k < MG_N; k++) {
