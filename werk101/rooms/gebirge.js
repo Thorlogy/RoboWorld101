@@ -27,10 +27,11 @@ function bgPfad(g, pts) {
 const BG_PJ = BG_F + 400, BG_WJ = BG_F + 62, BG_PC = BG_F + 640, BG_WC = BG_F + 60, BG_PS = BG_F + 870, BG_WS = BG_F + 130;
 const BG_OL = BG_P + 200, BG_OD = BG_P + 620, BG_WD = BG_F + 230;
 const bgJumbo = g => bgPfad(g, [[0, BG_PJ], [20, BG_WJ], [110, BG_WJ], [130, BG_PJ]]);
-const bgLade = g => bgPfad(g, [[130, BG_PC], [150, BG_WC], [200, BG_WC], [220, BG_PC]]);
+const bgLade = g => bgSperre() ? BG_PC : bgPfad(g, [[130, BG_PC], [150, BG_WC], [200, BG_WC], [220, BG_PC]]);
 const bgSpritz = g => bgPfad(g, [[380, BG_PS], [400, BG_WS], [465, BG_WS], [480, BG_PS]]);
-const bgDumper = g => bgPfad(g, [[250, BG_OD], [290, BG_WD], [380, BG_WD], [430, BG_OD]]);
+const bgDumper = g => bgSperre() ? BG_OD : bgPfad(g, [[250, BG_OD], [290, BG_WD], [380, BG_WD], [430, BG_OD]]);
 function bgLader(g) {
+  if (bgSperre()) return { x: BG_OL, dir: 1, hoch: 0, voll: false };
   if (g < 290) return { x: bgPfad(g, [[255, BG_OL], [290, BG_F + 40]]), dir: -1, hoch: 0, voll: false };
   if (g >= 380) return { x: bgPfad(g, [[380, BG_F + 40], [420, BG_OL]]), dir: 1, hoch: 0, voll: false };
   const u = ((g - 290) / 22.5) % 1, hin = u < 0.5, v = ease(hin ? u * 2 : 2 - u * 2);
@@ -38,8 +39,9 @@ function bgLader(g) {
 }
 // 6 Bohrlöcher: Arm 0 oben, Arm 1 unten, je drei nacheinander
 const BG_LOCH = [BG_TY - 122, BG_TY - 102, BG_TY - 82, BG_TY - 55, BG_TY - 35, BG_TY - 15];
-const bgLochTiefe = (i, g) => g >= 235 ? 0 : 55 * seg(g, 20 + (i % 3) * 30, 46 + (i % 3) * 30);
-const bgGeladen = (i, g) => g >= 235 ? 0 : seg(g, 150 + i * 8, 158 + i * 8);
+const bgSperre = () => typeof WELT !== 'undefined' && WELT.gewitter;   // bei Gewitter wird nicht geladen und nicht gesprengt
+const bgLochTiefe = (i, g) => bgSperre() ? 55 : g >= 235 ? 0 : 55 * seg(g, 20 + (i % 3) * 30, 46 + (i % 3) * 30);
+const bgGeladen = (i, g) => bgSperre() || g >= 235 ? 0 : seg(g, 150 + i * 8, 158 + i * 8);
 const MONO = '"IBM Plex Mono", monospace';
 // Spiegeln: Weltkoordinate x der Baustelle → 2·BG_MX − x, y → y + BG_DY
 const bgM = b => [2 * BG_MX - b[0] - b[2], b[1] + BG_DY, b[2], b[3]];
@@ -242,6 +244,7 @@ function bgSpritzZeichnen(x, g) {
   if (arbeit) for (let j = 0; j < 7; j++) { const t = ((g * 0.37 + j / 7) % 1); circle(nx + Math.sin(j * 3) * 6 * t, ny - t * 22, 2, 'rgba(190,185,175,0.9)', null); }
 }
 function bgSprengung(g) {
+  if (bgSperre()) { bgText('SPRENGUNG VERSCHOBEN · GEWITTER', BG_F + 300, BG_TC + 70, 12, { family: MONO, weight: 500, align: 'center', color: '#ffd27a' }); return; }
   if (g < 235 || g > 330) return;
   ctx.save(); ctx.beginPath(); ctx.rect(BG_F, BG_TC, BG_P - BG_F, BG_TY - BG_TC); ctx.clip();
   if (g < 242) { const r = ctx.createRadialGradient(BG_F, BG_TY - 70, 4, BG_F, BG_TY - 70, 260); r.addColorStop(0, 'rgba(255,240,200,0.95)'); r.addColorStop(0.4, 'rgba(255,150,60,0.6)'); r.addColorStop(1, 'rgba(255,150,60,0)'); ctx.fillStyle = r; ctx.fillRect(BG_F, BG_TC, 300, 140); }
@@ -250,7 +253,7 @@ function bgSprengung(g) {
   ctx.restore();
 }
 function bgHaufwerk(g) {
-  if (g < 236 || g >= 380) return;
+  if (bgSperre() || g < 236 || g >= 380) return;
   const s = 1 - seg(g, 290, 380);
   ctx.fillStyle = '#6d655b'; ctx.beginPath(); ctx.moveTo(BG_F, BG_TY); ctx.lineTo(BG_F, BG_TY - 70 * s); ctx.quadraticCurveTo(BG_F + 50, BG_TY - 64 * s, BG_F + 30 + 130 * s, BG_TY); ctx.closePath(); paint('#6d655b', INK, 1.2);
   for (let j = 0; j < 8; j++) circle(BG_F + 10 + j * 14 * s, BG_TY - 8 - (j % 3) * 14 * s, 4, '#857b6f', INK, 0.8);

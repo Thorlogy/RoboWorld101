@@ -96,7 +96,7 @@ function drawSchool(f) {
 
 /* ---------- Wetter und Tageszeit ---------- */
 const SKY = { sonne: ['#8fb1bd', '#bfd2d4', '#e3dccb'], regen: ['#6f7f86', '#8f9ca0', '#b3b1a8'], abend: ['#131b36', '#3a3d63', '#b8705a'] };
-const WETTER = ['sonne', 'wolken', 'regen', 'nebel', 'schnee'];
+const WETTER = ['sonne', 'wolken', 'regen', 'gewitter', 'nebel', 'schnee'];
 // Regen: schräge Striche überall draußen oberhalb des Bodens; Dichte folgt dem Bildschirm, nicht der Welt
 function drawRain(x0, y0, x1, y1) {
   const step = 46 / Math.min(1, state.z), len = 18, t = state.g * 9;
@@ -535,19 +535,19 @@ const followBtn = document.getElementById('follow');
 function setFollow(on) {
   if (!followBtn || state.follow === on) return;
   state.follow = on;
-  followBtn.textContent = on ? 'Verfolgen beenden' : 'Paket verfolgen';
+  followBtn.textContent = on ? 'Verfolgen beenden' : 'Verfolgen …'; const fm = document.getElementById('folgeMenue'); if (fm) fm.remove();
   followBtn.setAttribute('aria-pressed', String(on));
   if (on) { const aw = canvas.clientWidth - panelWidth(), ah = canvas.clientHeight - panelBottom() - 140; state.z = clamp(Math.min((aw - 32) / 760, ah / 520), 0.3, 2.5); followView(1); }
 }
 function followView(k) {
-  const p = paketFokus(state.g), aw = canvas.clientWidth - panelWidth();
+  const p = (typeof folgeFokus === 'function' && folgeFokus(state.g)) || paketFokus(state.g), aw = canvas.clientWidth - panelWidth();
   const cy = (window.innerWidth > 760 ? 150 : 120) + (canvas.clientHeight - (window.innerWidth > 760 ? 150 : 120) - panelBottom()) / 2;
   state.ox += (aw / 2 - p.x * state.z - state.ox) * k; state.oy += (cy - p.y * state.z - state.oy) * k; state.dirty = true;
 }
-if (followBtn) followBtn.addEventListener('click', () => setFollow(!state.follow));
+if (followBtn) followBtn.addEventListener('click', () => (state.follow || typeof folgeMenue !== 'function') ? setFollow(!state.follow) : folgeMenue());
 const wetterBtn = document.getElementById('wetter');
 if (wetterBtn) wetterBtn.addEventListener('click', () => {
-  setWetter(WETTER[(WETTER.indexOf(state.wetter) + 1) % WETTER.length]);
+  setWetter(WETTER[(WETTER.indexOf(typeof WELT !== 'undefined' && WELT.gewitter ? 'gewitter' : state.wetter) + 1) % WETTER.length]);
 });
 if (reduce) document.getElementById('hint').textContent = 'Die Bewegung ist angehalten, weil dein System reduzierte Bewegung wünscht. Mit „Abspielen“ läuft sie trotzdem.';
 

@@ -40,9 +40,11 @@ function setTageszeit(m) {
 }
 // alte Fassung kannte „Abend“ als Wetter; die Tour ruft das noch so auf
 function setWetter(w) {
+  WELT.gewitter = w === 'gewitter';
   if (w === 'abend') { state.wetter = 'sonne'; setTageszeit('abend'); }
-  else state.wetter = w;
-  const b = document.getElementById('wetter'); if (b) b.textContent = 'Wetter: ' + (WETTER_NAMEN[state.wetter] || 'Sonne');
+  else state.wetter = w === 'gewitter' ? 'regen' : w;
+  if (WELT.gewitter) WELT.emit('ticker', 'Gewitter! Drohnen bleiben am Boden, die Windräder halten an, und im Gebirge wird die Sprengung verschoben.');
+  const b = document.getElementById('wetter'); if (b) b.textContent = 'Wetter: ' + (WETTER_NAMEN[WELT.gewitter ? 'gewitter' : state.wetter] || 'Sonne');
   state.dirty = true;
 }
 
@@ -50,6 +52,7 @@ function setWetter(w) {
 function himmelFarben() {
   const w = state.wetter;
   if (w !== 'sonne' && istDunkel()) return istNacht() ? ['#141a26', '#232c38', '#3c4146'] : ['#2a3248', '#4a4f66', '#7c6f6a'];
+  if (w === 'regen' && WELT.gewitter) return ['#4b5660', '#69757c', '#8f918c'];
   if (w === 'regen') return ['#6f7f86', '#8f9ca0', '#b3b1a8'];
   if (w === 'wolken') return ['#93a6af', '#bcc8cb', '#ddd9cf'];
   if (w === 'nebel') return ['#b4babb', '#c9cdcc', '#d8d7d1'];
@@ -76,7 +79,7 @@ function himmelExtras() {
 }
 
 /* ---------- Wetter: Wolken, Nebel, Schnee (engine.js ruft wetterEffekte nach dem Zeichnen) ---------- */
-const WETTER_NAMEN = { sonne: 'Sonne', wolken: 'Wolken', regen: 'Regen', nebel: 'Nebel', schnee: 'Schnee' };
+const WETTER_NAMEN = { sonne: 'Sonne', wolken: 'Wolken', regen: 'Regen', gewitter: 'Gewitter', nebel: 'Nebel', schnee: 'Schnee' };
 const schlechtesWetter = () => ['regen', 'schnee', 'nebel'].includes(state.wetter);
 function wolke(x, y, s, farbe) {
   ctx.fillStyle = farbe; ctx.beginPath();
@@ -99,20 +102,60 @@ function draussenClip(x0, y0, x1, y1, bisY) {
 function wetterEffekte(x0, y0, x1, y1) {
   const w = state.wetter;
   if (w === 'schnee') {
+    // Flocken in drei Tiefen: hinten klein und langsam, vorn groß, manche als Kristall; leichter Wind von links
     ctx.save(); draussenClip(x0, y0, x1, y1, GROUND + 4);
-    const step = 52 / Math.min(1, state.z), t = state.g * 1.6;
-    ctx.fillStyle = 'rgba(250,250,250,0.9)';
-    for (let x = Math.floor(x0 / step) * step; x < x1; x += step) for (let y = Math.floor(Math.max(y0, -4000) / step) * step; y < Math.min(y1, GROUND); y += step) {
-      const k = (x * 7 + y * 13) % 97, yy = y + ((t + k * 5) % step), xx = x + k % 30 + Math.sin((yy + k) / 30) * 6;
-      ctx.beginPath(); ctx.arc(xx, yy, 2.6 / Math.min(1, state.z), 0, TAU); ctx.fill();
+    const zf = Math.min(1, state.z), t = state.g;
+    for (const [st, r, v, a, wind] of [[64, 1.4, 0.8, 0.5, 0.15], [50, 2.4, 1.5, 0.8, 0.25], [96, 3.8, 2.6, 0.95, 0.4]]) {
+      const step = st / zf; ctx.fillStyle = `rgba(250,251,253,${a})`; ctx.strokeStyle = `rgba(250,251,253,${a})`; ctx.lineWidth = 1.2 / zf;
+      for (let x = Math.floor(x0 / step) * step - step; x < x1; x += step) for (let y = Math.floor(Math.max(y0, -4000) / step) * step; y < Math.min(y1, GROUND); y += step) {
+        const k = Math.abs(x * 7 + y * 13 + st) % 97, yy = y + ((t * v + k * 5) % step), xx = x + (k % 30) + Math.sin((yy + k * 3) / 40) * 9 + (yy - y) * wind;
+        const rr = r * (0.7 + (k % 5) / 8) / zf;
+        if (r > 3 && k % 3 === 0) { ctx.beginPath(); for (let j = 0; j < 3; j++) { const an = j * Math.PI / 3 + k; ctx.moveTo(xx - rr * 1.6 * Math.cos(an), yy - rr * 1.6 * Math.sin(an)); ctx.lineTo(xx + rr * 1.6 * Math.cos(an), yy + rr * 1.6 * Math.sin(an)); } ctx.stroke(); }
+        else { ctx.beginPath(); ctx.arc(xx, yy, rr, 0, TAU); ctx.fill(); }
+      }
     }
     ctx.restore();
-    // Schneedecke: auf dem Boden draußen, auf den Außenfeldern und auf den Dächern
+    // Schneedecke mit welliger Oberkante und bläulichem Schatten, Verwehungen an den Hauswänden
+    ctx.save(); draussenClip(x0, y0, x1, y1, GROUND);
+    const kante = x => GROUND - 9 - 3 * Math.sin(x / 97) - 2 * Math.sin(x / 31);
+    ctx.beginPath(); ctx.moveTo(x0, GROUND); for (let x = Math.floor(x0 / 40) * 40; x <= x1 + 40; x += 40) ctx.lineTo(x, kante(x)); ctx.lineTo(x1 + 40, GROUND); ctx.closePath();
+    ctx.fillStyle = '#f4f6f6'; ctx.fill();
+    ctx.strokeStyle = 'rgba(160,180,205,0.6)'; ctx.lineWidth = 2; ctx.beginPath(); for (let x = Math.floor(x0 / 40) * 40; x <= x1 + 40; x += 40) ctx.lineTo(x, kante(x) + 5); ctx.stroke();
     ctx.fillStyle = '#f4f6f6';
-    ctx.save(); draussenClip(x0, y0, x1, y1, GROUND + 6); ctx.fillRect(x0, GROUND - 8, x1 - x0, 12); ctx.restore();
-    for (const o of ROOMS) if (o.outdoor && o.r === 6 && isOpen(o)) ctx.fillRect(rx(o.c), ry(6) + 380, RW, 6);
-    HOUSES.forEach((h, i) => ctx.fillRect(h.x + 6, h.y + ([126, 106, 46, 56, 46][i] ?? 46), h.w - 12, 8));
+    for (const h of HOUSES) for (const [xa, xb] of [[h.x - 46, h.x], [h.x + h.w + 46, h.x + h.w]]) { ctx.beginPath(); ctx.moveTo(xa, GROUND - 6); ctx.quadraticCurveTo(xb, GROUND - 8, xb, GROUND - 30); ctx.lineTo(xb, GROUND); ctx.closePath(); ctx.fill(); }
+    ctx.restore();
+    ctx.fillStyle = '#f4f6f6';
+    for (const o of ROOMS) if (o.outdoor && o.r === 6 && isOpen(o) && !o.berg && !o.wasser) ctx.fillRect(rx(o.c), ry(6) + 380, RW, 6);
+    // Dächer: Schneekappe mit Überhang und Eiszapfen
+    HOUSES.forEach((h, i) => {
+      const y = h.y + ([126, 106, 46, 56, 46][i] ?? 46);
+      ctx.beginPath(); ctx.moveTo(h.x - 2, y + 8); ctx.quadraticCurveTo(h.x - 6, y - 4, h.x + 14, y - 6); ctx.lineTo(h.x + h.w - 14, y - 6); ctx.quadraticCurveTo(h.x + h.w + 6, y - 4, h.x + h.w + 2, y + 8); ctx.closePath();
+      ctx.fillStyle = '#f4f6f6'; ctx.fill(); ctx.strokeStyle = 'rgba(160,180,205,0.7)'; ctx.lineWidth = 1.5; ctx.stroke();
+      ctx.fillStyle = 'rgba(214,234,246,0.95)';
+      for (let x = h.x + 10; x < h.x + h.w - 10; x += 34) { const l = 8 + ((x * 13) % 11); ctx.beginPath(); ctx.moveTo(x - 3, y + 6); ctx.lineTo(x, y + 6 + l); ctx.lineTo(x + 3, y + 6); ctx.closePath(); ctx.fill(); }
+    });
+    // Schneemann in der ersten breiten Lücke (Gag)
+    const lu = typeof UG_LUECKEN !== 'undefined' && UG_LUECKEN && UG_LUECKEN.find(([a, b]) => b - a > 160);
+    if (lu) {
+      const x = lu[0] + 70;
+      circle(x, GROUND - 28, 26, '#f7f8f8', INK, 1.5); circle(x, GROUND - 70, 19, '#f7f8f8', INK, 1.5); circle(x, GROUND - 102, 14, '#f7f8f8', INK, 1.5);
+      ctx.beginPath(); ctx.moveTo(x + 4, GROUND - 102); ctx.lineTo(x + 20, GROUND - 99); ctx.lineTo(x + 4, GROUND - 98); ctx.closePath(); ctx.fillStyle = '#e0662b'; ctx.fill();
+      circle(x - 4, GROUND - 106, 2, INK, null); circle(x + 5, GROUND - 107, 2, INK, null); for (const yy of [-78, -66, -54]) circle(x, GROUND + yy, 2, INK, null);
+      box(x - 11, GROUND - 126, 22, 12, '#3b3d40', 1, 1.2); box(x - 15, GROUND - 116, 30, 4, '#3b3d40', 1, 1);
+      line(x - 18, GROUND - 74, x - 40, GROUND - 92, '#6b5a48', 3); line(x + 18, GROUND - 74, x + 38, GROUND - 90, '#6b5a48', 3);
+    }
     shadeOutside(x0, y0, x1, y1, 'rgba(230,236,240,0.12)');
+  }
+  if (WELT.gewitter && state.wetter === 'regen') {
+    // Blitz: kurz hell, Zickzack vom Himmel; zweimal pro Minute an anderer Stelle
+    const t = state.g % 240, ein = t < 5 || (t > 9 && t < 12);
+    if (ein) {
+      shadeOutside(x0, y0, x1, y1, 'rgba(255,255,240,0.28)');
+      const bx = x0 + (x1 - x0) * (0.25 + 0.5 * ((Math.floor(state.g / 240) * 0.37 + WELT.runde * 0.21) % 1));
+      ctx.strokeStyle = 'rgba(255,252,220,0.95)'; ctx.lineWidth = 4 / Math.min(1, state.z); ctx.beginPath(); ctx.moveTo(bx, Math.max(y0, -2000));
+      let x = bx; for (let y = Math.max(y0, -2000); y < GROUND - 200; y += 120) { x += ((y * 7) % 90) - 45; ctx.lineTo(x, y); }
+      ctx.stroke();
+    }
   }
   if (w === 'nebel') {
     shadeOutside(x0, y0, x1, y1, istDunkel() ? 'rgba(90,96,110,0.4)' : 'rgba(226,229,227,0.5)');

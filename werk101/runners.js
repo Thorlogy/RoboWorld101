@@ -243,7 +243,7 @@ registerRunner({
   robot: { id: 'paketbote', name: 'Hauslieferroboter', bereich: 'Logistik', aera: 'seit 2014', typ: 'Kleiner Lieferroboter für Gebäude',
     fakt: 'Seit 2014 bringen kleine Roboter in Hotels Handtücher und Bestellungen bis vor die Zimmertür. Heute fahren solche Geräte auch in Kliniken, Bürohäusern und Wohnanlagen, rufen den Aufzug per Funk und finden allein ins richtige Stockwerk.',
     echt: 'Realistisch. Echte Geräte haben meist ein verschließbares Fach; hier ist es offen, damit man das Paket verfolgen kann.',
-    note: 'Bringt jede Runde ein Paket vom Hafen bis in den Wohnbereich und fährt mit dem Lieferroboter Aufzug. Mit „Paket verfolgen“ fährt die Ansicht mit.', color: '#e6e3da',
+    note: 'Bringt jede Runde ein Paket vom Hafen bis in den Wohnbereich und fährt mit dem Lieferroboter Aufzug. Mit „Verfolgen“ und „Paket“ fährt die Ansicht mit.', color: '#e6e3da',
     quelle: 'https://en.wikipedia.org/wiki/Delivery_robot',
     box: () => { const p = botePos(state.g); return [p.x - 20, p.y - 50, 40, 50]; } },
 });

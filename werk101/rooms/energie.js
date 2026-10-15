@@ -46,8 +46,9 @@ function drawEnergie(f) {
   ctx.fillStyle = '#7aae5a'; for (let i = 0; i < 40; i++) { const x = rnd(i) * RW, y = 340 + rnd(i + 5) * 55; ctx.fillRect(x, y, 2, 5); }
   text('ENERGIE', 290, 70, 34, { family: '"Saira Condensed", sans-serif', weight: 700, color: 'rgba(42,39,35,0.15)' });
   // Windräder im Hintergrund drehen sich
-  enTurbine(470, 330, 150, 64, TAU * g / 480 * 5, 7);
-  enTurbine(580, 330, 170, 56, TAU * g / 480 * 5 + 1.1, 6);
+  const enDreh = typeof WELT !== 'undefined' && WELT.gewitter ? 0.3 : TAU * g / 480 * 5;   // bei Sturm abgeschaltet
+  enTurbine(470, 330, 150, 64, enDreh, 7);
+  enTurbine(580, 330, 170, 56, enDreh + 1.1, 6);
   // Stehendes Windrad mit Wartungsroboter
   withAlpha('blatt', () => {
     ctx.beginPath(); ctx.moveTo(EN_HUB.x - 12, 330); ctx.lineTo(EN_HUB.x - 6, EN_HUB.y); ctx.lineTo(EN_HUB.x + 6, EN_HUB.y); ctx.lineTo(EN_HUB.x + 12, 330); ctx.closePath(); paint('#cdd2d5', INK, 1.5);
