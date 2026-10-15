@@ -342,7 +342,8 @@ function fit(x, y, w, h, animate = true) {
   };
   requestAnimationFrame(step);
 }
-const fitRoom = (key, a) => { const o = roomOf(key); fit(rx(o.c) - 30, ry(o.r) - 40, RW + 60, RH + 80, a); };
+// Hafen und See: auch die Unterwasserwelt und die hohen Kräne und Segel zeigen
+const fitRoom = (key, a) => { const o = roomOf(key); if (o.wasser || /^sh/.test(o.built)) fit(rx(o.c) - 120, ry(o.r) - 260, RW + 240, 2 * RH + 300, a); else fit(rx(o.c) - 30, ry(o.r) - 40, RW + 60, RH + 80, a); };
 const fitAll = a => { const c0 = Math.min(...ROOMS.map(o => o.c)), c1 = Math.max(...ROOMS.map(o => o.c)), xr = c1 >= 3 ? rx(c1) + RW + 40 : BW + 60; fit(rx(c0) - 40, TOP - 920, xr - rx(c0) + 40, BOTTOM - TOP + 940, a); };
 function zoomAt(factor, sx, sy) {
   const nz = clamp(state.z * factor, 0.06, 5);

@@ -26,8 +26,9 @@ function mrFrachter(g) {
   const winkel = 0.5 + 0.35 * Math.sin(g / 480 * TAU);
   for (const fx of [0.3, 0.55]) {
     const cx = x0 + MR_FL * fx, h = 37 * MR_M, w = Math.max(18, 110 * Math.abs(Math.cos(winkel)));
-    box(cx - w / 2, y - 72 - h, w, h, '#e6e3da', 4, 2);
-    for (let k = 1; k < 4; k++) line(cx - w / 2 + 3, y - 72 - h * k / 4, cx + w / 2 - 3, y - 72 - h * k / 4, '#a9aca8', 1.5);
+    box(cx - w / 2, y - 72 - h, w, h, '#7d93a3', 4, 3);
+    for (let k = 1; k < 4; k++) line(cx - w / 2 + 3, y - 72 - h * k / 4, cx + w / 2 - 3, y - 72 - h * k / 4, '#f3f1ea', 3);
+    ctx.fillStyle = '#d9542b'; ctx.fillRect(cx - w / 2 + 2, y - 72 - h + 8, w - 4, 8);
     line(cx, y - 72, cx, y - 60, INK, 4);
   }
 }
@@ -60,26 +61,57 @@ function mrCleanup(g) {
   if (g < 380) for (let i = 0; i < 6; i++) {
     const t = ((g / 380) + i / 6) % 1, px = lerp(a - 500, MR_SACK, t), py = y - 2 + Math.sin(i + g / 20) * 2;
     if (px > a - 20 && px < MR_SACK - 20) continue;
-    box(px - 5, py - 3, 10, 6, SH_FARBEN[(i + 1) % SH_FARBEN.length], 1, 0.8);
+    mrPlastik(px, py, i);
   }
   // Tierschutz-Klappe: Kamera erkennt einen Fisch im Sack, die Klappe öffnet sich, der Fisch schwimmt hinaus
   const fx = g < 200 ? lerp(MR_SACK - 300, MR_SACK - 10, seg(g, 120, 200)) : g < 230 ? MR_SACK - 10 : lerp(MR_SACK - 10, MR_SACK + 260, seg(g, 230, 300));
   if (g > 120 && g < 300) { ctx.beginPath(); ctx.ellipse(fx, y + 34, 10, 5, 0, 0, TAU); paint('#e0a526', INK, 1); ctx.beginPath(); ctx.moveTo(fx - 10, y + 34); ctx.lineTo(fx - 16, y + 29); ctx.lineTo(fx - 16, y + 39); ctx.closePath(); paint('#e0a526', INK, 1); }
   if (g >= 215 && g < 280 && hoch === 0) { box(sx + 40, sy + 8, 6, 30, '#2a2723', 1, 1); circle(sx + 30, sy + 8, 3, g % 8 < 4 ? '#d9342b' : '#5d1f1b', null); }
 }
+// Plastikmüll: Flasche, Tüte, Becher, Netzrest – groß genug, um ihn zu erkennen
+function mrPlastik(x, y, i, unter) {
+  const art = i % 4;
+  if (art === 0) { ctx.save(); ctx.translate(x, y); ctx.rotate(unter ? 0.6 : 0.15); box(-14, -6, 26, 12, '#9fd0e8', 4, 1.5); box(12, -3, 6, 6, '#3e6f9e', 1, 1); ctx.restore(); }
+  else if (art === 1) { ctx.beginPath(); ctx.moveTo(x - 12, y - 8); ctx.quadraticCurveTo(x, y - 18, x + 12, y - 8); ctx.lineTo(x + 9, y + 10); ctx.quadraticCurveTo(x, y + 14, x - 9, y + 10); ctx.closePath(); paint('rgba(250,250,250,0.85)', INK, 1.2); }
+  else if (art === 2) { ctx.beginPath(); ctx.moveTo(x - 9, y - 9); ctx.lineTo(x + 9, y - 9); ctx.lineTo(x + 6, y + 9); ctx.lineTo(x - 6, y + 9); ctx.closePath(); paint('#d9542b', INK, 1.2); }
+  else { ctx.strokeStyle = '#5f9a4a'; ctx.lineWidth = 2; ctx.beginPath(); for (let k = 0; k < 4; k++) { ctx.moveTo(x - 14 + k * 8, y - 8); ctx.lineTo(x - 6 + k * 8, y + 8); ctx.moveTo(x - 6 + k * 8, y - 8); ctx.lineTo(x - 14 + k * 8, y + 8); } ctx.stroke(); }
+}
+function mrFisch(x, y, s, farbe, dir) {
+  ctx.save(); ctx.translate(x, y); ctx.scale(dir * s, s);
+  ctx.beginPath(); ctx.ellipse(0, 0, 18, 8, 0, 0, TAU); paint(farbe, INK, 1.2);
+  ctx.beginPath(); ctx.moveTo(-16, 0); ctx.lineTo(-28, -8); ctx.lineTo(-28, 8); ctx.closePath(); paint(farbe, INK, 1.2);
+  circle(10, -2, 2, '#2a2723', null);
+  ctx.restore();
+}
+const mrTurtleX = g => MR_X0 + 200 + 1700 * (0.5 - 0.5 * Math.cos(TAU * g / 480));
+function mrUnterwasser(g) {
+  const W = MR_X1 - MR_X0, tief = SH_BOT - SH_WY;
+  // Fischschwärme (schwimmen nach links), einzelne große Fische nach rechts
+  for (let s = 0; s < 3; s++) {
+    const bx = MR_X0 + ((s * 900 - g * (3 + s)) % W + W) % W, by = SH_WY + 70 + s * 70;
+    for (let k = 0; k < 7; k++) mrFisch(bx + (k % 4) * 34 + (k > 3 ? 17 : 0), by + (k > 3 ? 18 : 0) + Math.sin(g / 10 + k) * 3, 0.7, ['#e0a526', '#9fc4d6', '#d9542b'][s], -1);
+  }
+  for (let i = 0; i < 4; i++) mrFisch(MR_X0 + ((i * 640 + g * 4) % W), SH_WY + 110 + (i * 47) % (tief - 160), 1.2, i % 2 ? '#7d93a3' : '#5f9a4a', 1);
+  // Plastik unter Wasser: Tüten und Flaschen schweben langsam
+  for (let i = 0; i < 10; i++) mrPlastik(MR_X0 + 80 + ((i * 263 + g) % (W - 160)), SH_WY + 40 + (i * 61) % (tief - 90) + Math.sin(g / 25 + i) * 6, i, true);
+  // Meeresschildkröte
+  withAlpha('schildkroete', () => {
+    const x = mrTurtleX(g), y = SH_WY + 140, dir = Math.sin(TAU * g / 480) >= 0 ? 1 : -1;
+    ctx.save(); ctx.translate(x, y); ctx.scale(dir, 1);
+    for (const [fx, fy] of [[14, 12], [-14, 12], [14, -12], [-14, -12]]) { ctx.beginPath(); ctx.ellipse(fx, fy, 10, 4, fx * fy > 0 ? 0.5 : -0.5, 0, TAU); paint('#7a9a5a', INK, 1.2); }
+    ctx.beginPath(); ctx.ellipse(0, 0, 26, 14, 0, 0, TAU); paint('#5f7a3a', INK, 1.5);
+    circle(30, -2, 8, '#7a9a5a', INK, 1.2); circle(33, -4, 1.6, '#2a2723', null);
+    ctx.restore();
+  });
+}
 function mrMeer(g) {
   const ab = istDunkel();
   ctx.fillStyle = ab ? '#16304a' : '#3f6f8e'; ctx.fillRect(MR_X0, SH_WY, MR_X1 - MR_X0, SH_BOT - SH_WY);
   ctx.fillStyle = '#5b4f45'; ctx.fillRect(MR_X0, SH_BOT - 20, MR_X1 - MR_X0, 20);
-  // Fische und kleine Plastikteile unter Wasser
-  for (let i = 0; i < 9; i++) {
-    const x = MR_X0 + ((i * 397 + g * (2 + i % 3)) % (MR_X1 - MR_X0)), y = SH_WY + 70 + (i * 53) % (SH_BOT - SH_WY - 110);
-    if (i % 3 === 0) box(x, y, 6, 4, SH_FARBEN[i % SH_FARBEN.length], 0, 0.6);
-    else { ctx.beginPath(); ctx.ellipse(x, y, 9, 4, 0, 0, TAU); paint('#9fc4d6', INK, 1); }
-  }
   withAlpha('fluegelfrachter', () => mrFrachter(g));
   withAlpha('oceancleanup', () => mrCleanup(g));
   ctx.fillStyle = ab ? 'rgba(20,45,70,0.4)' : 'rgba(70,120,150,0.35)'; ctx.fillRect(MR_X0, SH_WY + 8, MR_X1 - MR_X0, SH_BOT - SH_WY - 28);
+  mrUnterwasser(g);
   mrWellen(MR_X0, MR_X1, SH_WY, g, 'rgba(230,245,255,0.7)');
   text('HOHE SEE', MR_X0 + 1600, SH_WY + 150, 40, { family: '"Saira Condensed", sans-serif', weight: 700, color: 'rgba(230,245,255,0.25)' });
 }
@@ -124,7 +156,12 @@ registerRunner({
 });
 for (const [key, name] of [['see1', 'Hohe See'], ['see2', 'Hohe See: Frachter'], ['see3', 'Hohe See: Plastik sammeln'], ['see4', 'Hohe See: Barriere']])
   registerRoom({ key, name, level: 'Außengelände', hitOrder: [], robots: [], draw() {} });
+registerRunner({ room: 'see1', draw() {}, robot: { id: 'schildkroete', name: 'Meeresschildkröte', bereich: 'Tier', aera: 'Maßstab', typ: 'Tier im Meer', color: '#5f7a3a',
+  fakt: 'Meeresschildkröten fressen gern Quallen. Eine treibende Plastiktüte sieht unter Wasser ähnlich aus, darum verschlucken Schildkröten manchmal Plastik. Auch deshalb wird Plastik aus dem Meer gefischt.',
+  echt: 'Echt. Hier ist sie größer gezeichnet als im Maßstab der See, damit man sie sieht.', note: 'Schwimmt zwischen den Fischen und den Tüten hin und her.',
+  box: () => [mrTurtleX(state.g) - 40, SH_WY + 120, 90, 40] } });
 document.addEventListener('DOMContentLoaded', () => typeof KINDER !== 'undefined' && Object.assign(KINDER, {
+  schildkroete: 'Schildkröten fressen Quallen. Eine Plastiktüte im Wasser sieht aus wie eine Qualle, darum ist Plastik im Meer gefährlich für sie.',
   fluegelfrachter: 'Dieses riesige Schiff hat Segel aus festem Material. Ein Computer dreht sie in den Wind, so braucht das Schiff weniger Treibstoff.',
   oceancleanup: 'Zwei Schiffe ziehen eine lange Barriere durchs Meer. Das Plastik sammelt sich in einem Sack. Fische dürfen durch eine Klappe wieder hinaus.',
   wasteshark: 'Dieser kleine Roboter schwimmt durch den Hafen und schluckt Flaschen und anderen Müll.',
