@@ -160,7 +160,7 @@ function wuBild(g) {
 registerRunner({
   room: 'wueste2', draw(g) { wuBild(g); },
   robot: { id: 'darpa', name: 'DARPA Grand Challenge', bereich: 'Geschichte', aera: '2004 und 2005', typ: 'Rennen für Autos ohne Fahrer', color: '#dcbf86',
-    fakt: 'Die Forschungsbehörde DARPA des US-Verteidigungsministeriums lud 2004 zu einem Rennen quer durch die Mojave-Wüste ein: Fahrzeuge ohne Fahrer, ohne Fernsteuerung, über 200 Kilometer Piste. Im März 2004 kam keines ins Ziel, das beste schaffte knapp 12 Kilometer. Im Oktober 2005 kamen fünf durch. Viele Leute aus diesen Teams bauten später selbstfahrende Autos.',
+    fakt: 'Die Forschungsbehörde DARPA des US-Verteidigungsministeriums lud 2004 zu einem Rennen quer durch die Mojave-Wüste ein: Fahrzeuge ohne Fahrer, ohne Fernsteuerung, über 200 Kilometer Piste. Im März 2004 kam keines ins Ziel, das beste schaffte knapp 12 Kilometer. Im Oktober 2005 kamen fünf durch, gewonnen hat Stanley von der Universität Stanford. Viele Leute aus diesen Teams bauten später selbstfahrende Autos.',
     echt: 'Echt. Hier laufen beide Rennen im Wechsel und stark verkürzt: eine Runde 2004, eine Runde 2005. Die Wüste liegt hinter dem Gebirge, weil die Berge den Regen abhalten.',
     note: 'Achte auf das Schild an der Felskehre: KM 11,9.',
     quelle: 'https://en.wikipedia.org/wiki/DARPA_Grand_Challenge',

@@ -21,6 +21,7 @@ Lies vor jeder Änderung `werk101/STIL.md`. Dort stehen die Stilregeln und am En
 - Gebäude: Werk 101, Schule 102 (`H2`), Halle 103 (`H3`), Rechenzentrum (`H4`, Räume `rz1`/`rz2`). Die Datennetz-Ansicht steckt in `netz.js` und liest diese Konstanten.
 - Jede Figur zeichnen mit `withAlpha('<id>', () => …)`, damit Filter und Prüflauf funktionieren. Schutzfeld (Maus hält Roboter an): ID in `SAFETY` eintragen und `heldDraw`/`heldG` verwenden.
 - Wetter `state.wetter` ('sonne', 'regen'); Tageszeit aus `welt.js`: `WELT.phase`, `istDunkel()`, `istNacht()` (Test: `?phase=nacht`). Licht der Dunklen Fabrik `state.licht`.
+- Auskunft im Steuerfeld (`auskunft.js`) antwortet nur aus den Karten. Gute Karten mit klaren Sätzen machen also auch die Auskunft besser.
 - Eigene Figur R-101 in `avatar.js` (Botengänge in `AUFTRAEGE`, Knöpfe in `KNOEPFE`). Ereignisse zwischen Räumen über `WELT.emit/on`.
 - Geheime Felder: `secret: true` in `ROOMS`; sie sind erst nach `unlockSecret()` (dreimal am Notausgang im U-Bahn-Tunnel klopfen) sichtbar; noch einmal dreimal klopfen versteckt sie wieder (`lockSecret()`). Nicht in Tour oder Raumliste verraten.
 - Karten können `onSelect()` haben (z. B. ELIZA öffnet ein Chatfenster). Der ELIZA-Chat ist regelbasiert wie 1966 und muss kindgerecht bleiben.
