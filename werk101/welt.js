@@ -63,7 +63,7 @@ function himmelExtras() {
   if (istDunkel()) {
     ctx.fillStyle = '#f3efe4';
     const n = istNacht() ? 260 : 160;
-    for (let i = 0; i < n; i++) { const x = ((i * 733) % 22000) - 9000, y = TOP - 680 + ((i * 397) % 1500); ctx.fillRect(x, y, 3, 3); }
+    for (let i = 0; i < n; i++) { const x = ((i * 733) % 30000) - 10000, y = TOP - 680 + ((i * 397) % 1500); ctx.fillRect(x, y, 3, 3); }
   }
   if (istNacht() && state.wetter !== 'regen') {
     // Mond: Sichel als Kreis mit verschobenem Himmelskreis darüber
@@ -86,7 +86,7 @@ function wolken() {
   const w = state.wetter, n = { sonne: 11, wolken: 46, regen: 52, schnee: 50, nebel: 20 }[w] || 11;
   const farbe = istNacht() ? 'rgba(60,66,86,0.75)' : istDunkel() ? 'rgba(120,110,130,0.7)' : w === 'regen' ? 'rgba(130,140,146,0.9)' : w === 'schnee' ? 'rgba(220,226,230,0.9)' : 'rgba(246,246,242,0.85)';
   for (let i = 0; i < n; i++) {
-    const breite = 24000, x = ((i * 2311 + state.g * (1.2 + (i % 3) * 0.4) + WELT.runde * 480 * (1.2 + (i % 3) * 0.4)) % breite) - 10000;
+    const breite = 32000, x = ((i * 2311 + state.g * (1.2 + (i % 3) * 0.4) + WELT.runde * 480 * (1.2 + (i % 3) * 0.4)) % breite) - 10000;
     wolke(x, TOP - 760 + ((i * 397) % 900), 0.9 + (i % 4) * 0.35, farbe);
   }
 }
@@ -110,7 +110,7 @@ function wetterEffekte(x0, y0, x1, y1) {
     ctx.fillStyle = '#f4f6f6';
     ctx.save(); draussenClip(x0, y0, x1, y1, GROUND + 6); ctx.fillRect(x0, GROUND - 8, x1 - x0, 12); ctx.restore();
     for (const o of ROOMS) if (o.outdoor && o.r === 6 && isOpen(o)) ctx.fillRect(rx(o.c), ry(6) + 380, RW, 6);
-    HOUSES.forEach((h, i) => ctx.fillRect(h.x + 6, h.y + [126, 106, 46, 56, 46][i], h.w - 12, 8));
+    HOUSES.forEach((h, i) => ctx.fillRect(h.x + 6, h.y + ([126, 106, 46, 56, 46][i] ?? 46), h.w - 12, 8));
     shadeOutside(x0, y0, x1, y1, 'rgba(230,236,240,0.12)');
   }
   if (w === 'nebel') {
