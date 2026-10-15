@@ -11,7 +11,7 @@ const AV_V = 360;                        // Fahrtempo in Einheiten pro Sekunde (
 
 /* ---------- Wege ---------- */
 function avSegs(r) {
-  if (r === 6) { const xs = ROOMS.filter(o => o.r === 6); return [[Math.min(...xs.map(o => rx(o.c))) + 20, Math.max(...xs.map(o => rx(o.c) + RW)) - 20]]; }
+  if (r === 6) { const xs = ROOMS.filter(o => o.r === 6 && !o.wasser); return [[Math.min(...xs.map(o => rx(o.c))) + 20, Math.max(...xs.map(o => rx(o.c) + RW)) - 20]]; }
   const iv = ROOMS.filter(o => o.r === r && isOpen(o)).map(o => [rx(o.c) + 20, rx(o.c) + RW - 20]);
   if (r === 7) iv.push([SHAFT_X, SHAFT_X + SHAFT]);
   iv.sort((a, b) => a[0] - b[0]);

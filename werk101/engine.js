@@ -124,7 +124,7 @@ function glow(x, y, r, color) {
 function drawSurroundings(f) {
   const g = ctx.createLinearGradient(0, TOP - 700, 0, GROUND), sky = himmelFarben();
   g.addColorStop(0, sky[0]); g.addColorStop(0.55, sky[1]); g.addColorStop(1, sky[2]);
-  ctx.fillStyle = g; ctx.fillRect(-9000, -6000, BW + 18000, GROUND + 6000);
+  ctx.fillStyle = g; ctx.fillRect(-12000, -6000, BW + 30000, GROUND + 6000);
   himmelExtras();
   // Hintergrund-Silhouetten
   ctx.fillStyle = silhouetteFarbe();
@@ -136,8 +136,8 @@ function drawSurroundings(f) {
   // Erde
   const e = ctx.createLinearGradient(0, GROUND, 0, BOTTOM + 400);
   e.addColorStop(0, '#7a6450'); e.addColorStop(1, '#4d3e31');
-  ctx.fillStyle = e; ctx.fillRect(-9000, GROUND, BW + 18000, 6000);
-  ctx.fillStyle = '#6f8f5a'; ctx.fillRect(-9000, GROUND - 6, BW + 18000, 12);
+  ctx.fillStyle = e; ctx.fillRect(-12000, GROUND, BW + 30000, 6000);
+  ctx.fillStyle = '#6f8f5a'; ctx.fillRect(-12000, GROUND - 6, BW + 30000, 12);
   ctx.fillStyle = 'rgba(0,0,0,0.12)';
   for (let i = 0; i < 90; i++) { const x = ((i * 377) % (BW + 2400)) - 1200, y = GROUND + 40 + ((i * 211) % 1400); ctx.beginPath(); ctx.arc(x, y, 3 + (i % 4), 0, TAU); ctx.fill(); }
   // Ebenen-Beschriftung links
@@ -429,7 +429,7 @@ window.addEventListener('keydown', e => {
 
 /* ---------- Panel ---------- */
 const chipsEl = document.getElementById('chips'), listEl = document.getElementById('list');
-const FILTERS = ['Alle', 'Industrie', 'Service', 'Haushalt', 'Logistik', 'Medizin', 'Forschung', 'Inspektion', 'Geschichte', 'Raumfahrt', 'Mobilität', 'Landwirtschaft', 'Rettung', 'Unterwasser', 'Bildung', 'Medien', 'Umwelt', 'Energie', 'Bau', 'Science-Fiction'];
+const FILTERS = ['Alle', 'Industrie', 'Service', 'Haushalt', 'Logistik', 'Medizin', 'Forschung', 'Inspektion', 'Geschichte', 'Raumfahrt', 'Mobilität', 'Landwirtschaft', 'Rettung', 'Unterwasser', 'Bildung', 'Medien', 'Umwelt', 'Energie', 'Bau'];
 const roomsEl = document.getElementById('rooms');
 BUILT.forEach(o => {
   const b = document.createElement('button'); b.type = 'button'; b.textContent = o.name; b.dataset.key = o.key;
