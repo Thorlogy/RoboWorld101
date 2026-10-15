@@ -235,3 +235,4 @@ Object.assign(KINDER, {
   autosonde: 'In diesem Kasten wohnt ein Roboter, der Wetterballons aufbläst und fliegen lässt. Der Ballon steigt so hoch, bis er platzt.',
   polarfuchs: 'Der Polarfuchs ist im Winter weiß wie der Schnee. So sieht man ihn kaum.',
 });
+Object.assign(KINDER, { eisberg: 'Vom Eisberg sieht man nur die Spitze. Der größte Teil ist unter Wasser versteckt.' });

@@ -15,7 +15,7 @@ function stStart() {
   const a = AUFTRAEGE.find(x => x.id === 'rolle'), o = roomOf(a.von);
   if (AV.traegt !== 'rolle') avDinge.rolle = { r: o.r, x: rx(o.c) + a.spot, ok: false };
   const f = roomOf('fertigung');
-  WELT.emit('ticker', 'Störung in der Fertigungshalle: Eine Tragrolle am Förderband klemmt. R-101 kann die Ersatzrolle aus dem Lager holen.', rx(f.c) + RW / 2, ry(f.r) + RH / 2);
+  ticker('Störung in der Fertigungshalle: Eine Tragrolle am Förderband klemmt. R-101 kann die Ersatzrolle aus dem Lager holen.', rx(f.c) + RW / 2, ry(f.r) + RH / 2);
   avPanel();
 }
 function stEnde(durchR101) {

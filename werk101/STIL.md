@@ -243,3 +243,7 @@ registerRoom({
 - Arktis mit Forschungsstation (15. Oktober 2026, Version 20261015w):
   - `rooms/arktis.js`, c 29–32 (`arktis1`–`arktis4`, alle `wasser`), Präfix `ak`/`AK_`, Maßstab 1 : 2. Vorbilder MOSAiC-Eiscamp und Ny-Ålesund. Eisrand mit Ringelrobbe und Polarstern weit hinten; Eiscamp mit beheiztem Zelt über dem Eisloch, Steuerhütte und Tauchroboter (BEAST) unter der Scholle, der die Eisalgen anleuchtet; Ice-Tethered Profiler (Boje, Draht, Messkörper fährt auf und ab); Eisbär auf der Scholle; Küste mit Holzhäusern auf Stelzen, automatischer Wetterstation, Startautomat für Wetterballons (Dach 0–30 auf, Ballon steigt 30–220), Schild „Funkstille“, Polarfuchs. Nachts Polarlicht.
   - engine.js: Himmel, Erde und Grasstreifen reichen jetzt über alle Felder (`WX0`/`WX1` aus `ROOMS`), welt.js: Sterne und Wolken über die ganze Breite.
+- Eisberg und Meldungen (15. Oktober 2026, Version 20261015x):
+  - Arktis: die kleine Scholle ist jetzt ein Eisberg (Karte `eisberg`), unter Wasser spitz zulaufend und etwa neunmal so groß wie der sichtbare Teil; Robbe liegt auf dem Meereis. Lücke zwischen Graben und Arktis mit Wasser gefüllt.
+  - `meldungen.js`: zentrale Liste `MELDUNGEN` für den Ticker (Runde `WELT.runde % 6`, Zeitpunkt `g`, optional `wenn()`, Ort zum Hinfahren). Acht Meldungen: DARPA 2004/2005, Raketenstart, Lander, Nereus, Ballonstart, Polarlicht (nachts), Raumstation (abends). Neue Meldung = eine Zeile in der Liste.
+  - stoerung.js ruft `ticker()` direkt auf; `WELT.emit('ticker', …)` reicht nur ein Argument weiter, dann fehlt der Ort zum Hinfahren.

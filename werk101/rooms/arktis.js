@@ -49,7 +49,7 @@ function akHaus(x, w, h, farbe) {
 function akBild(g) {
   const ab = istDunkel(), nacht = istNacht();
   akPolarlicht(g);
-  ctx.fillStyle = himmelFarben()[2]; ctx.fillRect(AK_X0, GROUND - 8, AK_LAND - AK_X0, SH_WY - GROUND + 9);
+  ctx.fillStyle = himmelFarben()[2]; ctx.fillRect(AK_X0 - WALL, GROUND - 8, AK_LAND - AK_X0 + WALL, SH_WY - GROUND + 9);
   // Polarstern weit hinten im Eis (klein, weil weit weg)
   withAlpha('polarstern', () => {
     const x = AK_X0 + 200, y = SH_WY - 14;
@@ -58,14 +58,24 @@ function akBild(g) {
     box(x + 150, y - 44, 10, 18, '#3b3d40', 0, 1); line(x + 120, y - 26, x + 140, y - 60, INK, 2);
   });
   // Wasser unter dem Eis
-  ctx.fillStyle = ab ? '#102236' : '#2f5670'; ctx.fillRect(AK_X0, SH_WY, AK_X1 - AK_X0, SH_BOT - SH_WY);
-  ctx.fillStyle = '#5b4f45'; ctx.fillRect(AK_X0, SH_BOT - 20, AK_X1 - AK_X0, 20);
+  ctx.fillStyle = ab ? '#102236' : '#2f5670'; ctx.fillRect(AK_X0 - WALL, SH_WY, AK_X1 - AK_X0 + WALL, SH_BOT - SH_WY);
+  ctx.fillStyle = '#5b4f45'; ctx.fillRect(AK_X0 - WALL, SH_BOT - 20, AK_X1 - AK_X0 + WALL, 20);
   // Land: Fels mit Dauerfrost, Schnee obenauf
   ctx.beginPath(); ctx.moveTo(AK_LAND - 120, SH_BOT); ctx.lineTo(AK_LAND - 40, SH_WY + 20); ctx.lineTo(AK_LAND, GROUND); ctx.lineTo(AK_X1, GROUND); ctx.lineTo(AK_X1, SH_BOT); ctx.closePath(); paint('#4a4642', INK, 2);
   ctx.fillStyle = '#f4f6f6'; ctx.fillRect(AK_LAND, GROUND - 8, AK_X1 - AK_LAND, 10);
   // Eisschollen: offene Rinne links, große Scholle mit Camp
   const eis = ab ? '#c9d4e2' : '#eef4f8', eisU = ab ? '#8fa6bf' : '#b9d0de';
-  for (const [a, b] of [[AK_X0 + 60, AK_X0 + 380], [AK_X0 + 470, AK_LAND - 60]]) {
+  // Eisberg: vom Gletscher abgebrochen, etwa neun Zehntel liegen unter Wasser und laufen nach unten spitz zu
+  withAlpha('eisberg', () => {
+    const x = AK_X0 + 220, w = 1 + Math.sin(g / 40) * 0.004;
+    ctx.save(); ctx.translate(x, SH_WY); ctx.scale(1, w);
+    ctx.beginPath(); ctx.moveTo(-150, 0); ctx.lineTo(-170, 60); ctx.lineTo(-120, 150); ctx.lineTo(-60, 250); ctx.lineTo(10, SH_BOT - SH_WY - 50); ctx.lineTo(60, 220); ctx.lineTo(140, 120); ctx.lineTo(175, 40); ctx.lineTo(150, 0); ctx.closePath();
+    ctx.fillStyle = ab ? 'rgba(150,180,205,0.75)' : 'rgba(190,220,236,0.8)'; ctx.fill(); ctx.strokeStyle = '#7f97ad'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-150, 0); ctx.lineTo(-120, -50); ctx.lineTo(-70, -60); ctx.lineTo(-40, -130); ctx.lineTo(0, -150); ctx.lineTo(30, -100); ctx.lineTo(80, -90); ctx.lineTo(120, -40); ctx.lineTo(150, 0); ctx.closePath(); paint(eis, '#7f97ad', 2);
+    line(-40, -128, -10, -40, 'rgba(127,151,173,0.5)', 2); line(30, -98, 60, -30, 'rgba(127,151,173,0.5)', 2);
+    ctx.restore();
+  });
+  for (const [a, b] of [[AK_X0 + 470, AK_LAND - 60]]) {
     ctx.beginPath(); ctx.moveTo(a, AK_EIS_O); ctx.lineTo(b, AK_EIS_O); ctx.lineTo(b - 14, AK_EIS_U); ctx.lineTo(a + 14, AK_EIS_U); ctx.closePath(); paint(eis, '#7f97ad', 2);
     ctx.fillStyle = eisU; ctx.fillRect(a + 14, AK_EIS_U - 14, b - a - 28, 14);
   }
@@ -74,7 +84,7 @@ function akBild(g) {
   mrWellen(AK_X0, AK_X0 + 470, SH_WY, g, 'rgba(230,245,255,0.6)');
   text('ARKTIS', rx(31) + 60, SH_WY + 200, 44, { family: '"Saira Condensed", sans-serif', weight: 700, color: 'rgba(230,245,255,0.22)' });
 
-  withAlpha('robbe', () => akRobbe(AK_X0 + 240, AK_EIS_O));
+  withAlpha('robbe', () => akRobbe(AK_X0 + 560, AK_EIS_O));
   // Zelt über dem Eisloch und Steuerhütte
   withAlpha('beast', () => {
     box(AK_ZELT - 70, AK_EIS_O - 90, 110, 30, '#ecebe6', 0, 1.5); box(AK_ZELT - 70, AK_EIS_O - 60, 110, 60, '#3b3d40', 0, 1.5);
@@ -153,7 +163,12 @@ akReg('arktis1', { id: 'robbe', name: 'Ringelrobbe', bereich: 'Tier', aera: 'Ark
   fakt: 'Ringelrobben leben im arktischen Meereis. Sie halten sich mit ihren Krallen Atemlöcher im Eis offen und ruhen auf den Schollen. Sie sind die wichtigste Beute der Eisbären.',
   echt: 'Echt.', note: 'Ruht auf der kleinen Scholle.',
   quelle: 'https://en.wikipedia.org/wiki/Ringed_seal',
-  box: () => [AK_X0 + 190, AK_EIS_O - 30, 100, 30] });
+  box: () => [AK_X0 + 510, AK_EIS_O - 30, 100, 30] });
+akReg('arktis1', { id: 'eisberg', name: 'Eisberg', bereich: 'Umwelt', aera: 'Arktis', typ: 'Abgebrochenes Gletschereis', color: '#eef4f8',
+  fakt: 'Ein Eisberg ist ein Stück Gletscher, das ins Meer abgebrochen ist. Er besteht aus Süßwasser-Eis und ist etwas leichter als Meerwasser. Darum schaut nur etwa ein Zehntel heraus, der Rest liegt unter Wasser. Das flache Meereis daneben ist dagegen gefrorenes Meerwasser und meist nur ein bis zwei Meter dick.',
+  echt: 'Echt. Auf Spitzbergen brechen Gletscher direkt in die Fjorde ab. Dieser hier ist ein kleiner; große Eisberge sind viel höher als Häuser.', note: 'Schaukelt ganz leicht.',
+  quelle: 'https://de.wikipedia.org/wiki/Eisberg',
+  box: () => [AK_X0 + 70, SH_WY - 150, 300, 150] });
 akReg('arktis2', { id: 'beast', name: 'Tauchroboter unter dem Eis', bereich: 'Unterwasser', aera: '2019/2020', typ: 'Ferngesteuerter Tauchroboter (MOSAiC)', color: '#f0b429',
   fakt: 'Bei MOSAiC tauchte ein kleiner Roboter mit dem Spitznamen BEAST durch ein Loch im Eis, etwa 1,5 mal 1,5 Meter groß. Über dem Loch steht ein beheiztes Zelt, damit es nicht zufriert. Aus einer warmen Hütte daneben steuern Menschen den Roboter. Er filmt die Unterseite des Eises, misst Licht und Algen und sammelt mit Netzen Plankton.',
   echt: 'Echt. Am Nordpol zeigt ein Kompass kaum noch die Richtung an, darum ist geradeaus fahren unter dem Eis schwierig.', note: 'Fährt unter der Scholle hin und her und leuchtet die braunen Eisalgen an.',
