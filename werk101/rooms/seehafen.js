@@ -249,3 +249,37 @@ document.addEventListener('DOMContentLoaded', () => typeof KINDER !== 'undefined
   hubbruecke: 'Bei dieser Brücke fährt die Straße wie ein Fahrstuhl nach oben, damit das Schiff durchpasst.',
   molenfeuer: 'Der kleine Leuchtturm zeigt den Schiffen nachts, wo die Hafeneinfahrt ist.',
 }));
+
+/* ---------- Tauchroboter prüft den Rumpf unter Wasser (Hafenmaßstab 1 : 4) ---------- */
+function shInspRov(g) {
+  // fährt in Bahnen am Rumpf entlang wie ein Rasenmäher: hin, eine Reihe tiefer, zurück
+  const t = g / 480, bahn = Math.floor(t * 4), u = (t * 4) % 1, dir = bahn % 2 ? -1 : 1;
+  const x0 = SH_SX + 40, x1 = SH_SX + 190;
+  return { x: dir > 0 ? lerp(x0, x1, u) : lerp(x1, x0, u), y: SH_WY + 30 + bahn * 20, dir };
+}
+registerRunner({
+  room: 'shbecken',
+  draw(g) {
+    const p = shInspRov(g), bx = SH_XQ - 160;
+    // Pult mit Kabeltrommel auf der Kaikante, daneben die Prüferin
+    box(bx - 18, SH_QY - 30, 36, 30, '#3e6f9e', 2, 1.2); box(bx - 14, SH_QY - 26, 28, 12, '#23384d', 1, 0.8);
+    circle(bx + 32, SH_QY - 10, 10, '#f0b429', INK, 1.2);
+    person({ x: bx - 34, foot: SH_QY, face: 1, shirt: '#f08a24', s: 0.3 });
+    ctx.strokeStyle = '#f0b429'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(bx + 32, SH_QY - 10); ctx.lineTo(SH_XQ + 4, SH_QY); ctx.quadraticCurveTo(SH_XQ + 10, p.y + 30, p.x, p.y); ctx.stroke();
+    withAlpha('rumpfrov', () => {
+      ctx.fillStyle = 'rgba(255,250,210,0.28)'; ctx.beginPath(); ctx.moveTo(p.x + p.dir * 12, p.y); ctx.lineTo(p.x + p.dir * 50, p.y - 14); ctx.lineTo(p.x + p.dir * 50, p.y + 14); ctx.closePath(); ctx.fill();
+      box(p.x - 12, p.y - 6, 24, 12, '#e6e3da', 3, 1.2); box(p.x - 15, p.y - 3, 4, 6, '#3b3d40', 1, 0.8); box(p.x + 11, p.y - 3, 4, 6, '#3b3d40', 1, 0.8);
+      circle(p.x + p.dir * 9, p.y, 3, '#23384d', INK, 0.8);
+    });
+    if (g % 120 < 30) { box(bx - 60, SH_QY - 62, 120, 22, '#23384d', 1, 1.2); text('LIVEBILD · RUMPF OK', bx, SH_QY - 47, 9, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center', color: '#7fe08a' }); }
+  },
+  robot: { id: 'rumpfrov', name: 'Tauchroboter für die Rumpfprüfung', bereich: 'Inspektion', aera: 'seit 2021', typ: 'Kleiner ferngesteuerter Tauchroboter', color: '#e6e3da',
+    fakt: 'Schiffe müssen regelmäßig unter Wasser geprüft werden. Früher tauchten dafür Taucher oder das Schiff kam ins Trockendock. Heute fährt ein kleiner Tauchroboter mit Lampe und Kamera am Rumpf entlang und schickt ein Livebild. 2021 prüfte Bureau Veritas so die Fähre Bretagne von Brittany Ferries ganz aus der Ferne, mit einer Minidrohne von MaDfly.',
+    echt: 'Echt. Kein Taucher musste ins Wasser. Die Bahnen hin und her sind so, wie man einen Rumpf Stück für Stück abfährt.',
+    note: 'Fährt Bahn für Bahn am Heck entlang, das Livebild kommt per Kabel aufs Pult an der Kaikante.',
+    quelle: 'https://www.bairdmaritime.com/work-boat-world/passenger-vessel-world/ro-pax/bureau-veritas-completes-full-remote-in-water-hull-survey-by-rov',
+    box: () => { const p = shInspRov(state.g); return [p.x - 18, p.y - 12, 36, 24]; } },
+});
+document.addEventListener('DOMContentLoaded', () => typeof KINDER !== 'undefined' && Object.assign(KINDER, {
+  rumpfrov: 'Dieser kleine Tauchroboter schaut sich den Bauch des Schiffs unter Wasser an. So muss kein Taucher hinunter.',
+}));

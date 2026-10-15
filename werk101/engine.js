@@ -140,6 +140,7 @@ function drawSurroundings(f) {
   ctx.fillStyle = '#6f8f5a'; ctx.fillRect(-12000, GROUND - 6, BW + 30000, 12);
   ctx.fillStyle = 'rgba(0,0,0,0.12)';
   for (let i = 0; i < 90; i++) { const x = ((i * 377) % (BW + 2400)) - 1200, y = GROUND + 40 + ((i * 211) % 1400); ctx.beginPath(); ctx.arc(x, y, 3 + (i % 4), 0, TAU); ctx.fill(); }
+  if (typeof erdreich === 'function') erdreich();   // Schichten, Steine, Leitungen (welt.js); Räume liegen darüber
   // Ebenen-Beschriftung links
   for (let r = 0; r < ROWS; r++) {
     if (ROOMS.some(o => o.r === r && o.c < 0)) continue;

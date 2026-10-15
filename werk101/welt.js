@@ -59,6 +59,7 @@ function himmelFarben() {
 function silhouetteFarbe() { return istNacht() ? '#1d2440' : WELT.phase === 'abend' ? '#3b4566' : state.wetter === 'nebel' ? '#c3c8c7' : state.wetter !== 'sonne' ? '#8b989c' : WELT.phase === 'morgen' ? '#a7a5b8' : '#9eb6bb'; }
 function aussenSchatten() { return { morgen: 'rgba(255,150,80,0.08)', mittag: null, abend: 'rgba(12,18,48,0.45)', nacht: 'rgba(4,8,26,0.62)' }[WELT.phase]; }
 function himmelExtras() {
+  if (typeof fernsicht === 'function') fernsicht();
   wolken();
   if (istDunkel()) {
     ctx.fillStyle = '#f3efe4';
