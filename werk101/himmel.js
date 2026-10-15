@@ -235,6 +235,47 @@ registerRunner({
 });
 
 /* ---------- Abendhimmel: Satellitenkette und Raumstation, nur bei „Abend“ zu sehen ---------- */
+// Ganz nah herangezoomt wird aus dem Lichtpunkt die echte Form (von der Sonne angestrahlt, von unten gesehen)
+const nahDetail = () => clamp((state.z - 2.2) / 1.6, 0, 1);
+function starlinkNah(x, y, i) {
+  // flacher Satellit (etwa 3 m) mit einem einzigen langen Solarflügel (etwa 8 m), 1 Einheit ≈ 0,5 m
+  const k = (i % 3) * 0.06 - 0.06;
+  ctx.save(); ctx.translate(x, y); ctx.rotate(0.05 + k);
+  line(-3, 0, -6, 0, '#8a8f94', 0.8);
+  box(-22, -2.6, 16, 5.2, '#1d2a4a', 0, 0.5);
+  ctx.strokeStyle = '#4b6aa8'; ctx.lineWidth = 0.35; ctx.beginPath();
+  for (let u = -18; u < -6; u += 4) { ctx.moveTo(u, -2.6); ctx.lineTo(u, 2.6); }
+  ctx.moveTo(-22, 0); ctx.lineTo(-6, 0); ctx.stroke();
+  box(-3, -1.6, 6, 3.2, '#e9e7e1', 0, 0.5);
+  box(-2.4, -1, 2, 2, '#c3c7cb', 0, 0.01); box(0.6, -1, 2, 2, '#c3c7cb', 0, 0.01);
+  ctx.restore();
+}
+function issNah(x, y) {
+  // Raumstation von unten: lange Gitterstruktur (109 m), acht goldbraune Solarflügel, weiße Kühler, Module in der Mitte. 1 Einheit ≈ 1,5 m
+  ctx.save(); ctx.translate(x, y);
+  // Module quer zur Gitterstruktur (amerikanischer und russischer Teil)
+  box(-2, -14, 4, 30, '#e9e7e1', 1, 0.6);
+  box(-5, -16, 10, 3, '#d6d3cb', 1, 0.5);
+  box(-1.6, 16, 3.2, 10, '#d6d3cb', 1, 0.5);
+  for (const sx of [-1, 1]) box(sx > 0 ? 1.6 : -9.6, 21, 8, 2.6, '#1d2a4a', 0, 0.4);
+  // Kühler (weiß) an der Gitterstruktur
+  for (const sx of [-1, 1]) box(sx * 12 - 2.5, 1, 5, 13, '#f3f1ea', 0, 0.5);
+  // Gitterstruktur
+  box(-38, -1.4, 76, 2.8, '#b8bcc0', 0, 0.6);
+  ctx.strokeStyle = '#7d8186'; ctx.lineWidth = 0.35; ctx.beginPath();
+  for (let u = -37; u < 37; u += 3) { ctx.moveTo(u, -1.4); ctx.lineTo(u + 1.5, 1.4); }
+  ctx.stroke();
+  // vier Flügelpaare, je einer nach oben und unten
+  for (const ax of [-33, -27, 27, 33]) for (const sy of [-1, 1]) {
+    const y0 = sy < 0 ? -26 : 3;
+    box(ax - 2.6, y0, 5.2, 23, '#b07a3a', 0, 0.5);
+    line(ax, y0, ax, y0 + 23, '#6d4a22', 0.5);
+    ctx.strokeStyle = '#8a5e2c'; ctx.lineWidth = 0.3; ctx.beginPath();
+    for (let v = y0 + 3; v < y0 + 23; v += 3) { ctx.moveTo(ax - 2.6, v); ctx.lineTo(ax + 2.6, v); }
+    ctx.stroke();
+  }
+  ctx.restore();
+}
 const abend = () => istDunkel();
 const SL_N = 22;
 const slPos = (g, i) => { const t = ((g % RUN_P) / RUN_P) - i * 0.006; return { x: lerp(-4600, 6600, t), y: lerp(-470, -420, t) }; };
@@ -242,7 +283,13 @@ registerRunner({
   room: 'strasse',
   draw() {},
   glow(g) {
-    for (let i = 0; i < SL_N; i++) { const p = slPos(g, i); glow(p.x, p.y, 10, 'rgba(255,255,240,0.9)'); circle(p.x, p.y, 2.2, '#fffbe8', null); }
+    const d = nahDetail();
+    for (let i = 0; i < SL_N; i++) {
+      const p = slPos(g, i);
+      glow(p.x, p.y, 10, `rgba(255,255,240,${0.9 - 0.6 * d})`);
+      if (d < 1) { ctx.save(); ctx.globalAlpha = 1 - d; circle(p.x, p.y, 2.2, '#fffbe8', null); ctx.restore(); }
+      if (d > 0) { ctx.save(); ctx.globalAlpha = d; starlinkNah(p.x, p.y, i); ctx.restore(); }
+    }
   },
   robot: { id: 'satkette', name: 'Satellitenkette', bereich: 'Raumfahrt', aera: 'seit 2019', typ: 'Neu gestartete Internet-Satelliten',
     fakt: 'Kurz nach dem Start fliegen neue Starlink-Satelliten von SpaceX hintereinander wie eine Perlenkette über den Himmel. In der Dämmerung, wenn die Sonne sie noch anstrahlt, sieht man sie als Lichterkette. Nach einigen Tagen steigen sie höher und verteilen sich.',
@@ -255,13 +302,19 @@ const issPos = g => { g %= RUN_P; if (g < 120 || g >= 260) return null; const t 
 registerRunner({
   room: 'satellit',
   draw() {},
-  glow(g) { const p = issPos(g); if (p) { glow(p.x, p.y, 40, 'rgba(255,255,255,0.95)'); circle(p.x, p.y, 6, '#ffffff', null); } },
+  glow(g) {
+    const p = issPos(g); if (!p) return;
+    const d = nahDetail();
+    glow(p.x, p.y, 40, `rgba(255,255,255,${0.95 - 0.7 * d})`);
+    if (d < 1) { ctx.save(); ctx.globalAlpha = 1 - d; circle(p.x, p.y, 6, '#ffffff', null); ctx.restore(); }
+    if (d > 0) { ctx.save(); ctx.globalAlpha = d; issNah(p.x, p.y); ctx.restore(); }
+  },
   robot: { id: 'issflug', name: 'Raumstation am Abendhimmel', bereich: 'Raumfahrt', aera: 'seit 1998', typ: 'Internationale Raumstation ISS',
     fakt: 'Die Internationale Raumstation umrundet die Erde in etwa 90 Minuten. Abends sieht man sie als hellen Punkt, der nicht blinkt und gleichmäßig über den Himmel zieht. An Bord arbeiten ein großer Roboterarm und kleine fliegende Würfelroboter.',
     echt: 'Echt, nur viel langsamer: In echt dauert ein Überflug einige Minuten. Flugzeuge blinken, die Raumstation nicht.',
     note: 'Zieht ab und zu als heller Punkt vorbei, nur bei „Abend“.', color: '#ffffff',
     quelle: 'https://en.wikipedia.org/wiki/International_Space_Station',
-    box: () => { const p = abend() && issPos(state.g); return p ? [p.x - 30, p.y - 30, 60, 60] : HIDE; } },
+    box: () => { const p = abend() && issPos(state.g); return p ? [p.x - 40, p.y - 30, 80, 60] : HIDE; } },
 });
 
 /* ---------- Raketenstart mit Landung der ersten Stufe (weit hinten zwischen Schule 102 und Halle 103) ---------- */
