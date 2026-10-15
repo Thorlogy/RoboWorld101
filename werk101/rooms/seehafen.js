@@ -76,6 +76,7 @@ function shBinnenschiff(x, dir) {
 function shHafenbild(g) {
   const ab = istDunkel(), τ = shTau(), u = shU(τ), lift = shLift(g);
   // Wasser hinter allem (vom Kai bis weit nach rechts), Kai als Betonblock
+  ctx.fillStyle = himmelFarben()[2]; ctx.fillRect(SH_XQ, GROUND - 8, 4400, SH_WY - GROUND + 9);
   ctx.fillStyle = ab ? '#1e3550' : '#4f7f9c'; ctx.fillRect(SH_XQ, SH_WY, 4400, SH_BOT - SH_WY);
   ctx.fillStyle = '#6b5a48'; ctx.fillRect(SH_XQ, SH_BOT - 30, 4400, 30);
   ctx.fillStyle = '#9a968c'; ctx.fillRect(SHHX - 20, SH_QY, SH_XQ - SHHX + 20, SH_BOT - SH_QY); ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.strokeRect(SHHX - 20, SH_QY, SH_XQ - SHHX + 20, SH_BOT - SH_QY);

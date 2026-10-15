@@ -1,7 +1,7 @@
 /* Hohe See rechts hinter der Hafeneinfahrt (c 20–23, Wasserfelder) und Müllsammel-Roboter im Hafenbecken.
    Draußen auf See ist alles weit weg: Maßstab 1 : 12 (1 m ≈ 5,75 Einheiten). Der Hafen davor ist 1 : 4.
    Gezeichnet in Läufern ohne Zuschnitt; die Felder bleiben leer. Die Schiffe stehen im Bild, die Wellen ziehen vorbei. */
-const MR_X0 = rx(roomOf('see1').c) + 140, MR_X1 = rx(roomOf('see4').c) + RW + 900;
+const MR_X0 = rx(roomOf('see1').c) + 140, MR_X1 = rx(roomOf('see5').c) + RW + 900;
 const MR_M = 69 / 12;
 const MR_FR = rx(roomOf('see1').c) + 300;          // Bug des Frachters (fährt nach links)
 const MR_FL = 229 * MR_M;                           // 229 m lang
@@ -106,6 +106,8 @@ function mrUnterwasser(g) {
 }
 function mrMeer(g) {
   const ab = istDunkel();
+  // Erdstreifen zwischen Horizont und Wasser überdecken: draußen auf See gibt es kein Ufer
+  ctx.fillStyle = himmelFarben()[2]; ctx.fillRect(MR_X0, GROUND - 8, MR_X1 - MR_X0, SH_WY - GROUND + 9);
   ctx.fillStyle = ab ? '#16304a' : '#3f6f8e'; ctx.fillRect(MR_X0, SH_WY, MR_X1 - MR_X0, SH_BOT - SH_WY);
   ctx.fillStyle = '#5b4f45'; ctx.fillRect(MR_X0, SH_BOT - 20, MR_X1 - MR_X0, 20);
   withAlpha('fluegelfrachter', () => mrFrachter(g));
@@ -132,6 +134,42 @@ registerRunner({ room: 'see3', draw() {}, robot: { id: 'oceancleanup', name: 'Pl
   quelle: 'https://theoceancleanup.com/updates/system-03-a-beginners-guide/',
   box: () => [MR_ZA, SH_WY - 120, MR_ZB + 230 - MR_ZA, 200] } });
 
+/* ---------- Algenfarm: Zuckertang an Leinen unter Wasser, Tauchroboter vermisst, Ernteroboter schneidet (Prototyp) ---------- */
+const AF_X0 = rx(roomOf('see5').c) + 40, AF_X1 = AF_X0 + 560, AF_Y = SH_WY + 20;
+const afErnte = g => g < 360 ? lerp(AF_X0 + 10, AF_X1 - 10, seg(g, 0, 360)) : lerp(AF_X1 - 10, AF_X0 + 10, seg(g, 360, 480));
+const afAuv = g => ({ x: AF_X0 - 60 + 700 * (g / 480), y: SH_WY + 170 });
+function afFarm(g) {
+  const ernte = afErnte(g), zurueck = g >= 360;
+  for (let x = AF_X0; x <= AF_X1; x += 140) { line(x, SH_WY - 4, x, AF_Y, INK, 1.2); circle(x, SH_WY - 4, 7, '#f08a24', INK, 1.2); }
+  line(AF_X0, AF_Y, AF_X1, AF_Y, '#3b3d40', 2);
+  for (let x = AF_X0 + 12; x < AF_X1; x += 18) {
+    const geerntet = !zurueck && x < ernte, len = geerntet ? 14 : zurueck ? lerp(14, 90, seg(g, 360, 480) * (x > ernte ? 1 : 0.4)) : 90;
+    ctx.strokeStyle = '#8a7a2a'; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(x, AF_Y);
+    for (let k = 1; k <= 4; k++) ctx.lineTo(x + Math.sin(g / 20 + x + k) * 4, AF_Y + len * k / 4);
+    ctx.stroke();
+  }
+  withAlpha('algenernter', () => {
+    box(ernte - 22, AF_Y - 14, 44, 26, '#e0a526', 5, 1.5); box(ernte - 16, AF_Y + 12, 32, 16, '#3b3d40', 2, 1.2);
+    if (!zurueck) { line(ernte + 22, AF_Y + 6, ernte + 34, AF_Y + 6, '#c9ccc8', 3); for (let i = 0; i < 3; i++) circle(ernte - 30 - i * 6, AF_Y + 10 + i * 4, 3, '#8a7a2a', null); }
+  });
+  withAlpha('algenauv', () => {
+    const a = afAuv(g);
+    ctx.fillStyle = 'rgba(127,255,170,0.18)'; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(a.x - 50, AF_Y + 90); ctx.lineTo(a.x + 50, AF_Y + 90); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(a.x, a.y, 24, 6, 0, 0, TAU); paint('#f0b429', INK, 1.2); line(a.x - 24, a.y, a.x - 32, a.y, INK, 2);
+  });
+}
+registerRunner({ room: 'see5', draw(g) { afFarm(g); }, robot: { id: 'algenernter', name: 'Ernteroboter für Algen', bereich: 'Landwirtschaft', aera: 'Forschung', typ: 'Roboter, der an der Leine entlangfährt', color: '#e0a526',
+  fakt: 'Zuckertang wächst an langen Leinen knapp unter der Wasseroberfläche. In Norwegen hat die Forschungseinrichtung SINTEF ein Konzept mit einem Robotermodul entwickelt, das unter Wasser an der Farm arbeitet und beim Ernten hilft. Ein kleiner Prototyp wurde gebaut und getestet.',
+  echt: 'Noch Forschung, kein fertiges Gerät. Dass der Tang gleich nachwächst, ist Spaß – in echt dauert es Monate. Größer gezeichnet als der Maßstab der See.',
+  note: 'Fährt an der Leine entlang und schneidet den Tang ab.',
+  quelle: 'https://sintef.brage.unit.no/sintef-xmlui/handle/11250/3026603',
+  box: () => { const x = afErnte(state.g); return [x - 24, AF_Y - 16, 48, 46]; } } });
+registerRunner({ room: 'see5', draw() {}, robot: { id: 'algenauv', name: 'Vermessungs-Tauchroboter', bereich: 'Unterwasser', aera: 'heute', typ: 'Torpedoförmiges Unterwasserfahrzeug', color: '#f0b429',
+  fakt: 'Forschende des Woods Hole Oceanographic Institution in den USA lassen Tauchroboter vom Typ REMUS unter Algenfarmen entlangfahren. Mit Echolot, Sonar und Kamera messen sie, wie viel Tang an den Leinen wächst, ohne dass jemand tauchen muss.',
+  echt: 'Echt. Hier größer gezeichnet, damit man ihn sieht.', note: 'Fährt unter den Leinen durch und misst mit dem Echolot nach oben.',
+  quelle: 'https://insideunmannedsystems.com/autonomous-aquacultures-kelp-crusaders/',
+  box: () => { const a = afAuv(state.g); return [a.x - 30, a.y - 10, 60, 20]; } } });
+
 /* ---------- Müllsammel-Roboter im Hafenbecken (Hafenmaßstab 1 : 4) ---------- */
 const mrHaiX = g => SH_SX + 30 + 260 * seg(g, 0, 480);   // bleibt links vom Binnenschiff
 registerRunner({
@@ -154,7 +192,7 @@ registerRunner({
     quelle: 'https://www.ranmarine.io/news/the-plastic-gobbling-water-robot/',
     box: () => { const x = mrHaiX(state.g); return [x - 20, SH_WY - 22, 40, 30]; } },
 });
-for (const [key, name] of [['see1', 'Hohe See'], ['see2', 'Hohe See: Frachter'], ['see3', 'Hohe See: Plastik sammeln'], ['see4', 'Hohe See: Barriere']])
+for (const [key, name] of [['see1', 'Hohe See'], ['see2', 'Hohe See: Frachter'], ['see3', 'Hohe See: Plastik sammeln'], ['see4', 'Hohe See: Barriere'], ['see5', 'Hohe See: Algenfarm']])
   registerRoom({ key, name, level: 'Außengelände', hitOrder: [], robots: [], draw() {} });
 registerRunner({ room: 'see1', draw() {}, robot: { id: 'schildkroete', name: 'Meeresschildkröte', bereich: 'Tier', aera: 'Maßstab', typ: 'Tier im Meer', color: '#5f7a3a',
   fakt: 'Meeresschildkröten fressen gern Quallen. Eine treibende Plastiktüte sieht unter Wasser ähnlich aus, darum verschlucken Schildkröten manchmal Plastik. Auch deshalb wird Plastik aus dem Meer gefischt.',
@@ -164,5 +202,7 @@ document.addEventListener('DOMContentLoaded', () => typeof KINDER !== 'undefined
   schildkroete: 'Schildkröten fressen Quallen. Eine Plastiktüte im Wasser sieht aus wie eine Qualle, darum ist Plastik im Meer gefährlich für sie.',
   fluegelfrachter: 'Dieses riesige Schiff hat Segel aus festem Material. Ein Computer dreht sie in den Wind, so braucht das Schiff weniger Treibstoff.',
   oceancleanup: 'Zwei Schiffe ziehen eine lange Barriere durchs Meer. Das Plastik sammelt sich in einem Sack. Fische dürfen durch eine Klappe wieder hinaus.',
+  algenernter: 'Unter Wasser wachsen Algen an langen Leinen. Dieser Roboter fährt die Leine entlang und schneidet sie ab.',
+  algenauv: 'Dieser Tauchroboter misst, wie viele Algen gewachsen sind.',
   wasteshark: 'Dieser kleine Roboter schwimmt durch den Hafen und schluckt Flaschen und anderen Müll.',
 }));
