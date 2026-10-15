@@ -104,7 +104,12 @@ const AUFTRAEGE = [
     fertig: 'Geliefert! Im Bücherspeicher holen Roboterkräne die Bücher aus hohen Regalen.' },
   { id: 'socke', ding: 'rote Socke', von: 'recycling', nach: 'wohnen', text: 'Die rote Socke ist im Recyclinghof gelandet. Bring sie zurück in den Wohnbereich.',
     fertig: 'Geliefert! Socken gehören nicht in den Saugroboter und nicht in den Recyclinghof.' },
+  // gibt es nur während einer Störung am Förderband (stoerung.js)
+  { id: 'rolle', ding: 'Ersatzrolle', von: 'lager', nach: 'fertigung', spot: 240, nurStoerung: true,
+    text: 'Störung! Bring die Ersatzrolle vom Lager in die Fertigungshalle.',
+    fertig: 'Repariert, das Band läuft wieder! Ein Förderband rollt über viele Tragrollen. Klemmt eine, steht oft die ganze Linie. Darum liegen wichtige Ersatzteile meist gleich im Werk bereit.' },
 ];
+const avAktiv = a => !a.nurStoerung || !!WELT.stoerung || AV.traegt === a.id;
 const AV_SPOT = 540; // Abstand vom linken Raumrand für Abholen und Abgeben
 let avDinge = {};
 function avDingeStart() {
@@ -112,11 +117,11 @@ function avDingeStart() {
   try { fertig = JSON.parse(localStorage.getItem('rw101-botengaenge') || '[]'); } catch (e) {}
   avDinge = {};
   for (const a of AUFTRAEGE) {
-    const o = roomOf(fertig.includes(a.id) ? a.nach : a.von);
-    avDinge[a.id] = { r: o.r, x: rx(o.c) + AV_SPOT + (fertig.includes(a.id) ? -30 : 0), ok: fertig.includes(a.id) };
+    const ok = !a.nurStoerung && fertig.includes(a.id), o = roomOf(ok ? a.nach : a.von);
+    avDinge[a.id] = { r: o.r, x: rx(o.c) + (a.spot || AV_SPOT) + (ok ? -30 : 0), ok };
   }
 }
-function avSpeichern() { try { localStorage.setItem('rw101-botengaenge', JSON.stringify(AUFTRAEGE.filter(a => avDinge[a.id].ok).map(a => a.id))); } catch (e) {} }
+function avSpeichern() { try { localStorage.setItem('rw101-botengaenge', JSON.stringify(AUFTRAEGE.filter(a => !a.nurStoerung && avDinge[a.id].ok).map(a => a.id))); } catch (e) {} }
 const KNOEPFE = [
   { id: 'nothalt', room: 'fertigung', x: 34, name: 'Not-Halt', tu() {
       WELT.emit('nothalt', 'fertigung');
@@ -135,7 +140,7 @@ function avNah(maxd) {
   let best = null;
   const pruefe = (art, obj, p) => { if (!p || p.r !== AV.row) return; const d = Math.abs(p.x - AV.x); if (d < maxd && (!best || d < best.d)) best = { art, obj, d, x: p.x }; };
   KNOEPFE.forEach(k => pruefe('knopf', k, knopfPos(k)));
-  if (!AV.traegt) AUFTRAEGE.forEach(a => { const d = avDinge[a.id]; if (d && !d.traeger) pruefe('ding', a, d); });
+  if (!AV.traegt) AUFTRAEGE.forEach(a => { const d = avDinge[a.id]; if (d && !d.traeger && avAktiv(a)) pruefe('ding', a, d); });
   return best;
 }
 function avGreifen() {
@@ -191,7 +196,7 @@ function avZiel(wort) {
   let w = avNorm(wort); for (let i = 0; i < 3; i++) w = w.replace(AV_FUELL, '');
   if (!w) return null;
   if (/aufzug|fahrstuhl/.test(w)) return { r: AV.row, x: AV_DOOR };
-  for (const a of AUFTRAEGE) if (avNorm(a.ding) === w || w.split(' ').includes(avNorm(a.ding).split(' ').pop())) { const d = avDinge[a.id]; if (!d.traeger) return { r: d.r, x: d.x }; }
+  for (const a of AUFTRAEGE) if (avNorm(a.ding) === w || w.split(' ').includes(avNorm(a.ding).split(' ').pop())) { const d = avDinge[a.id]; if (!d.traeger && avAktiv(a)) return { r: d.r, x: d.x }; }
   const o = ROOMS.find(o => isOpen(o) && (avNorm(o.name).split(' ').some(t => t.length > 3 && (t.startsWith(w) || w.startsWith(t))) || avNorm(o.name) === w || o.built === w));
   if (o) return { r: o.r, x: rx(o.c) + RW / 2 };
   const rob = ROBOTS.find(r => r.id !== 'avatar' && avNorm(r.name).includes(w));
@@ -249,6 +254,13 @@ function avDing(id, x, y) {
   else if (id === 'paket') { box(x - 16, y - 22, 32, 22, '#c9a46a', 0, 2); line(x, y - 22, x, y, '#a8763f', 3); }
   else if (id === 'buch') { box(x - 11, y - 26, 22, 26, '#3e6f9e', 0, 2); line(x + 7, y - 24, x + 7, y - 2, '#e8e4da', 2); }
   else if (id === 'teil') { box(x - 14, y - 16, 28, 16, '#8a8f94', 2, 2); circle(x - 6, y - 8, 3, '#3b3d40', null); circle(x + 6, y - 8, 3, '#3b3d40', null); }
+  else if (id === 'rolle') {
+    // Tragrolle eines Förderbands: Stahlrohr mit Achsstummeln und Kugellagern an den Enden
+    line(x - 24, y - 9, x + 24, y - 9, INK, 3);
+    box(x - 19, y - 17, 38, 16, '#9aa0a6', 3, 2);
+    line(x - 15, y - 13, x + 15, y - 13, '#c3c7cb', 2);
+    box(x - 21, y - 16, 5, 14, '#5d6064', 1, 1.2); box(x + 16, y - 16, 5, 14, '#5d6064', 1, 1.2);
+  }
   else if (id === 'socke') {
     ctx.beginPath(); ctx.moveTo(x - 4, y - 24); ctx.lineTo(x + 4, y - 24); ctx.lineTo(x + 4, y - 8); ctx.lineTo(x + 12, y - 6); ctx.lineTo(x + 12, y); ctx.lineTo(x - 4, y); ctx.closePath(); paint('#d9342b');
   }
@@ -299,7 +311,7 @@ function avTaste(x, y, t) { box(x - 9, y - 18, 18, 18, '#2a2723', 0, 1.5); text(
 function avDraw() {
   if (!AV.an) return;
   // Dinge der Botengänge
-  for (const a of AUFTRAEGE) { const d = avDinge[a.id]; if (d && !d.traeger) { withAlpha('avatar', () => avDing(a.id, d.x, avFloor(d.r, d.x))); if (d.ok) text('✓', d.x + 20, avFloor(d.r, d.x) - 20, 18, { color: '#2e7d32', weight: 600 }); } }
+  for (const a of AUFTRAEGE) { const d = avDinge[a.id]; if (d && !d.traeger && avAktiv(a)) { withAlpha('avatar', () => avDing(a.id, d.x, avFloor(d.r, d.x))); if (d.ok) text('✓', d.x + 20, avFloor(d.r, d.x) - 20, 18, { color: '#2e7d32', weight: 600 }); } }
   // eigene Knöpfe: Not-Halt in der Fertigung, Schichtglocke in der Eingangshalle
   for (const k of KNOEPFE) {
     if (!k.room) continue; const p = knopfPos(k), fl = ry(p.r) + 360;
@@ -394,8 +406,8 @@ function avPanel() {
   avSt.textContent = t;
   avAuf.innerHTML = '';
   let n = 0;
-  AUFTRAEGE.forEach(x => { const li = document.createElement('li'); li.textContent = x.text; if (avDinge[x.id].ok) { li.className = 'ok'; n++; } if (AV.traegt === x.id) li.className = 'jetzt'; avAuf.appendChild(li); });
-  avBox.querySelector('.av-d1 summary').textContent = `Botengänge ${n} von ${AUFTRAEGE.length}`;
+  AUFTRAEGE.forEach(x => { if (!avAktiv(x)) return; const li = document.createElement('li'); li.textContent = x.text; if (avDinge[x.id] && avDinge[x.id].ok) { li.className = 'ok'; n++; } if (AV.traegt === x.id) li.className = 'jetzt'; avAuf.appendChild(li); });
+  avBox.querySelector('.av-d1 summary').textContent = `Botengänge ${n} von ${AUFTRAEGE.filter(x => !x.nurStoerung).length}` + (WELT.stoerung ? ' · Störung!' : '');
 }
 avBox.querySelector('.av-pad').addEventListener('click', e => {
   const k = e.target.closest('button'); if (!k) return;

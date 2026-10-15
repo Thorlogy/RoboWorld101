@@ -256,6 +256,7 @@ WELT.on('nothalt', key => {
   if (key === 'fertigung') setTimeout(() => { WELT.halt.lager = { bis: performance.now() + 3500, f: state.f, grund: 'FERTIGUNG STEHT · LAGER WARTET AUF TEILE' }; state.dirty = true; }, 700);
 });
 function reaktionen(key) {
+  if (typeof stoerungZeigen === 'function') stoerungZeigen(key);
   // Prüfstand testet das gelieferte Bauteil
   const s = WELT.seit('geliefert:teil');
   if (key === 'pruef' && s < 10) schild(s < 5 ? 'NEUES BAUTEIL · PRÜFUNG LÄUFT ' + '▮'.repeat(1 + Math.floor(s * 2) % 6) : 'BAUTEIL GEPRÜFT · IN ORDNUNG ✓', RW / 2, 40, s < 5 ? '#23384d' : '#2e7d32');
