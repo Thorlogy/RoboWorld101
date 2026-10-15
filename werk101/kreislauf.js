@@ -139,9 +139,9 @@ function ticker(textMeldung, x, y) {
   const b = document.createElement('button'); b.type = 'button'; b.textContent = zeit + '  ' + textMeldung;
   if (x != null) b.addEventListener('click', () => { setFollow(false); fit(x - 380, y - 260, 760, 520, true); });
   el.prepend(b); TICKER.push(b);
-  while (el.children.length > 3) el.lastChild.remove();
-  setTimeout(() => { b.classList.add('alt'); }, 20000);
-  setTimeout(() => b.remove(), 32000);
+  while (el.children.length > 1) el.lastChild.remove();   // immer nur eine Meldung, die neue löst die alte ab
+  setTimeout(() => { b.classList.add('alt'); }, 15000);
+  setTimeout(() => b.remove(), 24000);
   el.style.bottom = (panelBottom() + 16) + 'px';
 }
 if (typeof WELT !== 'undefined') WELT.on('ticker', (t, x, y) => ticker(t, x, y));
@@ -190,7 +190,7 @@ let klLetztesG = -1;
 function klTick() {
   if (state.g !== klLetztesG) {
     if (klLetztesG < 235 && state.g >= 235 && state.g < 260 && !(typeof bgSperre === 'function' && bgSperre()) && WELT.runde % 3 === 0)
-      ticker('Sprengung im Gebirge! Im Leitstand des Bergwerks schlägt der Erschütterungsmesser aus.', 2 * BG_MX - BG_F, GROUND - 200);
+      (typeof meldung === 'function' ? meldung : ticker)('Sprengung im Gebirge! Im Leitstand des Bergwerks schlägt der Erschütterungsmesser aus.', 2 * BG_MX - BG_F, GROUND - 200);
     klLetztesG = state.g;
     if (state.follow && ROUTEN[FOLGE.ziel]) {
       const r = ROUTEN[FOLGE.ziel], p = routePos(r, routeU(r));

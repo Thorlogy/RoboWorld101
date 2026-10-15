@@ -1,6 +1,8 @@
 /* Meldungen im Ticker unten links: lenken den Blick auf Ereignisse in der Welt. Ein Klick fährt die Kamera hin.
    Jede Meldung feuert, wenn state.g den Wert g überschreitet und wenn (WELT.runde % (alle || 6)) === runde; über die Runden
-   verteilt, damit höchstens etwa alle 20 Sekunden eine kommt. wenn() kann zusätzlich prüfen (Tageszeit, Wetter).
+   verteilt. wenn() kann zusätzlich prüfen (Tageszeit, Wetter).
+   meldung() bremst: dieselbe Meldung frühestens nach ML_WIEDER Sekunden wieder, zwischen zwei Meldungen mindestens
+   ML_ABSTAND Sekunden (sonst fällt die neue aus und kommt in einer späteren Runde). Störung und „Verfolgen“ melden direkt.
    Die Sprengung im Gebirge meldet kreislauf.js (Runden 0 und 3), die Störung stoerung.js. */
 const MELDUNGEN = [
   { runde: 1, g: 262, text: 'Wüste: Stanley ist im Ziel! 2005 gewinnt zum ersten Mal ein Auto ohne Fahrer die Grand Challenge.', ort: () => [WU_ZIEL, GROUND - 120] },
@@ -24,6 +26,13 @@ const MELDUNGEN = [
   { runde: 4, g: 20, text: 'Mars-Testgelände: Der Rover macht ein Selfie mit seinem Kameraarm.', ort: () => mlRaum('mars') },
   { runde: 5, g: 380, text: 'Katastrophenschutz: Das verdächtige Paket ist nur das, was die Möwe vom Dach geklaut hat.', ort: () => mlRaum('kat') },
 ];
+const ML_WIEDER = 15 * 60, ML_ABSTAND = 25;
+const mlGesehen = new Map(); let mlZuletzt = -Infinity;
+function meldung(text, x, y) {
+  const jetzt = performance.now() / 1000;
+  if (jetzt - mlZuletzt < ML_ABSTAND || jetzt - (mlGesehen.get(text) ?? -Infinity) < ML_WIEDER) return;
+  mlGesehen.set(text, jetzt); mlZuletzt = jetzt; ticker(text, x, y);
+}
 function mlRaum(key) { const o = roomOf(key); return [rx(o.c) + RW / 2, ry(o.r) + RH / 2]; }
 let mlLetztesG = -1;
 function mlTick() {
@@ -32,7 +41,7 @@ function mlTick() {
     for (const m of MELDUNGEN) {
       if (WELT.runde % (m.alle || 6) !== m.runde || !(mlLetztesG < m.g && g >= m.g && g < m.g + 20)) continue;
       if (m.wenn && !m.wenn()) continue;
-      const [x, y] = m.ort(); ticker(m.text, x, y);
+      const [x, y] = m.ort(); meldung(m.text, x, y);
     }
     mlLetztesG = g;
   }
