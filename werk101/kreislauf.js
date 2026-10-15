@@ -136,9 +136,12 @@ const TICKER = [];
 function ticker(textMeldung, x, y) {
   const el = document.getElementById('ticker'); if (!el) return;
   const d = new Date(), zeit = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
-  const b = document.createElement('button'); b.type = 'button'; b.textContent = zeit + '  ' + textMeldung;
-  if (x != null) b.addEventListener('click', () => { setFollow(false); fit(x - 380, y - 260, 760, 520, true); });
-  el.prepend(b); TICKER.push(b);
+  const b = document.createElement('div'); b.className = 'meldung';
+  const t = document.createElement('button'); t.type = 'button'; t.textContent = zeit + '  ' + textMeldung;
+  if (x != null) t.addEventListener('click', () => { setFollow(false); fit(x - 380, y - 260, 760, 520, true); });
+  const zu = document.createElement('button'); zu.type = 'button'; zu.className = 'zu'; zu.textContent = '×'; zu.title = 'Meldung schließen'; zu.setAttribute('aria-label', 'Meldung schließen');
+  zu.addEventListener('click', e => { e.stopPropagation(); b.remove(); });
+  b.append(t, zu); el.prepend(b); TICKER.push(b);
   while (el.children.length > 1) el.lastChild.remove();   // immer nur eine Meldung, die neue löst die alte ab
   setTimeout(() => { b.classList.add('alt'); }, 15000);
   setTimeout(() => b.remove(), 24000);
