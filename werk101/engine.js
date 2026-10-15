@@ -429,7 +429,7 @@ window.addEventListener('keydown', e => {
 
 /* ---------- Panel ---------- */
 const chipsEl = document.getElementById('chips'), listEl = document.getElementById('list');
-const FILTERS = ['Alle', 'Industrie', 'Service', 'Haushalt', 'Logistik', 'Medizin', 'Forschung', 'Inspektion', 'Geschichte', 'Raumfahrt', 'Mobilität', 'Landwirtschaft', 'Rettung', 'Unterwasser', 'Bildung', 'Medien', 'Umwelt', 'Energie', 'Bau'];
+const FILTERS = ['Alle', 'Industrie', 'Service', 'Haushalt', 'Logistik', 'Medizin', 'Forschung', 'Inspektion', 'Geschichte', 'Raumfahrt', 'Mobilität', 'Landwirtschaft', 'Rettung', 'Unterwasser', 'Bildung', 'Medien', 'Umwelt', 'Energie', 'Bau', 'Rohstoffe'];
 const roomsEl = document.getElementById('rooms');
 BUILT.forEach(o => {
   const b = document.createElement('button'); b.type = 'button'; b.textContent = o.name; b.dataset.key = o.key;

@@ -33,8 +33,8 @@ function shU(τ) {
   else c = { x: SH_STK, top: topT };
   return { sx, sy, agv, ax, ay, c };
 }
-const shLift = g => g < 30 ? 0 : g < 60 ? 300 * ease(seg(g, 30, 60)) : g < 150 ? 300 : g < 180 ? 300 * (1 - ease(seg(g, 150, 180))) : g < 290 ? 0 : g < 320 ? 300 * ease(seg(g, 290, 320)) : g < 395 ? 300 : g < 425 ? 300 * (1 - ease(seg(g, 395, 425))) : 0;
-const SH_BIN_AUS = SHHX + 3900, SH_BIN_IN = SHHX + 2050;
+const shLift = g => g < 30 ? 0 : g < 60 ? 300 * ease(seg(g, 30, 60)) : g < 150 ? 300 : g < 180 ? 300 * (1 - ease(seg(g, 150, 180))) : g < 290 ? 0 : g < 320 ? 300 * ease(seg(g, 290, 320)) : g < 420 ? 300 : g < 450 ? 300 * (1 - ease(seg(g, 420, 450))) : 0;
+const SH_BIN_AUS = SHHX + 3500, SH_BIN_IN = SHHX + 2050;
 const shBinX = g => g < 30 ? SH_BIN_AUS : g < 180 ? lerp(SH_BIN_AUS, SH_BIN_IN, ease(seg(g, 30, 180))) : g < 280 ? SH_BIN_IN : g < 430 ? lerp(SH_BIN_IN, SH_BIN_AUS, ease(seg(g, 280, 430))) : SH_BIN_AUS;
 const shSkater = g => SH_SX + 220 + 900 * (0.5 - 0.5 * Math.cos(TAU * g / 480));
 
@@ -107,7 +107,7 @@ function shHafenbild(g) {
     const x = rx(roomOf('shkai').c) + 40;
     box(x, SH_QY - 120, 130, 120, '#e6e3da', 2, 2); box(x + 10, SH_QY - 106, 110, 40, ab ? '#ffe7a3' : '#9fc4d6', 1, 1.2);
     text('LEITSTAND', x + 65, SH_QY - 50, 11, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center' });
-    ctx.save(); ctx.translate(x + 60, SH_QY - 66); ctx.scale(0.25, 0.25); person({ x: 0, foot: 0, face: 1, shirt: '#3d5a80', sit: true }); ctx.restore();
+    ctx.save(); ctx.translate(x + 60, SH_QY - 66); ctx.scale(0.25, 0.25); person({ x: 0.001, foot: 0.001, face: 1, shirt: '#3d5a80', sit: true }); ctx.restore();
   });
   // AGV mit oder ohne Container
   withAlpha('shagv', () => {
