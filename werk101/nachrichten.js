@@ -1,6 +1,8 @@
 /* Robo-Nachrichten für das Studio im Sendeturm (rooms/sendeturm.js).
    Neue Meldung = neuer Eintrag OBEN in der Liste. Das Studio zeigt die neueste Meldung, deren Datum nicht in der Zukunft liegt.
-   Regeln: nur Robotik, kindgerecht, mindestens zwei Quellen, Forschung/Test/Produkt klar angeben.
+   Regeln: nur Robotik, kindgerecht, mindestens zwei Quellen von verschiedenen Seiten, davon mindestens eine von der
+   Liste erlaubter Quellen in tools/news_check.js; Forschung/Test/Produkt klar angeben. Ablauf: NACHRICHTEN-AUFGABE.md.
+   Vor jedem Vorschlag: node werk101/tools/news_check.js --diff (muss „In Ordnung“ melden).
    Nicht aufnehmen: Militär und Waffen, Unfälle mit Verletzten, Panikthemen (Jobverlust, „Roboter übernehmen“), Sexualität, sonst heikle Themen.
    Felder:
      datum      'JJJJ-MM-TT' (Sendetag)
@@ -20,14 +22,6 @@ const NACHRICHTEN = [
     stand: 'Produkt',
     quellen: ['https://www.ipa.fraunhofer.de/de/presse/presseinformationen/world-robotics-service-robots-2026-neue-roboter-fuer-arbeitswelt-und-baustelle.html', 'https://www.malaymail.com/news/money/mediaoutreach/2026/09/30/global-sales-of-professional-service-robots-surge-24/491164'],
     figur: 'humanoid', hintergrund: 'fabrik', bewegung: 'laufen', werk: 'humanoidfabrik',
-  },
-  {
-    datum: '2026-10-15',
-    titel: 'Lastendrohnen bringen Werkzeug zu Windrädern im Meer',
-    text: 'In der Nordsee haben große Drohnen vier Wochen lang Werkzeugkisten zu Windrädern geflogen, jede bis zu 65 Kilo schwer. Bisher muss so etwas mit dem Schiff hin und dann mühsam hochgezogen werden.',
-    stand: 'Test',
-    quellen: ['https://interestingengineering.com/ai-robotics/cargo-drones-airlift-to-wind-turbines', 'https://www.suasnews.com/2026/10/big-cargo-drones-deliver-toolkits-to-wind-turbines-in-the-north-sea/'],
-    figur: 'drohne', hintergrund: 'meer', bewegung: 'fliegen', werk: 'paket',
   },
   {
     datum: '2026-10-14',

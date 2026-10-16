@@ -49,6 +49,11 @@ index.html, kit.js, rooms/*.js, kinder.js, runners.js, himmel.js, welt.js, avata
 - Sendeturm Haus 107 mit Nachrichtenstudio (rooms/sendeturm.js): Moderatorin, Kamera-Roboter auf Bodenschiene, Bildschirm mit Meldung des Tages aus Baukasten (Hintergrund/Figur/Bewegung), Laufband, Etikett Forschung/Test/Produkt. Karte „Robo-Nachricht des Tages“ öffnet das Archiv (mit Quellen-Links und „Gibt es auch bei uns im Werk“).
 - Meldungen stehen in nachrichten.js (`NACHRICHTEN`, neuester Eintrag oben; Felder und Regeln im Dateikopf). Statt news.json, weil fetch bei file:// und im Prüflauf nicht geht. Drei echte Beispielmeldungen (14.–16.10.2026).
 
+## Erledigt 16.10.2026 (Version 20261016g)
+- Robo-Nachrichten abgesichert: Links nur https (`nwLinks`), Prüfskript `tools/news_check.js` (Felder, Längen, verbotene Zeichen, zwei Quellen von verschiedenen Seiten, eine davon aus `ERLAUBT`; mit `--diff` nur nachrichten.js und deren index.html-Zeile geändert). Ablauf für den täglichen Lauf in `NACHRICHTEN-AUFGABE.md`: Vorschlag als Pull Request auf Zweig `robo-nachrichten`, Nutzer führt zusammen.
+- nachrichten.js hat einen eigenen Cache-Zähler `?v=nJJJJMMTT` (wird bei Versions-Erhöhungen nicht mit ersetzt).
+- Drohnen-Beispiel (15.10.) entfernt: keine Quelle von der Liste erlaubter Quellen.
+
 ## Erkenntnisse
 - Spalten rechts verschieben: nur kit.js (alle Positionen über `roomOf`). Zwischen zwei Häusern mindestens 0,5 Spalten Abstand lassen, sonst überlappen die Wände (Haus 105 endet genau bei rx(14)).
 - Neues Haus: Konstante + `HOUSES.push` + Zeichenblock in engine.js (wie Haus 104), Räume mit `haus: n`; die Lücken bekommen Gehweg und Laternen automatisch (uebergang.js).
@@ -96,14 +101,14 @@ index.html, kit.js, rooms/*.js, kinder.js, runners.js, himmel.js, welt.js, avata
 - Gag-Ideen: Staubkorn als „Staatsfeind Nr. 1“; Menschen wirken neben den Robotern wie die Fremdkörper.
 - Zahlen (Anzahl Deckenwagen, Wafer pro Behälter, Reinraumklasse) vor dem Einbauen mit Quellen prüfen.
 
-**G. News-Raum** (Studio steht seit 20261016f im Sendeturm; offen: tägliche geplante Aufgabe, erst nach Freigabe durch den Nutzer)
+**G. News-Raum** (Studio steht seit 20261016f im Sendeturm; tägliche Aufgabe als Pull-Request-Vorschlag seit 20261016g)
 - Täglich eine Robotik-Meldung, visualisiert. Seite liest `nachrichten.js` im Repo (Datum, Überschrift, 2–3 Sätze Kindersprache, Quelle, Kategorie, Figur, Hintergrund, Bewegung). Archiv zum Zurückblättern.
 - Studio fest gezeichnet (Moderationstisch, großer Bildschirm, Kamera auf Schienen als Roboter). Bildschirm setzt die Meldung aus vorhandenen Baukasten-Teilen zusammen – keine täglich neu generierte Zeichnung. Laufband unten; Verweis „gibt's auch bei uns im Werk“ mit Klick zur Figur.
 - Erst Raum mit 3–4 handgeschriebenen Beispielmeldungen bauen; tägliche geplante Aufgabe erst einrichten, wenn das Studio gefällt.
 - **Themenfilter (fest):** keine Militär-/Waffenroboter, keine Unfälle mit Verletzten, keine Panikthemen (Jobverlust, „Roboter übernehmen“), nichts mit Sexualität oder sonst kritischen Robotik-Themen. Forschung/Prototyp/Produkt klar unterscheiden. Mindestens zwei Quellen. Nichts Geeignetes gefunden → Meldung vom Vortag bleibt stehen.
 
 ## Nächster Schritt (Ideen)
-1. Tägliche geplante Aufgabe für die Robo-Nachrichten einrichten (sucht Meldung, prüft zwei Quellen und Themenfilter, schreibt Eintrag oben in nachrichten.js, Version hochzählen, Push). Erst wenn der Nutzer das Studio freigibt.
+1. Tägliche geplante Aufgabe „Robo-Nachrichten“ läuft (Pull Request statt Push). Bei Bedarf Quellenliste in tools/news_check.js erweitern.
 2. Chipfabrik-UG (Reinstwasser) und Tour-Station.
 3. Startflagge DARPA als zweite Aufgabe (R-101 kommt nicht hin: Wüste ist als `berg` markiert, Weg dorthin klären). Danach weitere Wüsten-Motive.
 4. Lieferroboter bringt Salatkisten von Farm 106 zur Kantine (passt zu Teil B); Trinkwasserleitung sichtbar bis zu den Häusern.

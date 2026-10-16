@@ -8,6 +8,8 @@ const NW_SCR = { x: 250, y: 58, w: 372, h: 236 };
 const nwHeute = () => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; };
 const nwListe = () => NACHRICHTEN.slice().sort((a, b) => (a.datum < b.datum ? 1 : -1));
 const nwAktuell = () => { const h = nwHeute(), l = nwListe(); return l.find(n => n.datum <= h) || l[l.length - 1]; };
+// Nur echte https-Links zulassen (kein javascript: oder data:)
+const nwLinks = n => (n.quellen || []).filter(q => typeof q === 'string' && /^https:\/\/[^\s"'<>]+$/.test(q));
 const nwDatum = d => { const [j, m, t] = d.split('-'); return `${+t}.${+m}.${j}`; };
 
 /* ---------- Baukasten: Hintergründe (Bildschirm-Szene 0..372 × 0..176, Boden bei 150) ---------- */
@@ -173,8 +175,8 @@ registerRoom({
       box: () => [NWX + NW_SCR.x - 8, NWY + NW_SCR.y - 8, NW_SCR.w + 16, NW_SCR.h + 16] }, (() => {
       const n = nwAktuell();
       return { aera: nwDatum(n.datum), fakt: n.titel + '. ' + n.text,
-        echt: `Echte Meldung (${n.stand}). Geprüft mit ${n.quellen.length} Quellen. Die Szene auf dem Bildschirm ist aus Bausteinen zusammengesetzt und zeigt nicht den echten Roboter.`,
-        quelle: n.quellen[0] };
+        echt: `Echte Meldung (${n.stand}). Geprüft mit ${nwLinks(n).length} Quellen. Die Szene auf dem Bildschirm ist aus Bausteinen zusammengesetzt und zeigt nicht den echten Roboter.`,
+        quelle: nwLinks(n)[0] };
     })()),
     { id: 'kamerarobo', name: 'Kamera-Roboter', bereich: 'Medien', aera: 'seit den 1990ern', typ: 'Fernsehkamera auf einer Schiene',
       fakt: 'In vielen Nachrichtenstudios steht hinter der Kamera kein Mensch mehr. Die Kamera fährt auf einer Schiene oder einem Rollfuß und schwenkt nach einem Plan, den ein Mensch im Regieraum vorher festgelegt hat. Ein Mensch kann so mehrere Kameras auf einmal steuern.',
@@ -215,7 +217,7 @@ registerRoom({
     const t = document.createElement('h3'); t.textContent = n.titel;
     const p = document.createElement('p'); p.textContent = n.text;
     li.append(kopf, t, p);
-    n.quellen.forEach((q, i) => { const a = document.createElement('a'); a.href = q; a.target = '_blank'; a.rel = 'noopener'; a.textContent = 'Quelle ' + (i + 1); li.appendChild(a); });
+    nwLinks(n).forEach((q, i) => { const a = document.createElement('a'); a.href = q; a.target = '_blank'; a.rel = 'noopener'; a.textContent = 'Quelle ' + (i + 1); li.appendChild(a); });
     if (n.werk) {
       const b = document.createElement('button'); b.type = 'button'; b.className = 'zum'; b.textContent = 'Gibt es auch bei uns im Werk →';
       b.addEventListener('click', () => { if (typeof byId === 'undefined' || !byId[n.werk]) return; box.hidden = true; select(n.werk, true); });
