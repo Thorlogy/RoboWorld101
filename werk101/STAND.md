@@ -107,9 +107,18 @@ index.html, kit.js, rooms/*.js, kinder.js, runners.js, himmel.js, welt.js, avata
 - Erst Raum mit 3–4 handgeschriebenen Beispielmeldungen bauen; tägliche geplante Aufgabe erst einrichten, wenn das Studio gefällt.
 - **Themenfilter (fest):** keine Militär-/Waffenroboter, keine Unfälle mit Verletzten, keine Panikthemen (Jobverlust, „Roboter übernehmen“), nichts mit Sexualität oder sonst kritischen Robotik-Themen. Forschung/Prototyp/Produkt klar unterscheiden. Mindestens zwei Quellen. Nichts Geeignetes gefunden → Meldung vom Vortag bleibt stehen.
 
+## Vereinbart 16.10.2026 (Plan, vom Nutzer bestätigt)
+**H. Ideen hinter den Robotern sichtbar machen** (alle fünf aufnehmen; Reihenfolge-Vorschlag wie unten)
+1. **Roboterblick:** Knopf schaltet einen Raum auf Sensor-Sicht: Lidar-Punktwolke, Erkennungs-Kästchen mit Prozent („Mensch 92 %“), Wärmebild. Botschaft: Roboter sehen Punkte und Wahrscheinlichkeiten, keine Bilder. Raum für Raum ausbauen.
+2. **Roboter irren sich:** Szene mit Fehl-Erkennung (z. B. Muffin als Hund, Schild mit Aufkleber falsch gelesen) und Mensch, der nachprüft.
+3. **Wer entscheidet?** Einheitliches Zeichen auf jeder Karte (Mensch steuert / Mensch passt auf / Roboter allein) plus Filter „ganz allein“.
+4. **Selbst programmieren:** Blockfeld für R-101 („fahre 3 Felder“, „wiederhole“, „wenn Hindernis, dann warte“); R-101 führt wörtlich aus, auch Fehler.
+5. **Was ein Roboter über uns speichert:** welche Daten (Grundriss beim Saugroboter, Straße bei der Klingelkamera) und wo man es abschaltet. Kindgerecht, ohne Angstmache.
+
 ## Nächster Schritt (Ideen)
 1. Tägliche geplante Aufgabe „Robo-Nachrichten“ läuft (Pull Request statt Push). Bei Bedarf Quellenliste in tools/news_check.js erweitern.
-2. Chipfabrik-UG (Reinstwasser) und Tour-Station.
+2. Teil H, beginnend mit dem Roboterblick.
+3. Chipfabrik-UG (Reinstwasser) und Tour-Station.
 3. Startflagge DARPA als zweite Aufgabe (R-101 kommt nicht hin: Wüste ist als `berg` markiert, Weg dorthin klären). Danach weitere Wüsten-Motive.
 4. Lieferroboter bringt Salatkisten von Farm 106 zur Kantine (passt zu Teil B); Trinkwasserleitung sichtbar bis zu den Häusern.
 5. Tour-Stationen und Suchspiel-Aufgaben für die neuen Bereiche (Stausee, Bergwerk, Hafen, Ozean, Wüste, Marianengraben, Arktis).
