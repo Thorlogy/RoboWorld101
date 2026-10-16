@@ -38,7 +38,7 @@
   const box = document.createElement('details');
   box.className = 'game';
   box.innerHTML = '<summary>Suchspiel <span class="score"></span></summary><ol class="tasks"></ol><p class="hint">Klicke im Bild auf die Figuren. Ein Klick in der Liste unten zählt nicht.</p><button type="button" class="reset">Neu anfangen</button>';
-  host.insertBefore(box, host.children[1]);
+  host.insertBefore(box, document.getElementById('raeume'));
   const list = box.querySelector('.tasks'), score = box.querySelector('.score');
   const toast = document.createElement('div'); toast.className = 'toast'; toast.setAttribute('role', 'status'); document.body.appendChild(toast);
   let toastTimer = null;

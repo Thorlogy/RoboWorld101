@@ -434,12 +434,43 @@ window.addEventListener('keydown', e => {
 const chipsEl = document.getElementById('chips'), listEl = document.getElementById('list');
 const FILTERS = ['Alle', 'Industrie', 'Service', 'Haushalt', 'Logistik', 'Medizin', 'Forschung', 'Inspektion', 'Geschichte', 'Raumfahrt', 'Mobilität', 'Landwirtschaft', 'Rettung', 'Unterwasser', 'Bildung', 'Medien', 'Umwelt', 'Energie', 'Bau', 'Rohstoffe'];
 const roomsEl = document.getElementById('rooms');
-BUILT.forEach(o => {
-  const b = document.createElement('button'); b.type = 'button'; b.textContent = o.name; b.dataset.key = o.key;
-  if (!isOpen(roomOf(o.key))) b.hidden = true;
-  b.addEventListener('click', () => { state.room = o.key; state.sel = null; renderPanel(); state.dirty = true; fitRoom(o.key, true); });
-  roomsEl.appendChild(b);
+// Räume nach Gegend gruppiert; die Liste ist eingeklappt und lässt sich durchsuchen
+const RAUM_GRUPPEN = ['Werk 101', 'Weitere Häuser', 'Draußen links', 'Draußen rechts', 'Unter der Erde'];
+function raumGruppe(o) {
+  if (o.haus) return 'Weitere Häuser';
+  if (!o.outdoor) return 'Werk 101';
+  if (/^graben/.test(o.built)) return 'Draußen rechts';
+  if (o.r >= 7) return 'Unter der Erde';
+  return o.c < 0 ? 'Draußen links' : 'Draußen rechts';
+}
+RAUM_GRUPPEN.forEach(g => {
+  const raeume = BUILT.filter(d => roomOf(d.key) && raumGruppe(roomOf(d.key)) === g);
+  if (!raeume.length) return;
+  const h = document.createElement('div'); h.className = 'gruppe'; h.textContent = g; roomsEl.appendChild(h);
+  raeume.sort((a, b) => { const A = roomOf(a.key), B = roomOf(b.key); return A.r - B.r || A.c - B.c; }).forEach(o => {
+    const b = document.createElement('button'); b.type = 'button'; b.textContent = o.name; b.dataset.key = o.key;
+    if (!isOpen(roomOf(o.key))) b.hidden = true;
+    b.addEventListener('click', () => { state.room = o.key; state.sel = null; renderPanel(); state.dirty = true; fitRoom(o.key, true); });
+    roomsEl.appendChild(b);
+  });
 });
+function raumListeFiltern() {
+  const q = (document.getElementById('raumSuche').value || '').trim().toLowerCase();
+  let gruppe = null, sichtbar = 0;
+  [...roomsEl.children].forEach(el => {
+    if (el.classList.contains('gruppe')) { if (gruppe) gruppe.hidden = !sichtbar; gruppe = el; sichtbar = 0; return; }
+    const offen = isOpen(roomOf(el.dataset.key)) && (!q || el.textContent.toLowerCase().includes(q));
+    el.hidden = !offen; if (offen) sichtbar++;
+  });
+  if (gruppe) gruppe.hidden = !sichtbar;
+}
+document.getElementById('raumSuche').addEventListener('input', raumListeFiltern);
+// Auf- und Zuklappen merkt sich der Browser
+for (const id of ['raeume', 'bereiche']) {
+  const d = document.getElementById(id);
+  try { if (localStorage.getItem('rw101-' + id) === '1') d.open = true; } catch (e) {}
+  d.addEventListener('toggle', () => { try { localStorage.setItem('rw101-' + id, d.open ? '1' : '0'); } catch (e) {} });
+}
 const OPEN_ROOMS = ROOMS.filter(o => !o.secret), OPEN_BUILT = BUILT.filter(d => !roomOf(d.key) || !roomOf(d.key).secret);
 document.querySelector('.bar i').style.width = (OPEN_BUILT.length / OPEN_ROOMS.length * 100).toFixed(1) + '%';
 document.getElementById('progressText').textContent = OPEN_BUILT.length === OPEN_ROOMS.length ? `Alle ${OPEN_ROOMS.length} Räume gebaut. Unterwegs sind außerdem Lieferroboter, Fassadendrohne, Rohrpost und ein Paket vom Hafen bis in den Wohnbereich. Draußen: Straße, Park, Feld, Energiepark, Solarpark, Schulweg, U-Bahn mit Tunnel und eine Tunnelbaustelle. Rechts stehen die Schule 102, die Halle 103, eine Fabrik, in der das Licht aus ist, das Rechenzentrum und ganz rechts Haus 104 mit Imbiss und Pflege. Am Himmel fliegen Flugtaxis und Lieferdrohnen. Der Knopf „Datennetz“ zeigt, wie die Häuser Daten austauschen.` : `${OPEN_BUILT.length} von ${OPEN_ROOMS.length} Räumen gebaut. Der Rest ist Baustelle.`;
@@ -459,7 +490,9 @@ ROBOTS.forEach(r => {
 });
 function renderPanel() {
   [...chipsEl.children].forEach(b => b.setAttribute('aria-pressed', String(b.textContent === state.filter)));
-  [...roomsEl.children].forEach(b => b.setAttribute('aria-pressed', String(b.dataset.key === state.room)));
+  [...roomsEl.querySelectorAll('button')].forEach(b => b.setAttribute('aria-pressed', String(b.dataset.key === state.room)));
+  document.getElementById('raeumeZahl').textContent = BUILT.filter(d => isOpen(roomOf(d.key))).length;
+  document.getElementById('bereichAktiv').textContent = state.filter === 'Alle' ? '' : state.filter;
   const cur = BUILT.find(o => o.key === state.room);
   document.getElementById('roomLevel').textContent = `${cur.level} · fertig`;
   document.getElementById('roomName').textContent = cur.name;
@@ -586,7 +619,7 @@ function unlockSecret() {
   state.secret = true; state.dirty = true;
   try { localStorage.setItem('werk101-geheim', '1'); } catch (e) {}
   const key = (ROOMS.find(o => o.secret) || {}).built;
-  ROOMS.filter(o => o.secret).forEach(o => { const b = document.querySelector(`#rooms button[data-key="${o.built}"]`); if (b) b.hidden = false; });
+  ROOMS.filter(o => o.secret).forEach(o => { const b = document.querySelector(`#rooms button[data-key="${o.built}"]`); if (b) b.hidden = false; }); raumListeFiltern(); renderPanel();
   const t = document.querySelector('.toast');
   if (t) { t.textContent = 'Geheimer Raum entdeckt!'; t.classList.add('on'); setTimeout(() => t.classList.remove('on'), 2600); }
   if (key) setTimeout(() => { state.room = key; state.sel = null; renderPanel(); fitRoom(key, true); }, 700);
@@ -595,7 +628,7 @@ function unlockSecret() {
 function lockSecret() {
   state.secret = false; state.dirty = true; window.secretKnocks = 0;
   try { localStorage.removeItem('werk101-geheim'); } catch (e) {}
-  ROOMS.filter(o => o.secret).forEach(o => { const b = document.querySelector(`#rooms button[data-key="${o.built}"]`); if (b) b.hidden = true; });
+  ROOMS.filter(o => o.secret).forEach(o => { const b = document.querySelector(`#rooms button[data-key="${o.built}"]`); if (b) b.hidden = true; }); raumListeFiltern(); renderPanel();
   if (state.sel && byId[state.sel] && roomOf(byId[state.sel].room) && roomOf(byId[state.sel].room).secret) select(null, false);
   const t = document.querySelector('.toast');
   if (t) { t.textContent = 'Geheime Räume sind wieder versteckt.'; t.classList.add('on'); setTimeout(() => t.classList.remove('on'), 2600); }
@@ -605,4 +638,4 @@ function knock() {
   window.secretKnocks = (window.secretKnocks || 0) + 1; state.dirty = true;
   if (window.secretKnocks >= 3) { window.secretKnocks = 0; if (state.secret) lockSecret(); else unlockSecret(); }
 }
-if (state.secret) document.querySelectorAll('#rooms button').forEach(b => { b.hidden = false; });
+if (state.secret) raumListeFiltern();
