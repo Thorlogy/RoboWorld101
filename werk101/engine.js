@@ -66,6 +66,31 @@ function drawH6(f) {
   text('HAUS 105 · CHIPFABRIK', H6.x + dx0() + 145, H6.y - 28, 27, { family: '"Saira Condensed", sans-serif', weight: 700, align: 'center', color: '#f3efe4' });
 }
 const dx0 = () => H6.w - 310;
+// Haus 107: Sendeturm. Unten das Nachrichtenstudio, oben ein Gittermast mit Antennen und Flugwarnlicht
+const H7 = { x: rx(14.5) - WALL, y: ry(6) - WALL, w: RW + 2 * WALL, h: RH + 2 * WALL };
+const TURM = { x: H7.x + H7.w / 2, top: H7.y - 760 };
+HOUSES.push({ x: H7.x - 12, y: H7.y - 60, w: H7.w + 24, h: GROUND - H7.y + 60 });
+function drawH7(f) {
+  // Mast: Gitter aus zwei Holmen mit Diagonalen, Plattform, Antennenstab
+  const m = TURM, b = H7.y - 10;
+  line(m.x - 70, b, m.x - 12, m.top + 120, '#d9542b', 6); line(m.x + 70, b, m.x + 12, m.top + 120, '#d9542b', 6);
+  for (let y = b - 40, k = 0; y > m.top + 130; y -= 46, k++) {
+    const w = 12 + 58 * (y - m.top - 120) / (b - m.top - 120), w2 = 12 + 58 * (y - 46 - m.top - 120) / (b - m.top - 120);
+    line(m.x - w, y, m.x + w2, y - 46, k % 2 ? '#f3f1ea' : '#d9542b', 2); line(m.x + w, y, m.x - w2, y - 46, k % 2 ? '#f3f1ea' : '#d9542b', 2);
+  }
+  box(m.x - 40, m.top + 110, 80, 14, '#8a8f94', 2, 1.5);
+  for (const dx of [-30, 30]) { box(m.x + dx - 7, m.top + 60, 14, 50, '#e6e3da', 2, 1.2); }
+  line(m.x, m.top + 110, m.x, m.top, '#5d6064', 4);
+  ctx.save(); ctx.translate(m.x + 40, m.top + 170); ctx.rotate(-0.5); ctx.beginPath(); ctx.ellipse(0, 0, 26, 9, 0, 0, Math.PI); ctx.closePath(); paint('#e6e3da'); ctx.restore();
+  circle(m.x, m.top - 4, 5, f % 12 < 6 ? '#ff3b2b' : '#7a2a22', INK, 1.2);
+  if (f % 12 < 6) glow(m.x, m.top - 4, 24, 'rgba(255,80,60,0.55)');
+  // Haus
+  ctx.fillStyle = '#5f6b78'; ctx.fillRect(H7.x, H7.y, H7.w, H7.h);
+  ctx.strokeStyle = INK; ctx.lineWidth = 3; ctx.strokeRect(H7.x, H7.y, H7.w, H7.h);
+  ctx.fillStyle = '#5f5b55'; ctx.fillRect(H7.x - 12, H7.y - 10, H7.w + 24, 14);
+  box(H7.x + 20, H7.y - 58, 260, 40, '#2a2723');
+  text('SENDETURM · HAUS 107', H7.x + 150, H7.y - 28, 26, { family: '"Saira Condensed", sans-serif', weight: 700, align: 'center', color: '#f3efe4' });
+}
 // Haus 4: Rechenzentrum ohne Fenster, Rückkühler auf dem Dach, Satellitenschüssel; daneben ein Funkmast
 function drawRZ(f) {
   ctx.fillStyle = '#a3a8a6'; ctx.fillRect(H4.x, H4.y, H4.w, H4.h);
@@ -317,6 +342,17 @@ function draw() {
     drawH6(f);
     for (const room of ROOMS) {
       if (room.haus !== 6) continue;
+      const x = rx(room.c), y = ry(room.r), def = BUILT.find(d => d.key === room.built);
+      if (!def || !visible(x, y, RW, RH)) continue;
+      ctx.save(); ctx.beginPath(); ctx.rect(x, y, RW, RH); ctx.clip(); ctx.translate(x, y); def.draw(f); ctx.restore();
+      ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.strokeRect(x, y, RW, RH);
+    }
+  }
+  // Haus 107: Sendeturm
+  if (visible(H7.x - 80, TURM.top - 20, H7.w + 160, GROUND - TURM.top + 20)) {
+    drawH7(f);
+    for (const room of ROOMS) {
+      if (room.haus !== 7) continue;
       const x = rx(room.c), y = ry(room.r), def = BUILT.find(d => d.key === room.built);
       if (!def || !visible(x, y, RW, RH)) continue;
       ctx.save(); ctx.beginPath(); ctx.rect(x, y, RW, RH); ctx.clip(); ctx.translate(x, y); def.draw(f); ctx.restore();

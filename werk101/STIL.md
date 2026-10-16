@@ -261,4 +261,7 @@ registerRoom({
   - Haus 105 (`H6`, `drawH6` in engine.js) bei c 12–13 mit Räumen `chip1` (Reinraum) und `chip2` (Belichtung) in `rooms/chipfabrik.js`; alles ab Farm 106 um 2,5 Spalten nach rechts verschoben.
   - Reinraum: Luftdusche mit sich drehender Technikerin, zwei Deckenwagen am Load Port (`cfW1`/`cfW2`), Cluster-Anlage mit Vakuumarm (`cfArmTip`) und Plasma, Steckbrief „Staubkorn“ mit Teilchenzähler. Belichtung: gelbes Licht, Maschine mit Klappe (`cfKlappe`), Laser, Zinntröpfchen, Spiegel, Maske, Wafertisch; Hinweis „Schnitt vereinfacht“.
   - Kreislauf `chip` (Wafer → Belichtung → Lkw → KI-Schrank), Suchspiel-Aufgabe, Ticker-Meldung (Runde 3), Kindertexte.
+- Sendeturm (16. Oktober 2026, Version 20261016f):
+  - Haus 107 (`H7`, `drawH7`, Gittermast `TURM` mit Flugwarnlicht) bei c 14.5, Raum `news` in `rooms/sendeturm.js`; alles ab Farm um weitere 1,5 Spalten nach rechts.
+  - Meldungen in `nachrichten.js`; Bildschirm-Baukasten `NW_HG` (Hintergründe) und `NW_FIG` (Figuren), Bewegung über `nwFigurPos`. Archiv-Fenster `openNachrichten()` (Stil wie ELIZA-Fenster).
 

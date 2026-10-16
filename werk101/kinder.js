@@ -248,3 +248,9 @@ Object.assign(KINDER, {
   scannerbed: 'Sie passt auf, dass die Maschine richtig arbeitet. Anfassen muss sie die Scheiben nie.',
 });
 
+// Sendeturm (rooms/sendeturm.js)
+Object.assign(KINDER, {
+  tagesmeldung: 'Hier gibt es jeden Tag eine echte Nachricht über Roboter. Klick auf die Karte, dann siehst du auch die älteren Meldungen.',
+  kamerarobo: 'Diese Fernsehkamera fährt von allein auf einer Schiene. Ein Mensch im Nebenraum hat vorher festgelegt, wohin sie schauen soll.',
+  moderatorin: 'Sie liest die Robo-Nachrichten vor. Die Meldungen sind echt und werden vorher genau geprüft.',
+});

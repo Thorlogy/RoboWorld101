@@ -5,6 +5,7 @@
    ML_ABSTAND Sekunden (sonst fällt die neue aus und kommt in einer späteren Runde). Störung und „Verfolgen“ melden direkt.
    Die Sprengung im Gebirge meldet kreislauf.js (Runden 0 und 3), die Störung stoerung.js. */
 const MELDUNGEN = [
+  { runde: 2, g: 120, text: 'Sendeturm: Die Robo-Nachrichten laufen. Heute: ' + nwAktuell().titel, ort: () => [rx(roomOf('news').c) + 430, ry(6) + 170] },
   { runde: 3, g: 200, text: 'Chipfabrik: Die Klappe der Belichtungsmaschine ist offen. Schau, wie das Licht über die Spiegel läuft.', ort: () => [rx(roomOf('chip2').c) + 390, ry(6) + 250] },
   { runde: 1, g: 262, text: 'Wüste: Stanley ist im Ziel! 2005 gewinnt zum ersten Mal ein Auto ohne Fahrer die Grand Challenge.', ort: () => [WU_ZIEL, GROUND - 120] },
   { runde: 2, g: 270, text: 'Wüste: Sandstorm sitzt an der Felskehre auf einem Felsen fest. 2004 kommt kein Fahrzeug ins Ziel.', ort: () => [WU_FELS, GROUND - 120] },

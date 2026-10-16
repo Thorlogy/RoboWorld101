@@ -22,7 +22,7 @@ index.html, kit.js, rooms/*.js, kinder.js, runners.js, himmel.js, welt.js, avata
 
 ## Weltkarte (Reihe 6 = EG, 7–9 = UG 1–3)
 - Links (EG): Wüste c −25 bis −22, Gebirge c −21 bis −13, Stausee c −12 bis −10, Wasserkraftwerk c −9, Paketzentrum c −8, Magnetbahn-Bahnhof c −7, Flughafen c −6 … Straße c −1.
-- Rechts (EG): Häuser bis Haus 104 (c 10.5), Haus 105 Chipfabrik c 12–13 (`haus: 6`, `H6` in engine.js), Farm 106 c 14.5 (r 5–6), Ladepark c 15.5, Fusion c 16.5, Feuerwache c 17.5, Seehafen c 18.5–22.5, Ozean c 23.5–27.5 (Algenfarm c 27.5), Marianengraben c 28.5–30.5 (r 6) mit Graben in r 8/9 bei c 29.5, Arktis c 31.5–34.5. (Seit 20261016e alles ab Farm um 2,5 Spalten nach rechts verschoben.)
+- Rechts (EG): Häuser bis Haus 104 (c 10.5), Haus 105 Chipfabrik c 12–13 (`haus: 6`, `H6`), Haus 107 Sendeturm c 14.5 (`haus: 7`, `H7`, Mast `TURM`), Farm 106 c 16 (r 5–6), Ladepark c 17, Fusion c 18, Feuerwache c 19, Seehafen c 20–24, Ozean c 25–29 (Algenfarm c 29), Marianengraben c 30–32 (r 6) mit Graben in r 8/9 bei c 31, Arktis c 33–36. (20261016e/f: alles ab Farm um insgesamt 4 Spalten nach rechts verschoben.)
 - Unter der Erde: Wasserwerk UG 1 c −9; Bergwerk UG 1–3 c −5/−4 mit Schacht; Kläranlage UG 1 c −3; Kanal UG 1 c −2/−1; Tiefbahnhof UG 1 und Zugwerk UG 2 c 8–9.
 - Maßstäbe: normal 1 m ≈ 69; Bergwerk 1 : 2; Arktis 1 : 2; Hafen 1 : 4; Stausee 1 : 8; Ozean 1 : 12; Marianengraben: Tiefe stark verkürzt (`grTiefe`), Tiere vergrößert (jeweils auf den Karten genannt).
 - Alle Positionen über `roomOf(...)`: zum Verschieben reicht die Spalte in kit.js.
@@ -44,6 +44,10 @@ index.html, kit.js, rooms/*.js, kinder.js, runners.js, himmel.js, welt.js, avata
 - Haus 105 Chipfabrik (rooms/chipfabrik.js): Reinraum mit Luftdusche, Deckenwagen (holen/bringen Behälter am Load Port), Cluster-Anlage mit Vakuumarm und Plasma, Steckbrief „Staubkorn“ mit Teilchenzähler; Belichtung mit gelbem Licht, Belichtungsmaschine mit aufklappbarem vereinfachtem Schnitt, Operatorin, Durchfahrt der Deckenwagen.
 - Kreislauf „Wafer zum KI-Chip“ (kreislauf.js): Reinraum → Deckenwagen → Belichtung → Lkw → KI-Schrank im Rechenzentrum; Quarz-Hinweis (nicht Wüstensand).
 - Suchspiel-Aufgabe, Ticker-Meldung, Kindertexte.
+
+## Erledigt 16.10.2026 (Version 20261016f)
+- Sendeturm Haus 107 mit Nachrichtenstudio (rooms/sendeturm.js): Moderatorin, Kamera-Roboter auf Bodenschiene, Bildschirm mit Meldung des Tages aus Baukasten (Hintergrund/Figur/Bewegung), Laufband, Etikett Forschung/Test/Produkt. Karte „Robo-Nachricht des Tages“ öffnet das Archiv (mit Quellen-Links und „Gibt es auch bei uns im Werk“).
+- Meldungen stehen in nachrichten.js (`NACHRICHTEN`, neuester Eintrag oben; Felder und Regeln im Dateikopf). Statt news.json, weil fetch bei file:// und im Prüflauf nicht geht. Drei echte Beispielmeldungen (14.–16.10.2026).
 
 ## Erkenntnisse
 - Spalten rechts verschieben: nur kit.js (alle Positionen über `roomOf`). Zwischen zwei Häusern mindestens 0,5 Spalten Abstand lassen, sonst überlappen die Wände (Haus 105 endet genau bei rx(14)).
@@ -92,15 +96,14 @@ index.html, kit.js, rooms/*.js, kinder.js, runners.js, himmel.js, welt.js, avata
 - Gag-Ideen: Staubkorn als „Staatsfeind Nr. 1“; Menschen wirken neben den Robotern wie die Fremdkörper.
 - Zahlen (Anzahl Deckenwagen, Wafer pro Behälter, Reinraumklasse) vor dem Einbauen mit Quellen prüfen.
 
-**G. News-Raum** (danach)
-- Täglich eine Robotik-Meldung, visualisiert. Seite liest `news.json` im Repo (Datum, Überschrift, 2–3 Sätze Kindersprache, Quelle, Kategorie, Figur, Hintergrund, Bewegung). Archiv zum Zurückblättern.
+**G. News-Raum** (Studio steht seit 20261016f im Sendeturm; offen: tägliche geplante Aufgabe, erst nach Freigabe durch den Nutzer)
+- Täglich eine Robotik-Meldung, visualisiert. Seite liest `nachrichten.js` im Repo (Datum, Überschrift, 2–3 Sätze Kindersprache, Quelle, Kategorie, Figur, Hintergrund, Bewegung). Archiv zum Zurückblättern.
 - Studio fest gezeichnet (Moderationstisch, großer Bildschirm, Kamera auf Schienen als Roboter). Bildschirm setzt die Meldung aus vorhandenen Baukasten-Teilen zusammen – keine täglich neu generierte Zeichnung. Laufband unten; Verweis „gibt's auch bei uns im Werk“ mit Klick zur Figur.
-- Ort noch offen: neben dem Filmstudio im Haus oder eigener Sendeturm draußen.
 - Erst Raum mit 3–4 handgeschriebenen Beispielmeldungen bauen; tägliche geplante Aufgabe erst einrichten, wenn das Studio gefällt.
 - **Themenfilter (fest):** keine Militär-/Waffenroboter, keine Unfälle mit Verletzten, keine Panikthemen (Jobverlust, „Roboter übernehmen“), nichts mit Sexualität oder sonst kritischen Robotik-Themen. Forschung/Prototyp/Produkt klar unterscheiden. Mindestens zwei Quellen. Nichts Geeignetes gefunden → Meldung vom Vortag bleibt stehen.
 
 ## Nächster Schritt (Ideen)
-1. News-Raum (Teil G), danach tägliche Aufgabe. Ort klären (neben Filmstudio oder Sendeturm draußen).
+1. Tägliche geplante Aufgabe für die Robo-Nachrichten einrichten (sucht Meldung, prüft zwei Quellen und Themenfilter, schreibt Eintrag oben in nachrichten.js, Version hochzählen, Push). Erst wenn der Nutzer das Studio freigibt.
 2. Chipfabrik-UG (Reinstwasser) und Tour-Station.
 3. Startflagge DARPA als zweite Aufgabe (R-101 kommt nicht hin: Wüste ist als `berg` markiert, Weg dorthin klären). Danach weitere Wüsten-Motive.
 4. Lieferroboter bringt Salatkisten von Farm 106 zur Kantine (passt zu Teil B); Trinkwasserleitung sichtbar bis zu den Häusern.
