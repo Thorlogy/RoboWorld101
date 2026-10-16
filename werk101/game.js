@@ -21,6 +21,7 @@
     { text: 'Finde drei Sensoren, mit denen Roboter ihre Umgebung messen', ids: ['lidar', 'ultraschall', 'sensorkamera', 'infrarot', 'radar'], need: 3 },
     { text: 'Finde drei Arten, wie Roboter lernen', ids: ['greiffarm', 'laufsim', 'vierbeiner', 'aloha'], need: 3 },
     { text: 'Finde im Rechenzentrum den Agenten-Schwarm und den Bandroboter', ids: ['agentenschwarm', 'bandroboter'], need: 2 },
+    { text: 'Finde in der Chipfabrik den Deckenwagen, den Arm im Vakuum und den Steckbrief vom Staubkorn', ids: ['ohtwagen', 'ohtwagen2', 'vakuumarm', 'staubkorn'], need: 3 },
     { text: 'Finde die drei Robotergesetze, die sich ein Schriftsteller ausgedacht hat', ids: ['asimov'], need: 1 },
     { text: 'Finde in der Montage den SCARA, den Humanoiden und den Hexapod', ids: ['scara', 'humanoidfabrik', 'hexapod'], need: 3 },
     { text: 'Finde zwei Schwärme: einen aus Software und einen aus echten Robotern', ids: ['agentenschwarm', 'kilobots'], need: 2 },

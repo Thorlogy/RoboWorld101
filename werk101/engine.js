@@ -45,6 +45,27 @@ function drawH5() {
   text('HAUS 104', H5.x + 120, H5.y - 28, 30, { family: '"Saira Condensed", sans-serif', weight: 700, align: 'center', color: '#f3efe4' });
   box(H5.x + H5.w - 160, H5.y - 40, 120, 30, '#8a8f94', 2, 1.5);
 }
+// Haus 105: Chipfabrik ohne Fenster; Lüftungsgeräte auf dem Dach (der Reinraum braucht viel saubere Luft) und Abluftkamine
+const H6 = { x: rx(12) - WALL, y: ry(6) - WALL, w: 2 * (RW + WALL) + WALL, h: RH + 2 * WALL };
+HOUSES.push({ x: H6.x - 12, y: H6.y - 60, w: H6.w + 24, h: GROUND - H6.y + 60 });
+function drawH6(f) {
+  ctx.fillStyle = '#d4d8d6'; ctx.fillRect(H6.x, H6.y, H6.w, H6.h);
+  for (let x = H6.x + 60; x < H6.x + H6.w; x += 120) line(x, H6.y, x, H6.y + H6.h, 'rgba(42,39,35,0.10)', 2);
+  ctx.strokeStyle = INK; ctx.lineWidth = 3; ctx.strokeRect(H6.x, H6.y, H6.w, H6.h);
+  ctx.fillStyle = '#5f5b55'; ctx.fillRect(H6.x - 12, H6.y - 10, H6.w + 24, 14);
+  for (let i = 0; i < 3; i++) {
+    const x = H6.x + 30 + i * 190;
+    box(x, H6.y - 52, 160, 42, '#b9bdbb', 2, 1.5);
+    for (const dx of [40, 120]) {
+      circle(x + dx, H6.y - 31, 14, '#3b3d40', INK, 1.5);
+      ctx.save(); ctx.translate(x + dx, H6.y - 31); ctx.rotate(-f * 0.7 - i); for (let b = 0; b < 3; b++) { ctx.rotate(TAU / 3); line(0, 0, 12, 0, '#c9ccc8', 2); } ctx.restore();
+    }
+  }
+  for (const dx of [640, 700]) { box(H6.x + dx, H6.y - 130, 24, 120, '#8a8f94', 2, 1.5); box(H6.x + dx - 4, H6.y - 136, 32, 8, '#5d6064', 1, 1.2); }
+  box(H6.x + dx0(), H6.y - 58, 290, 40, '#2a2723');
+  text('HAUS 105 · CHIPFABRIK', H6.x + dx0() + 145, H6.y - 28, 27, { family: '"Saira Condensed", sans-serif', weight: 700, align: 'center', color: '#f3efe4' });
+}
+const dx0 = () => H6.w - 310;
 // Haus 4: Rechenzentrum ohne Fenster, Rückkühler auf dem Dach, Satellitenschüssel; daneben ein Funkmast
 function drawRZ(f) {
   ctx.fillStyle = '#a3a8a6'; ctx.fillRect(H4.x, H4.y, H4.w, H4.h);
@@ -285,6 +306,17 @@ function draw() {
     drawH5();
     for (const room of ROOMS) {
       if (room.haus !== 5) continue;
+      const x = rx(room.c), y = ry(room.r), def = BUILT.find(d => d.key === room.built);
+      if (!def || !visible(x, y, RW, RH)) continue;
+      ctx.save(); ctx.beginPath(); ctx.rect(x, y, RW, RH); ctx.clip(); ctx.translate(x, y); def.draw(f); ctx.restore();
+      ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.strokeRect(x, y, RW, RH);
+    }
+  }
+  // Haus 105: Chipfabrik
+  if (visible(H6.x, H6.y - 140, H6.w, H6.h + 140)) {
+    drawH6(f);
+    for (const room of ROOMS) {
+      if (room.haus !== 6) continue;
       const x = rx(room.c), y = ry(room.r), def = BUILT.find(d => d.key === room.built);
       if (!def || !visible(x, y, RW, RH)) continue;
       ctx.save(); ctx.beginPath(); ctx.rect(x, y, RW, RH); ctx.clip(); ctx.translate(x, y); def.draw(f); ctx.restore();

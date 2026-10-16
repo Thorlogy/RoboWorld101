@@ -236,3 +236,15 @@ Object.assign(KINDER, {
   polarfuchs: 'Der Polarfuchs ist im Winter weiß wie der Schnee. So sieht man ihn kaum.',
 });
 Object.assign(KINDER, { eisberg: 'Vom Eisberg sieht man nur die Spitze. Der größte Teil ist unter Wasser versteckt.' });
+// Chipfabrik (rooms/chipfabrik.js)
+Object.assign(KINDER, {
+  ohtwagen: 'Diese Wagen fahren an Schienen unter der Decke. Sie bringen Kisten mit Siliziumscheiben von Maschine zu Maschine und lassen sie an Bändern herunter.',
+  ohtwagen2: 'Noch mehr Deckenwagen. In großen Chipfabriken fahren Tausende davon herum, ein Rechner sagt jedem, wohin.',
+  vakuumarm: 'In dieser Maschine gibt es fast keine Luft. Ein Roboterarm legt die Scheibe in eine Kammer, dort ätzt leuchtendes Gas feine Muster hinein.',
+  reinraumtech: 'In der Luftdusche wird der Staub vom Anzug geblasen. Der Anzug schützt die Chips vor dem Menschen, nicht umgekehrt.',
+  staubkorn: 'Ein einziges Staubkorn kann einen Chip kaputt machen. Darum ist die Luft hier viel sauberer als irgendwo sonst.',
+  euvscanner: 'Diese riesige Maschine malt mit Licht winzige Muster auf die Scheibe. Daraus werden später die Chips für Computer und Roboter.',
+  gelblicht: 'Das Licht hier ist gelb, weil blaues Licht den Lack auf den Scheiben verderben würde.',
+  scannerbed: 'Sie passt auf, dass die Maschine richtig arbeitet. Anfassen muss sie die Scheiben nie.',
+});
+

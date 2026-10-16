@@ -71,12 +71,26 @@ const KL_FLUSS = rx(roomOf('kraftwerk').c) + RW + WALL / 2;
     [h - 10, st, { t: 'lkw', info: 'Bestellt! Ein Lkw fährt es zum Paketzentrum.' }], [pk + 300, st], [pk + 380, ry(6) + 300, { t: 'paket', info: 'Im Paketzentrum packt ein Roboterarm es in einen Karton. Gleich holt es der Lieferwagen ab.', w: 140 }],
     [MNX + 500, ry(9) + 292, { neu: true }]], ['mine1', 'mine2', 'mine3', 'mine4', 'mine5', 'mine6', 'fertigung', 'lager', 'paket'], 'Erz zum Paket');
 })();
+/* ---------- Vom Wafer zum KI-Chip: Reinraum → Deckenwagen → Belichtung → Lkw → Rechenzentrum ---------- */
+(function () {
+  const c1 = rx(roomOf('chip1').c), c2 = rx(roomOf('chip2').c), y = ry(6), st = GROUND - 12, rz = rx(roomOf('rz1').c), rz2 = rx(roomOf('rz2').c);
+  route('chip', 3, [
+    [c1 + 200, y + 285, { t: 'wafer', info: 'Ein Wafer ist eine dünne Scheibe aus Silizium. Silizium gewinnt man aus Quarz, meist aus sehr reinem Quarzgestein, nicht aus Wüstensand.', w: 80 }],
+    [c1 + 200, y + 80, { info: 'Ein Deckenwagen holt den Behälter mit den Wafern ab.' }], [c2 + 300, y + 80],
+    [c2 + 575, y + 318, { info: 'Die Belichtungsmaschine zeichnet mit Licht die Muster der Chips auf den Wafer. Das passiert viele Male, Schicht für Schicht.', w: 120 }],
+    [c2 + 300, y + 80], [c1 + 20, y + 80], [c1 + 20, y + 340, { t: 'chip', info: 'Aus dem fertigen Wafer werden Hunderte Chips gesägt und verpackt. In echt dauert das Wochen und braucht Hunderte Schritte.', w: 60 }],
+    [c1 - 30, st, { t: 'lkw', info: 'Ein Lkw bringt die neuen KI-Chips zum Rechenzentrum.' }], [rz2 + RW + 40, st],
+    [rz2 + RW - 20, y + 330], [rz + 487, y + 300, { t: 'chip', info: 'Im KI-Schrank rechnen jetzt die neuen Chips, auch für die Agenten in der Leitwarte.', w: 140 }],
+    [c1 + 200, y + 285, { neu: true }]], ['chip1', 'chip2', 'rz1', 'rz2'], 'Wafer zum KI-Chip');
+})();
 function klTropfen(x, y, art, gross) {
   const s = gross ? 1.6 : 1;
   if (art === 'schnee') { ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2 * s; ctx.beginPath(); for (let k = 0; k < 3; k++) { const a = k * Math.PI / 3; ctx.moveTo(x - 6 * s * Math.cos(a), y - 6 * s * Math.sin(a)); ctx.lineTo(x + 6 * s * Math.cos(a), y + 6 * s * Math.sin(a)); } ctx.stroke(); return; }
   if (art === 'strom') { glow(x, y, 16 * s, 'rgba(255,220,90,0.8)'); circle(x, y, 5 * s, '#ffd23f', INK, 1); ctx.beginPath(); ctx.moveTo(x + 1 * s, y - 4 * s); ctx.lineTo(x - 2 * s, y + 1 * s); ctx.lineTo(x + 1 * s, y + 1 * s); ctx.lineTo(x - 1 * s, y + 4 * s); ctx.strokeStyle = INK; ctx.lineWidth = 1; ctx.stroke(); return; }
   if (art === 'erz') { ctx.beginPath(); ctx.moveTo(x - 7 * s, y + 3 * s); ctx.lineTo(x - 4 * s, y - 5 * s); ctx.lineTo(x + 3 * s, y - 6 * s); ctx.lineTo(x + 7 * s, y + 1 * s); ctx.lineTo(x + 2 * s, y + 6 * s); ctx.closePath(); paint('#8a5a3a', INK, 1.2); circle(x + 1 * s, y - 1 * s, 1.6 * s, '#d9a441', null); return; }
   if (art === 'teil') { circle(x, y, 7 * s, '#b9c0c6', INK, 1.2); circle(x, y, 2.5 * s, '#5d6064', null); for (let j = 0; j < 6; j++) { const a = j * TAU / 6; box(x + Math.cos(a) * 8 * s - 2 * s, y + Math.sin(a) * 8 * s - 2 * s, 4 * s, 4 * s, '#b9c0c6', 0, 0.8); } return; }
+  if (art === 'wafer') { ctx.beginPath(); ctx.ellipse(x, y, 9 * s, 9 * s, 0, 0, TAU); paint('#b8c4cf', INK, 1.2); for (let k = -1; k <= 1; k++) line(x - 6 * s, y + k * 4 * s, x + 6 * s, y + k * 4 * s, 'rgba(176,124,255,0.8)', 1); return; }
+  if (art === 'chip') { box(x - 7 * s, y - 7 * s, 14 * s, 14 * s, '#2f3238', 1, 1.2); box(x - 3 * s, y - 3 * s, 6 * s, 6 * s, '#8a8f94', 0, 0.8); for (let k = -1; k <= 1; k++) for (const d of [-1, 1]) { line(x + k * 4 * s, y + d * 7 * s, x + k * 4 * s, y + d * 10 * s, '#c9ccc8', 1.5); line(x + d * 7 * s, y + k * 4 * s, x + d * 10 * s, y + k * 4 * s, '#c9ccc8', 1.5); } return; }
   if (art === 'paket') { box(x - 8 * s, y - 7 * s, 16 * s, 13 * s, '#c9a36b', 1, 1.2); line(x - 8 * s, y - 2 * s, x + 8 * s, y - 2 * s, '#8a6a3a', 2 * s); return; }
   if (art === 'lkw') { box(x - 26, y - 22, 34, 18, '#e0662b', 2, 1.2); box(x + 8, y - 20, 16, 16, '#3e6f9e', 2, 1.2); box(x + 12, y - 17, 9, 7, '#bfe0f0', 1, 0.8); for (const dx of [-18, 0, 16]) circle(x + dx, y - 3, 5, '#2b2b2b', INK, 1); if (gross) circle(x - 8, y - 30, 6, '#ffd23f', INK, 1); return; }
   if (art === 'dampf') { ctx.fillStyle = 'rgba(255,255,255,0.55)'; for (const [dx, dy, r] of [[0, 0, 9], [8, -4, 7], [-8, -2, 6]]) { ctx.beginPath(); ctx.arc(x + dx * s, y + dy * s, r * s, 0, TAU); ctx.fill(); } return; }
@@ -115,7 +129,7 @@ registerRunner({
     quelle: 'https://de.wikipedia.org/wiki/Wasserkreislauf',
     box: () => [KL_HAHN - 34, KL_IMY + 192, 62, 74] },
 });
-const KL_ANZAHL = { wasser: 9, strom: 6, erz: 3 };
+const KL_ANZAHL = { wasser: 9, strom: 6, erz: 3, chip: 2 };
 function klTropfenAlle() {
   for (const [name, r] of Object.entries(ROUTEN)) {
     const N = KL_ANZAHL[name] || 3, mein = state.follow && FOLGE.ziel === name;
