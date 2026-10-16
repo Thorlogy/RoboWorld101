@@ -264,4 +264,5 @@ registerRoom({
 - Sendeturm (16. Oktober 2026, Version 20261016f):
   - Haus 107 (`H7`, `drawH7`, Gittermast `TURM` mit Flugwarnlicht) bei c 14.5, Raum `news` in `rooms/sendeturm.js`; alles ab Farm um weitere 1,5 Spalten nach rechts.
   - Meldungen in `nachrichten.js`; Bildschirm-Baukasten `NW_HG` (Hintergründe) und `NW_FIG` (Figuren), Bewegung über `nwFigurPos`. Archiv-Fenster `openNachrichten()` (Stil wie ELIZA-Fenster).
+- Roboterblick (16. Oktober 2026, Version 20261016h): `blick.js`, Zustand `state.blick` ('aus' | 'kamera' | 'waerme'), gezeichnet in engine.js nach dem Datennetz (`drawBlick`). Farben der Kästchen: Mensch #f0b429, Tier #7fe08a, Roboter #7fd3ff.
 

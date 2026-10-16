@@ -54,7 +54,11 @@ index.html, kit.js, rooms/*.js, kinder.js, runners.js, himmel.js, welt.js, avata
 - nachrichten.js hat einen eigenen Cache-Zähler `?v=nJJJJMMTT` (wird bei Versions-Erhöhungen nicht mit ersetzt).
 - Drohnen-Beispiel (15.10.) entfernt: keine Quelle von der Liste erlaubter Quellen.
 
+## Erledigt 16.10.2026 (Version 20261016h)
+- Teil H1 Roboterblick (blick.js, Knopf „Roboterblick“): aus → Kamera mit Objekterkennung (Grau, Bildzeilen, Kästchen „Mensch/Tier/Roboter xx %“ aus den Klickflächen der Karten) → Wärmebild (Menschen/Tiere hell, Motoren schwach) → aus. Erklärkasten unten links. Gilt in allen Räumen ohne Eingriff in Raumdateien.
+
 ## Erkenntnisse
+- Übersichten über alle Räume (Roboterblick) lassen sich aus `ROBOTS` + `box(f)` bauen; zu große Klickflächen (Landschaften, w > 900 oder h > 700) und Bereiche Wissen/Daten/KI/Sensoren/Lernen auslassen.
 - Spalten rechts verschieben: nur kit.js (alle Positionen über `roomOf`). Zwischen zwei Häusern mindestens 0,5 Spalten Abstand lassen, sonst überlappen die Wände (Haus 105 endet genau bei rx(14)).
 - Neues Haus: Konstante + `HOUSES.push` + Zeichenblock in engine.js (wie Haus 104), Räume mit `haus: n`; die Lücken bekommen Gehweg und Laternen automatisch (uebergang.js).
 - welt.js hüllt `draw`, `box` und `withAlpha` aller Räume ein; Tageszeit-Effekte gehen ohne Eingriff in die Raumdateien.
@@ -117,7 +121,7 @@ index.html, kit.js, rooms/*.js, kinder.js, runners.js, himmel.js, welt.js, avata
 
 ## Nächster Schritt (Ideen)
 1. Tägliche geplante Aufgabe „Robo-Nachrichten“ läuft (Pull Request statt Push). Bei Bedarf Quellenliste in tools/news_check.js erweitern.
-2. Teil H, beginnend mit dem Roboterblick.
+2. Teil H: als Nächstes H2 „Roboter irren sich“ – kann im Kamera-Modus des Roboterblicks ansetzen (einzelne absichtlich falsche Kästchen mit Erklärung).
 3. Chipfabrik-UG (Reinstwasser) und Tour-Station.
 3. Startflagge DARPA als zweite Aufgabe (R-101 kommt nicht hin: Wüste ist als `berg` markiert, Weg dorthin klären). Danach weitere Wüsten-Motive.
 4. Lieferroboter bringt Salatkisten von Farm 106 zur Kantine (passt zu Teil B); Trinkwasserleitung sichtbar bis zu den Häusern.

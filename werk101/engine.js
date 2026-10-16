@@ -387,6 +387,7 @@ function draw() {
   }
   if (typeof avDraw === 'function') avDraw();
   if (state.netz && typeof drawNetz === 'function') drawNetz(vx0, vy0, vx1, vy1);
+  if (state.blick && state.blick !== 'aus' && typeof drawBlick === 'function') drawBlick(vx0, vy0, vx1, vy1);
 
   const sel = state.sel && byId[state.sel];
   if (sel) {
