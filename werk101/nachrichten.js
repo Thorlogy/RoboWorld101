@@ -16,6 +16,14 @@
      werk       (optional) ID einer Figur in RoboWorld, die dazu passt */
 const NACHRICHTEN = [
   {
+    datum: '2026-10-17',
+    titel: 'Mars-Rover Perseverance fährt Rekord',
+    text: 'Der Roboter-Rover Perseverance ist jetzt mehr als 45 Kilometer über den Mars gefahren. So weit ist noch nie ein Fahrzeug auf einem anderen Himmelskörper gekommen. Den alten Rekord hielt sein Vorgänger Opportunity, der dafür viel länger gebraucht hat.',
+    stand: 'Forschung',
+    quellen: ['https://science.nasa.gov/blogs/perseverance-mars-rover/2026/10/12/nasas-perseverance-sets-off-world-record-for-total-distance-driven/', 'https://www.space.com/space-exploration/mars-rovers/nasas-perseverance-mars-rover-breaks-interplanetary-driving-record-and-its-far-from-done'],
+    figur: 'rover', hintergrund: 'weltraum', bewegung: 'fahren', werk: 'marsrover',
+  },
+  {
     datum: '2026-10-16',
     titel: 'Zum ersten Mal gezählt: rund 7.000 Humanoide verkauft',
     text: 'Fachleute zählen jedes Jahr, wie viele Roboter weltweit verkauft werden. Jetzt haben sie zum ersten Mal auch menschenähnliche Roboter mitgezählt: rund 7.000 Stück im letzten Jahr. Die meisten arbeiten noch im Probebetrieb, oft mit einem Menschen daneben.',
