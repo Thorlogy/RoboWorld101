@@ -254,3 +254,14 @@ Object.assign(KINDER, {
   kamerarobo: 'Diese Fernsehkamera fährt von allein auf einer Schiene. Ein Mensch im Nebenraum hat vorher festgelegt, wohin sie schauen soll.',
   moderatorin: 'Sie liest die Robo-Nachrichten vor. Die Meldungen sind echt und werden vorher genau geprüft.',
 });
+Object.assign(KINDER, {
+  korbwurf: 'Dieser Roboter wirft Basketbälle und trifft fast immer. Hier übt er einen Trick-Wurf auf einem Bein, den ein berühmter deutscher Basketballspieler bekannt gemacht hat.',
+});
+Object.assign(KINDER, {
+  rueckgabe: 'Hier gibst du Bücher zurück, sogar nachts. In jedem Buch steckt ein kleiner Funkchip. Die Anlage liest ihn und sortiert das Buch in die richtige Kiste.',
+  inventur: 'Dieser Roboter fährt an den Regalen entlang und zählt alle Bücher, ohne sie anzufassen. Er liest die Funkchips und merkt, wenn ein Buch am falschen Platz steht.',
+  verbucher: 'An diesem Automaten leihst du dir selbst ein Buch aus. Ausweis drauf, Buch drauf, fertig.',
+  roboregal: 'In diesem Regal stehen Bücher und Filme über Roboter. Die kann man sich ausleihen, genau wie R-101.',
+  bibliothekarin: 'Sie hilft dir, das richtige Buch zu finden. Und sie sorgt dafür, dass es leise bleibt, auch bei den Robotern.',
+});
+

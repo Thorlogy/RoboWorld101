@@ -22,12 +22,47 @@ function pingBall(f) {
   const y = u < bx ? lerp(270, 292, u / bx) - 10 * Math.sin(Math.PI * u / bx) : 292 - 30 * Math.sin(Math.PI * (u - bx) / (1 - bx)) * (1 - (u - bx) / (1 - bx) * 0.3);
   return { x, y };
 }
+// Rechts in der Halle wechseln sich Parkour und Basketball ab: jede zweite 5-s-Runde wirft der Basketball-Roboter.
+const spKorb = () => Math.floor(state.g / 60) % 2 === 1;
 function parkour(f) {
+  if (spKorb()) return { x: 486, y: 0, rot: 0, run: false };
   if (f < 6) return { x: 486, y: 0, rot: 0, run: true };
-  if (f < 22) { const t = seg(f, 6, 22); return { x: lerp(486, 610, t), y: -70 * Math.sin(Math.PI * t), rot: 0.3 * Math.sin(Math.PI * t), run: false }; }
-  if (f < 36) return { x: 610, y: 0, rot: 0, pose: true };
-  if (f < 56) { const t = ease(seg(f, 36, 56)); return { x: lerp(610, 486, t), y: -86 * Math.sin(Math.PI * t), rot: -TAU * t, run: false }; }
+  if (f < 22) { const t = seg(f, 6, 22); return { x: lerp(486, 590, t), y: -70 * Math.sin(Math.PI * t), rot: 0.3 * Math.sin(Math.PI * t), run: false }; }
+  if (f < 36) return { x: 590, y: 0, rot: 0, pose: true };
+  if (f < 56) { const t = ease(seg(f, 36, 56)); return { x: lerp(590, 486, t), y: -86 * Math.sin(Math.PI * t), rot: -TAU * t, run: false }; }
   return { x: 486, y: 0, rot: 0, run: true };
+}
+
+// Basketball-Roboter: einbeiniger Sprungwurf nach hinten, Ball quer durch die Halle in den Korb links
+const CUE_X = 610, CUE_S = 1.1;
+function cuePose(f) {
+  const ruhe = { jy: 0, rot: 0, legL: 0, kneeL: 0, armL: -1.9, armR: -1.9 };
+  if (!spKorb() || f < 8) return ruhe;
+  if (f < 16) { const t = ease(seg(f, 8, 16)); return { jy: 26 * Math.sin(Math.PI / 2 * t), rot: 0.22 * t, legL: -1.3 * t, kneeL: -1.5 * t, armL: lerp(-1.9, -2.8, t), armR: lerp(-1.9, -2.8, t) }; }
+  if (f < 22) { const t = seg(f, 16, 22); return { jy: 26 * Math.cos(Math.PI / 2 * t), rot: lerp(0.22, 0.34, t), legL: -1.3, kneeL: -1.5, armL: lerp(-2.8, -2.4, t), armR: lerp(-2.8, -2.4, t) }; }
+  if (f < 34) { const t = seg(f, 22, 34), a = seg(f, 22, 28); return { jy: 0, rot: 0.34 * (1 - t) * Math.cos(3 * Math.PI * t), legL: -1.3 * (1 - seg(f, 22, 30)), kneeL: -1.5 * (1 - seg(f, 22, 30)), armL: lerp(-2.4, -1.5, a), armR: lerp(-2.4, 1.5, a) }; }
+  if (f < 42) { const t = ease(seg(f, 34, 42)); return { jy: 0, rot: 0, legL: 0, kneeL: 0, armL: lerp(-1.5, 0.2, t), armR: lerp(1.5, -0.2, t) }; }
+  if (f < 54) { const t = ease(seg(f, 46, 54)); return { jy: 0, rot: 0, legL: 0, kneeL: 0, armL: 0.2, armR: lerp(-0.2, 0.6, t) }; }
+  const t = ease(seg(f, 54, 60)); return { jy: 0, rot: 0, legL: 0, kneeL: 0, armL: lerp(0.2, -1.9, t), armR: lerp(0.6, -1.9, t) };
+}
+// Hand des Roboters in Raumkoordinaten (gleiche Rechnung wie humanoid() in kit.js)
+function cueHand(p, a, dx) {
+  const el = { x: dx + Math.sin(a) * 18, y: -84 + Math.cos(a) * 18 };
+  const hx = el.x + Math.sin(a + 0.3) * 18, hy = el.y + Math.cos(a + 0.3) * 18 + 60;
+  const c = Math.cos(p.rot), sn = Math.sin(p.rot), x = hx * c - hy * sn, y = hx * sn + hy * c - 60;
+  return { x: CUE_X + x * CUE_S, y: 358 - p.jy + y * CUE_S };
+}
+function cueBall(f) {
+  const p = cuePose(f), beide = () => { const l = cueHand(p, p.armL, -4), r = cueHand(p, p.armR, 4); return { x: (l.x + r.x) / 2 - 4, y: (l.y + r.y) / 2 - 6 }; };
+  if (!spKorb() || f < 16) return beide();
+  const RIM = { x: 25, y: 146 };
+  if (f < 34) { const t = seg(f, 16, 34), s0 = (() => { const q = cuePose(16), l = cueHand(q, q.armL, -4), r = cueHand(q, q.armR, 4); return { x: (l.x + r.x) / 2 - 4, y: (l.y + r.y) / 2 - 6 }; })();
+    return { x: lerp(s0.x, RIM.x, t), y: lerp(s0.y, RIM.y, t) - 131 * 4 * t * (1 - t) }; }
+  if (f < 40) { const t = seg(f, 34, 40); return { x: RIM.x, y: lerp(RIM.y, 350, t * t) }; }
+  if (f < 44) { const t = seg(f, 40, 44); return { x: lerp(25, 14, t), y: 350 - 22 * Math.sin(Math.PI * t) }; }
+  if (f < 54) return { x: lerp(14, -14, seg(f, 44, 52)), y: 350 };
+  const r = cueHand(p, p.armR, 4), b = beide(), t = seg(f, 54, 60);
+  return { x: lerp(r.x, b.x, t), y: lerp(r.y - 4, b.y, t) };
 }
 
 function drawSport(f) {
@@ -48,6 +83,16 @@ function drawSport(f) {
   ctx.stroke();
   line(0, 382, 300, 382, '#f3f1ea', 2);
   line(0, 360, RW, 360, INK, 2);
+  // Basketballkorb links an der Wand, Ring in 3,05 m Höhe (1 m ≈ 69)
+  box(2, 98, 8, 64, '#f3f1ea', 1, 1.5); line(10, 120, 22, 112, '#5d6064', 3);
+  const netz = spKorb() && f >= 34 && f < 40 ? 3 * Math.sin(Math.PI * seg(f, 34, 40)) : 0;
+  ctx.strokeStyle = 'rgba(243,241,234,0.85)'; ctx.lineWidth = 1.2; ctx.beginPath();
+  for (let i = 0; i <= 4; i++) { const x = 11 + i * 7.5; ctx.moveTo(x, 148); ctx.lineTo(18 + i * 3.8 + (i - 2) * netz * 0.3, 172 + netz); }
+  ctx.stroke();
+  line(10, 148, 42, 148, '#d9542b', 3);
+  // Ballwagen hinter dem Basketball-Roboter
+  box(626, 334, 14, 24, '#5d6064', 2, 1.2);
+  circle(633, 330, 7, '#d9762b', INK, 1.5);
 
   // Kreideumriss: hier verletzte sich der Laufroboter
   withAlpha('umriss', () => {
@@ -96,19 +141,27 @@ function drawSport(f) {
   });
 
   // Parkour: Humanoider springt über die Kiste und macht den Rückwärtssalto
-  box(536, 310, 52, 50, '#a8763f', 2);
-  line(536, 335, 588, 335, '#8e6233', 2);
+  box(506, 310, 52, 50, '#a8763f', 2);
+  line(506, 335, 558, 335, '#8e6233', 2);
   withAlpha('parkour', () => {
     const p = parkour(f), run = p.run ? Math.sin(TAU * f / 6) * 0.5 : 0;
     humanoid(p.x, 358 + p.y, { rot: p.rot, legL: run - (p.y ? 0.6 : 0), kneeL: p.y ? 1.2 : 0.2, legR: -run + (p.y ? 0.3 : 0), kneeR: p.y ? 1.0 : 0.2,
       armL: p.pose ? -2.8 : -run, armR: p.pose ? 2.8 : run, s: 0.92, color: '#b9bec4' });
     if (p.pose) text('TA-DA', p.x, 236, 13, { family: '"Saira Condensed", sans-serif', weight: 700, align: 'center', color: '#3e6f9e' });
   });
+  // Basketball-Roboter übt den Sprungwurf auf einem Bein
+  withAlpha('korbwurf', () => {
+    const p = cuePose(f);
+    humanoid(CUE_X, 358 - p.jy, { s: CUE_S, rot: p.rot, legL: p.legL, kneeL: p.kneeL, armL: p.armL, armR: p.armR, color: '#e6e3da' });
+    const b = cueBall(f);
+    circle(b.x, b.y, 8, '#d9762b', INK, 1.5); line(b.x - 7, b.y, b.x + 7, b.y, INK, 1);
+    if (spKorb() && f >= 36 && f < 48) text('KORB!', 50, 128, 20, { family: '"Saira Condensed", sans-serif', weight: 700, color: '#d9542b' });
+  });
 }
 
 registerRoom({
   key: 'sport', name: 'Sporthalle', level: 'Ebene 3',
-  hitOrder: ['umriss', 'fussball', 'pingpong', 'spieler', 'parkour'],
+  hitOrder: ['umriss', 'fussball', 'pingpong', 'spieler', 'parkour', 'korbwurf'],
   robots: [
     { id: 'fussball', echt: 'Echt: Beim RoboCup fallen Roboter oft um und stehen von selbst wieder auf. Tore schießen sie trotzdem.', name: 'Fußballroboter', bereich: 'Forschung', aera: 'seit 1997', typ: 'Kleine Humanoide',
       fakt: 'Der RoboCup wird seit 1997 ausgetragen. Das erklärte Ziel: Bis 2050 soll eine Robotermannschaft den amtierenden menschlichen Fußball-Weltmeister schlagen.',
@@ -128,6 +181,12 @@ registerRoom({
       note: 'Springt über die Kiste, macht einen Salto rückwärts und erwartet Applaus.', color: '#b9bec4',
       quelle: 'https://en.wikipedia.org/wiki/Atlas_(robot)',
       box: f => { const p = parkour(f); return [SX + p.x - 30, SY + 236 + p.y, 60, 124]; } },
+    { id: 'korbwurf', name: 'Basketball-Roboter', bereich: 'Forschung', aera: 'seit 2019', typ: 'Humanoider Wurfroboter',
+      fakt: 'Der Wurfroboter CUE von Toyota traf 2019 in Japan 2.020 Freiwürfe hintereinander, das steht im Guinness-Buch der Rekorde. 2024 traf die neuere Version CUE6 aus 24,55 Metern Entfernung. Sensoren finden den Korb, dann stellt der Roboter Kraft und Winkel für den Wurf ein.',
+      echt: 'Die Rekorde sind echt. Ausgedacht ist, dass er hier den einbeinigen Sprungwurf nach hinten übt, mit dem der deutsche Basketballspieler Dirk Nowitzki berühmt wurde. Dabei verliert er fast das Gleichgewicht.',
+      note: 'Wirft in jeder zweiten Runde quer durch die Halle, auf einem Bein und nach hinten fallend. Der Ball geht rein, der Roboter wackelt.', color: '#d9762b',
+      quelle: 'https://www.guinnessworldrecords.com/world-records/519716-most-consecutive-basketball-free-throws-by-a-humanoid-robot-assisted',
+      box: f => { const p = cuePose(f); return [SX + CUE_X - 34, SY + 210 - p.jy, 58, 150]; } },
     { id: 'umriss', echt: 'Ein Spaß. Für kaputte Roboter gibt es keine Kreideumrisse, sondern Fehlerprotokolle.', name: 'Kreideumriss', bereich: 'Spielzeug', aera: 'Tatort', typ: 'Unfallstelle',
       fakt: 'Hier hat sich der Laufroboter beim Parkour das Bein verbogen. Der Pfeil zeigt zur Krankenstation auf Ebene 5.',
       note: 'Bitte nicht wegwischen.', color: '#f3f1ea',

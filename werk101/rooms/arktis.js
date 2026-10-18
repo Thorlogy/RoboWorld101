@@ -2,15 +2,15 @@
    Ny-Ålesund auf Spitzbergen. Maßstab 1 : 2 (1 m ≈ 34,5), die Polarstern steht weit hinten und wirkt darum klein.
    Ablauf pro Runde (state.g): Wetterballon 0–30 Dach auf, 30–220 steigt; Tauchroboter unter dem Eis 40–440 hin und zurück;
    Profiler am Draht ganz hinab und wieder hinauf; Eisbär läuft über die Scholle. Nachts Polarlicht. Präfix ak/AK_. */
-const AK_X0 = rx(29), AK_X1 = rx(32) + RW, AK_M = 34.5;
-const AK_LAND = rx(31) + 260;                         // hier beginnt das Land
+const AK_X0 = rx(roomOf('arktis1').c), AK_X1 = rx(roomOf('arktis4').c) + RW, AK_M = 34.5;
+const AK_LAND = rx(roomOf('arktis3').c) + 260;                         // hier beginnt das Land
 const AK_EIS_O = SH_WY - 12, AK_EIS_U = SH_WY + 58;   // Scholle: knapp 2 m dick, ein Stück ragt heraus
-const AK_ZELT = rx(30) + 120, AK_ITP = rx(30) + 520, AK_BALLON = rx(32) + 300;
+const AK_ZELT = rx(roomOf('arktis2').c) + 120, AK_ITP = rx(roomOf('arktis2').c) + 520, AK_BALLON = rx(roomOf('arktis4').c) + 300;
 
 const akRov = g => { const t = seg(g, 40, 440); return { x: AK_ZELT + 50 + 380 * Math.sin(Math.PI * t), y: AK_EIS_U + 70 + 30 * Math.sin(TAU * t) }; };
 const akProfiler = g => { const t = (g % 480) / 480; return AK_EIS_U + 30 + (SH_BOT - AK_EIS_U - 90) * (0.5 - 0.5 * Math.cos(TAU * t)); };
-const akBaer = g => ({ x: lerp(rx(31) + 180, rx(30) + 380, 0.5 - 0.5 * Math.cos(TAU * g / 480)), dir: Math.sin(TAU * g / 480) >= 0 ? -1 : 1 });
-const akFuchs = g => ({ x: lerp(rx(32) + 400, rx(32) + 600, 0.5 - 0.5 * Math.cos(TAU * g / 240)), dir: Math.sin(TAU * g / 240) >= 0 ? 1 : -1 });
+const akBaer = g => ({ x: lerp(rx(roomOf('arktis3').c) + 180, rx(roomOf('arktis2').c) + 380, 0.5 - 0.5 * Math.cos(TAU * g / 480)), dir: Math.sin(TAU * g / 480) >= 0 ? -1 : 1 });
+const akFuchs = g => ({ x: lerp(rx(roomOf('arktis4').c) + 400, rx(roomOf('arktis4').c) + 600, 0.5 - 0.5 * Math.cos(TAU * g / 240)), dir: Math.sin(TAU * g / 240) >= 0 ? 1 : -1 });
 
 function akEisbaer(x, y, dir, g) {
   ctx.save(); ctx.translate(x, y); ctx.scale(dir, 1);
@@ -52,7 +52,7 @@ function akBild(g) {
   ctx.fillStyle = himmelFarben()[2]; ctx.fillRect(AK_X0 - WALL, GROUND - 8, AK_LAND - AK_X0 + WALL, SH_WY - GROUND + 9);
   // Polarstern weit hinten im Eis (klein, weil weit weg)
   withAlpha('polarstern', () => {
-    const x = rx(30) + 640, y = AK_EIS_O - 4;
+    const x = rx(roomOf('arktis2').c) + 640, y = AK_EIS_O - 4;
     ctx.beginPath(); ctx.moveTo(x, y - 26); ctx.lineTo(x + 230, y - 26); ctx.lineTo(x + 220, y); ctx.lineTo(x + 12, y); ctx.closePath(); paint('#b4322a', INK, 1.5);
     box(x + 30, y - 58, 70, 32, '#ecebe6', 0, 1.2); box(x + 46, y - 74, 34, 16, '#ecebe6', 0, 1.2); line(x + 63, y - 74, x + 63, y - 96, INK, 2);
     box(x + 150, y - 44, 10, 18, '#3b3d40', 0, 1); line(x + 120, y - 26, x + 140, y - 60, INK, 2);
@@ -86,7 +86,7 @@ function akBild(g) {
   // Eisalgen an der Unterseite (braun), die der Tauchroboter filmt
   ctx.fillStyle = 'rgba(140,100,50,0.55)'; for (let x = AK_X0 + 500; x < AK_LAND - 80; x += 22) ctx.fillRect(x, AK_EIS_U - 2, 12, 4 + (x % 5));
   mrWellen(AK_X0, AK_X0 + 470, SH_WY, g, 'rgba(230,245,255,0.6)');
-  text('ARKTIS', rx(31) + 60, SH_WY + 200, 44, { family: '"Saira Condensed", sans-serif', weight: 700, color: 'rgba(230,245,255,0.22)' });
+  text('ARKTIS', rx(roomOf('arktis3').c) + 60, SH_WY + 200, 44, { family: '"Saira Condensed", sans-serif', weight: 700, color: 'rgba(230,245,255,0.22)' });
 
   withAlpha('robbe', () => akRobbe(AK_X0 + 560, AK_EIS_O));
   // Zelt über dem Eisloch und Steuerhütte
@@ -111,13 +111,13 @@ function akBild(g) {
   withAlpha('eisbaer', () => { const b = akBaer(g); akEisbaer(b.x, AK_EIS_O, b.dir, g); });
   // Forschungssiedlung
   akHaus(AK_LAND + 40, 230, 120, '#b4322a');
-  akHaus(rx(31) + 560, 200, 100, '#e0b23a');
-  line(rx(32) + 450, GROUND, rx(32) + 450, GROUND - 60, INK, 3); line(rx(32) + 590, GROUND, rx(32) + 590, GROUND - 60, INK, 3);
-  box(rx(32) + 420, GROUND - 92, 200, 34, '#2a2723', 0, 1.5);
-  text('FUNKSTILLE · KEIN WLAN', rx(32) + 520, GROUND - 70, 13, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center', color: '#f3efe4' });
+  akHaus(rx(roomOf('arktis3').c) + 560, 200, 100, '#e0b23a');
+  line(rx(roomOf('arktis4').c) + 450, GROUND, rx(roomOf('arktis4').c) + 450, GROUND - 60, INK, 3); line(rx(roomOf('arktis4').c) + 590, GROUND, rx(roomOf('arktis4').c) + 590, GROUND - 60, INK, 3);
+  box(rx(roomOf('arktis4').c) + 420, GROUND - 92, 200, 34, '#2a2723', 0, 1.5);
+  text('FUNKSTILLE · KEIN WLAN', rx(roomOf('arktis4').c) + 520, GROUND - 70, 13, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center', color: '#f3efe4' });
   // automatische Wetterstation: Mast mit Windmesser
   withAlpha('wettermast', () => {
-    const x = rx(31) + 470;
+    const x = rx(roomOf('arktis3').c) + 470;
     line(x, GROUND, x, GROUND - 330, '#8a8f94', 4); line(x - 20, GROUND, x, GROUND - 120, '#8a8f94', 2); line(x + 20, GROUND, x, GROUND - 120, '#8a8f94', 2);
     box(x - 16, GROUND - 160, 32, 30, '#ecebe6', 1, 1.2); for (let i = 0; i < 3; i++) line(x - 14, GROUND - 154 + i * 8, x + 14, GROUND - 154 + i * 8, '#c9ccc8', 1.5);
     const a = g * 0.9; line(x, GROUND - 330, x, GROUND - 344, INK, 2);
@@ -155,14 +155,14 @@ registerRunner({
     echt: 'Echt. Gezeichnet im Maßstab 1 : 2, das Schiff steht weit hinten. In Ny-Ålesund gilt wegen der Radioteleskope wirklich Funkstille: WLAN und Bluetooth sind dort weitgehend verboten.',
     note: 'Nachts leuchtet Polarlicht über dem Eis.',
     quelle: 'https://mosaic-expedition.org/',
-    box: () => [rx(31) + 50, SH_WY + 160, 220, 50] },
+    box: () => [rx(roomOf('arktis3').c) + 50, SH_WY + 160, 220, 50] },
 });
 const akReg = (room, robot) => registerRunner({ room, draw() {}, robot });
 akReg('arktis1', { id: 'polarstern', name: 'Polarstern', bereich: 'Forschung', aera: 'seit 1982', typ: 'Forschungs-Eisbrecher', color: '#b4322a',
   fakt: 'Die Polarstern ist der Forschungs-Eisbrecher des Alfred-Wegener-Instituts aus Bremerhaven, 118 Meter lang. Für die MOSAiC-Expedition ließ sie sich im Herbst 2019 in einer Eisscholle einfrieren und driftete fast ein Jahr mit dem Eis durch das Nordpolarmeer. Um das Schiff herum entstand ein Eiscamp mit Messstationen.',
   echt: 'Echt. Hier klein, weil sie weit hinten im Eis liegt.', note: 'Liegt weit draußen eingefroren im Eis.',
   quelle: 'https://en.wikipedia.org/wiki/RV_Polarstern',
-  box: () => [rx(30) + 640, AK_EIS_O - 100, 240, 100] });
+  box: () => [rx(roomOf('arktis2').c) + 640, AK_EIS_O - 100, 240, 100] });
 akReg('arktis1', { id: 'robbe', name: 'Ringelrobbe', bereich: 'Tier', aera: 'Arktis', typ: 'Robbe auf dem Eis', color: '#7d7a72',
   fakt: 'Ringelrobben leben im arktischen Meereis. Sie halten sich mit ihren Krallen Atemlöcher im Eis offen und ruhen auf den Schollen. Sie sind die wichtigste Beute der Eisbären.',
   echt: 'Echt.', note: 'Ruht auf der kleinen Scholle.',
@@ -192,7 +192,7 @@ akReg('arktis3', { id: 'wettermast', name: 'Automatische Wetterstation', bereich
   fakt: 'Der Mast misst Wind, Temperatur, Luftfeuchte und Luftdruck ganz von selbst, Tag und Nacht. Der Strom kommt aus Solarmodul und Akku, die Daten gehen per Funk oder Satellit weiter. Im langen Polarwinter ohne Sonne müssen die Akkus besonders gut sein.',
   echt: 'Echt. Solche Stationen stehen überall in der Arktis, viele weit weg von jedem Haus.', note: 'Der Windmesser oben dreht sich.',
   quelle: 'https://en.wikipedia.org/wiki/Automatic_weather_station',
-  box: () => [rx(31) + 440, GROUND - 350, 70, 350] });
+  box: () => [rx(roomOf('arktis3').c) + 440, GROUND - 350, 70, 350] });
 akReg('arktis4', { id: 'autosonde', name: 'Startautomat für Wetterballons', bereich: 'Forschung', aera: 'seit 1994', typ: 'Wetterballon-Roboter', color: '#ecebe6',
   fakt: 'Ein Wetterballon trägt eine kleine Messsonde bis etwa 30 Kilometer hoch, dann platzt er. Ein Startautomat erledigt alles allein: Er lagert die Sonden, füllt den Ballon mit Gas, öffnet das Dach und lässt ihn steigen. Das neueste Modell schafft mit einer Füllung etwa einen Monat lang zwei Starts am Tag.',
   echt: 'Echt. Solche Automaten gibt es seit 1994, auch in der Antarktis. An vielen Polarstationen lassen aber noch Menschen die Ballons von Hand steigen.', note: 'Das Dach geht auf, der Ballon steigt.',

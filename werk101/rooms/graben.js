@@ -2,7 +2,7 @@
    in Reihe 8 und 9 bis zum Challenger-Tief (fast 11.000 m). Die Tiefe ist stark verkürzt (grTiefe), Tiere und Fahrzeuge
    sind vergrößert. Ablauf pro Runde (state.g): Lander sinkt 0–80 herab, liegt 80–400 am Grund (Schneckenfische kommen 120–380),
    steigt 400–479 wieder auf. Nereus nimmt 140–260 mit dem Arm eine Probe. Präfix gr/GR_. */
-const GR_X0 = rx(26), GR_X1 = rx(28) + RW, GR_M = rx(27) + RW / 2, GR_BOT = ry(9) + RH - 24;
+const GR_X0 = rx(roomOf('graben1').c), GR_X1 = rx(roomOf('graben3').c) + RW, GR_M = rx(roomOf('graben2').c) + RW / 2, GR_BOT = ry(9) + RH - 24;
 const GR_T = [[0, SH_WY], [1000, SH_WY + 110], [6000, SH_BOT], [8000, ry(8) + 330], [11000, GR_BOT]];
 function grTiefe(d) {
   for (let i = 1; i < GR_T.length; i++) if (d <= GR_T[i][0]) return lerp(GR_T[i - 1][1], GR_T[i][1], (d - GR_T[i - 1][0]) / (GR_T[i][0] - GR_T[i - 1][0]));

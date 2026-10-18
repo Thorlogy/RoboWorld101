@@ -22,7 +22,7 @@ index.html, kit.js, rooms/*.js, kinder.js, runners.js, himmel.js, welt.js, avata
 
 ## Weltkarte (Reihe 6 = EG, 7–9 = UG 1–3)
 - Links (EG): Wüste c −25 bis −22, Gebirge c −21 bis −13, Stausee c −12 bis −10, Wasserkraftwerk c −9, Paketzentrum c −8, Magnetbahn-Bahnhof c −7, Flughafen c −6 … Straße c −1.
-- Rechts (EG): Häuser bis Haus 104 (c 10.5), Haus 105 Chipfabrik c 12–13 (`haus: 6`, `H6`), Haus 107 Sendeturm c 14.5 (`haus: 7`, `H7`, Mast `TURM`), Farm 106 c 16 (r 5–6), Ladepark c 17, Fusion c 18, Feuerwache c 19, Seehafen c 20–24, Ozean c 25–29 (Algenfarm c 29), Marianengraben c 30–32 (r 6) mit Graben in r 8/9 bei c 31, Arktis c 33–36. (20261016e/f: alles ab Farm um insgesamt 4 Spalten nach rechts verschoben.)
+- Rechts (EG): Häuser bis Haus 104 (c 10.5), Haus 105 Chipfabrik c 12–13 (`haus: 6`, `H6`), Haus 107 Sendeturm c 14.5 (`haus: 7`, `H7`, Mast `TURM`), Haus 108 Stadtbibliothek c 16 (`haus: 8`, `H8`), Farm 106 c 17.5 (r 5–6), Ladepark c 18.5, Fusion c 19.5, Feuerwache c 20.5, Seehafen c 21.5–25.5, Ozean c 26.5–30.5, Marianengraben c 31.5–33.5 (r 6) mit Graben in r 8/9 bei c 32.5, Arktis c 34.5–37.5. (20261018a: alles ab Farm um weitere 1,5 Spalten nach rechts.)
 - Unter der Erde: Wasserwerk UG 1 c −9; Bergwerk UG 1–3 c −5/−4 mit Schacht; Kläranlage UG 1 c −3; Kanal UG 1 c −2/−1; Tiefbahnhof UG 1 und Zugwerk UG 2 c 8–9.
 - Maßstäbe: normal 1 m ≈ 69; Bergwerk 1 : 2; Arktis 1 : 2; Hafen 1 : 4; Stausee 1 : 8; Ozean 1 : 12; Marianengraben: Tiefe stark verkürzt (`grTiefe`), Tiere vergrößert (jeweils auf den Karten genannt).
 - Alle Positionen über `roomOf(...)`: zum Verschieben reicht die Spalte in kit.js.
@@ -57,7 +57,15 @@ index.html, kit.js, rooms/*.js, kinder.js, runners.js, himmel.js, welt.js, avata
 ## Erledigt 16.10.2026 (Version 20261016h)
 - Teil H1 Roboterblick (blick.js, Knopf „Roboterblick“): aus → Kamera mit Objekterkennung (Grau, Bildzeilen, Kästchen „Mensch/Tier/Roboter xx %“ aus den Klickflächen der Karten) → Wärmebild (Menschen/Tiere hell, Motoren schwach) → aus. Erklärkasten unten links. Gilt in allen Räumen ohne Eingriff in Raumdateien.
 
+## Erledigt 18.10.2026 (Version 20261018a)
+- Sporthalle: Basketball-Roboter (CUE, Guinness 2.020 Freiwürfe 2019, CUE6 24,55 m 2024) wechselt sich rechts mit Parkour ab; Nowitzki-Sprungwurf als Gag, nur auf der Karte erwähnt.
+- Haus 108 Stadtbibliothek (c 16) mit Rückgabe-Sortieranlage, Inventur-Roboter, Selbstverbucher, Roboter-Ecke (echte Titel nur in Worten), Bibliothekarin; Binär-Gespräch „Hi“ + „Psst!“. R-101: Botengänge Leihbuch und Leihfilm.
+- Farm bis Arktis um 1,5 Spalten nach rechts; graben.js/arktis.js/meldungen.js auf `roomOf` umgestellt (waren 4 Spalten verrutscht).
+
 ## Erkenntnisse
+- Feste Spalten wie `rx(26)` in Raumdateien vermeiden: beim Verschieben in kit.js wandern sie nicht mit. Immer `rx(roomOf('<key>').c)`.
+- Zwei Szenen auf einer Fläche: Wechsel pro 5-s-Runde über `Math.floor(state.g / 60) % 2`; Figuren am Rundenende in gleicher Pose wie im anderen Modus enden lassen. check.py prüft nur `state.g` beim Laden, den zweiten Modus selbst ansehen.
+- Botengang-Dinge nicht nach Wörtern benennen, die in Befehlen vorkommen („Roboter“): `avZiel` vergleicht das letzte Wort.
 - Übersichten über alle Räume (Roboterblick) lassen sich aus `ROBOTS` + `box(f)` bauen; zu große Klickflächen (Landschaften, w > 900 oder h > 700) und Bereiche Wissen/Daten/KI/Sensoren/Lernen auslassen.
 - Spalten rechts verschieben: nur kit.js (alle Positionen über `roomOf`). Zwischen zwei Häusern mindestens 0,5 Spalten Abstand lassen, sonst überlappen die Wände (Haus 105 endet genau bei rx(14)).
 - Neues Haus: Konstante + `HOUSES.push` + Zeichenblock in engine.js (wie Haus 104), Räume mit `haus: n`; die Lücken bekommen Gehweg und Laternen automatisch (uebergang.js).

@@ -13,7 +13,7 @@ const MELDUNGEN = [
   { runde: 5, g: 35, text: 'Arktis: Der Startautomat lässt einen Wetterballon steigen. Er fliegt bis etwa 30 Kilometer hoch.', ort: () => [AK_BALLON, GROUND - 200] },
   { runde: 1, g: 60, text: 'Raketenstart! Achte darauf, wo die erste Stufe nachher wieder landet.', ort: () => [RK_PAD.x, GROUND - 400] },
   { runde: 2, g: 150, text: 'Marianengraben: Nereus greift mit dem Arm in den Schlamm, fast 11.000 Meter tief.', ort: () => [GR_NX, GR_BOT - 80] },
-  { runde: 4, g: 330, wenn: () => istNacht(), text: 'Über der Arktis leuchtet Polarlicht.', ort: () => [rx(31), GROUND - 700] },
+  { runde: 4, g: 330, wenn: () => istNacht(), text: 'Über der Arktis leuchtet Polarlicht.', ort: () => [rx(roomOf('arktis3').c), GROUND - 700] },
   { runde: 5, g: 125, wenn: () => istDunkel(), text: 'Die Raumstation zieht über den Abendhimmel. Zoom ganz nah heran!', ort: () => { const p = issPos(150); return p ? [p.x, p.y] : [0, 0]; } },
   // weitere Ereignisse auf der langen Uhr
   { runde: 1, g: 380, text: 'Die erste Stufe der Rakete kommt zurück und landet aufrecht auf dem X. So kann sie wieder fliegen.', ort: () => [RK_LZ.x, RK_LZ.y - 200] },

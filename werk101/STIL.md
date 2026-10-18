@@ -265,4 +265,8 @@ registerRoom({
   - Haus 107 (`H7`, `drawH7`, Gittermast `TURM` mit Flugwarnlicht) bei c 14.5, Raum `news` in `rooms/sendeturm.js`; alles ab Farm um weitere 1,5 Spalten nach rechts.
   - Meldungen in `nachrichten.js`; Bildschirm-Baukasten `NW_HG` (Hintergründe) und `NW_FIG` (Figuren), Bewegung über `nwFigurPos`. Archiv-Fenster `openNachrichten()` (Stil wie ELIZA-Fenster).
 - Roboterblick (16. Oktober 2026, Version 20261016h): `blick.js`, Zustand `state.blick` ('aus' | 'kamera' | 'waerme'), gezeichnet in engine.js nach dem Datennetz (`drawBlick`). Farben der Kästchen: Mensch #f0b429, Tier #7fe08a, Roboter #7fd3ff.
-
+- Basketball und Bibliothek (18. Oktober 2026, Version 20261018a):
+  - Sporthalle: Basketball-Roboter `korbwurf` (Vorbild Toyota CUE) mit Korb links an der Wand (Ring 3,05 m). Rechts wechseln sich Parkour und Basketball pro 5-s-Runde ab (`spKorb()` aus `state.g`); Gag: einbeiniger Sprungwurf nach hinten (Nowitzki, nur in Worten auf der Karte). Parkour-Kiste und Landung 20–30 nach links gerückt.
+  - Haus 108 Stadtbibliothek (`H8`, `drawH8`, `haus: 8`) bei c 16, Raum `bibliothek` (Präfix bb/BB_): Rückgabe-Sortieranlage, Inventur-Roboter, Selbstverbucher, Roboter-Ecke, Bibliothekarin; Gag: Gespräch in Nullen und Einsen („Hi“ in ASCII), Bibliothekarin sagt „Psst!“. Alles ab Farm um 1,5 Spalten nach rechts.
+  - Botengänge `leihbuch` (Bibliothek → Wohnbereich) und `leihfilm` (Bibliothek → Filmstudio).
+  - Fehler behoben: graben.js, arktis.js und meldungen.js nutzten feste Spalten (rx(26) …) und waren seit den Verschiebungen 4 Spalten zu weit links gezeichnet; jetzt über `roomOf(...)`.

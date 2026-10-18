@@ -102,6 +102,10 @@ const AUFTRAEGE = [
     fertig: 'Geliefert! Der Scanner-Roboter im Supermarkt zählt es jetzt mit.' },
   { id: 'buch', ding: 'Buch', von: 'buecher', nach: 'schule', text: 'Bring das Buch aus dem Bücherspeicher hinauf in die Schule.',
     fertig: 'Geliefert! Im Bücherspeicher holen Roboterkräne die Bücher aus hohen Regalen.' },
+  { id: 'leihbuch', ding: 'Leihbuch', von: 'bibliothek', nach: 'wohnen', text: 'Leih dir in der Stadtbibliothek ein Buch über Roboter aus und bring es in den Wohnbereich.',
+    fertig: 'Ausgeliehen und geliefert! In echten Bibliotheken bucht ein Automat das Buch über seinen kleinen Funkchip auf deinen Ausweis.' },
+  { id: 'leihfilm', ding: 'Leihfilm', von: 'bibliothek', nach: 'film', spot: 480, text: 'Hol in der Stadtbibliothek einen Film über Roboter und bring ihn ins Filmstudio.',
+    fertig: 'Geliefert! Viele Bibliotheken verleihen auch Filme. Im Filmstudio steht ein Regal mit Filmrobotern aus verschiedenen Zeiten.' },
   { id: 'socke', ding: 'rote Socke', von: 'recycling', nach: 'wohnen', text: 'Die rote Socke ist im Recyclinghof gelandet. Bring sie zurück in den Wohnbereich.',
     fertig: 'Geliefert! Socken gehören nicht in den Saugroboter und nicht in den Recyclinghof.' },
   // gibt es nur während einer Störung am Förderband (stoerung.js)
@@ -253,6 +257,8 @@ function avDing(id, x, y) {
   else if (id === 'medi') { box(x - 15, y - 20, 30, 20, '#e8e6e0', 0, 2); box(x - 3, y - 17, 6, 14, '#2e9a5a', 0, 0.01); box(x - 7, y - 13, 14, 6, '#2e9a5a', 0, 0.01); }
   else if (id === 'paket') { box(x - 16, y - 22, 32, 22, '#c9a46a', 0, 2); line(x, y - 22, x, y, '#a8763f', 3); }
   else if (id === 'buch') { box(x - 11, y - 26, 22, 26, '#3e6f9e', 0, 2); line(x + 7, y - 24, x + 7, y - 2, '#e8e4da', 2); }
+  else if (id === 'leihbuch') { box(x - 11, y - 26, 22, 26, '#d9542b', 0, 2); circle(x - 1, y - 15, 4, '#f0b429', null); line(x + 7, y - 24, x + 7, y - 2, '#f3d2bf', 2); }
+  else if (id === 'leihfilm') { box(x - 12, y - 28, 24, 28, '#23384d', 2, 2); circle(x, y - 14, 8, '#c3c7cb', INK, 1.2); circle(x, y - 14, 2.5, '#23384d', null); }
   else if (id === 'teil') { box(x - 14, y - 16, 28, 16, '#8a8f94', 2, 2); circle(x - 6, y - 8, 3, '#3b3d40', null); circle(x + 6, y - 8, 3, '#3b3d40', null); }
   else if (id === 'rolle') {
     // Tragrolle eines Förderbands: Stahlrohr mit Achsstummeln und Kugellagern an den Enden

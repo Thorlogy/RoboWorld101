@@ -91,6 +91,21 @@ function drawH7(f) {
   box(H7.x + 20, H7.y - 58, 260, 40, '#2a2723');
   text('SENDETURM · HAUS 107', H7.x + 150, H7.y - 28, 26, { family: '"Saira Condensed", sans-serif', weight: 700, align: 'center', color: '#f3efe4' });
 }
+// Haus 108: Stadtbibliothek, Backstein mit hohen Fenstern und Bücherbrett-Gesims
+const H8 = { x: rx(16) - WALL, y: ry(6) - WALL, w: RW + 2 * WALL, h: RH + 2 * WALL };
+HOUSES.push({ x: H8.x - 12, y: H8.y - 60, w: H8.w + 24, h: GROUND - H8.y + 60 });
+function drawH8() {
+  ctx.fillStyle = '#a65a3e'; ctx.fillRect(H8.x, H8.y, H8.w, H8.h);
+  ctx.strokeStyle = 'rgba(42,39,35,0.14)'; ctx.lineWidth = 1; ctx.beginPath();
+  for (let y = H8.y + 8; y < H8.y + H8.h; y += 10) { ctx.moveTo(H8.x, y); ctx.lineTo(H8.x + H8.w, y); }
+  ctx.stroke();
+  ctx.strokeStyle = INK; ctx.lineWidth = 3; ctx.strokeRect(H8.x, H8.y, H8.w, H8.h);
+  ctx.fillStyle = '#5f5b55'; ctx.fillRect(H8.x - 12, H8.y - 10, H8.w + 24, 14);
+  box(H8.x + 40, H8.y - 58, 300, 40, '#2a2723');
+  text('STADTBIBLIOTHEK · HAUS 108', H8.x + 190, H8.y - 28, 26, { family: '"Saira Condensed", sans-serif', weight: 700, align: 'center', color: '#f3efe4' });
+  // Bücher auf dem Dach als Schmuck
+  for (let i = 0; i < 9; i++) box(H8.x + 380 + i * 26, H8.y - 46 + (i % 3) * 4, 20, 36 - (i % 3) * 4, ['#d9542b', '#3e6f9e', '#f0b429', '#5f9a4a'][i % 4], 1, 1.5);
+}
 // Haus 4: Rechenzentrum ohne Fenster, Rückkühler auf dem Dach, Satellitenschüssel; daneben ein Funkmast
 function drawRZ(f) {
   ctx.fillStyle = '#a3a8a6'; ctx.fillRect(H4.x, H4.y, H4.w, H4.h);
@@ -364,6 +379,17 @@ function draw() {
     drawRZ(f);
     for (const room of ROOMS) {
       if (room.haus !== 4) continue;
+      const x = rx(room.c), y = ry(room.r), def = BUILT.find(d => d.key === room.built);
+      if (!def || !visible(x, y, RW, RH)) continue;
+      ctx.save(); ctx.beginPath(); ctx.rect(x, y, RW, RH); ctx.clip(); ctx.translate(x, y); def.draw(f); ctx.restore();
+      ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.strokeRect(x, y, RW, RH);
+    }
+  }
+  // Haus 108: Stadtbibliothek
+  if (visible(H8.x - 20, H8.y - 70, H8.w + 40, H8.h + 70)) {
+    drawH8();
+    for (const room of ROOMS) {
+      if (room.haus !== 8) continue;
       const x = rx(room.c), y = ry(room.r), def = BUILT.find(d => d.key === room.built);
       if (!def || !visible(x, y, RW, RH)) continue;
       ctx.save(); ctx.beginPath(); ctx.rect(x, y, RW, RH); ctx.clip(); ctx.translate(x, y); def.draw(f); ctx.restore();
