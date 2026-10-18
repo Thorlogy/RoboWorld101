@@ -16,6 +16,14 @@
      werk       (optional) ID einer Figur in RoboWorld, die dazu passt */
 const NACHRICHTEN = [
   {
+    datum: '2026-10-18',
+    titel: 'Roboter fällt wie ein Ahornsamen und segelt los',
+    text: 'In Singapur haben Forschende einen Roboter gebaut, der aus einem Flugzeug ins Wasser fallen darf. Beim Fallen dreht er sich wie ein Ahornsamen und landet darum sanft. Dann richtet er sich auf, und seine Flügel werden zu Segeln, mit denen der Wind ihn übers Wasser schiebt.',
+    stand: 'Forschung',
+    quellen: ['https://newatlas.com/robotics/albatross-robot-sail-seed-boat', 'https://www.eurekalert.org/news-releases/1146168'],
+    figur: 'drohne', hintergrund: 'meer', bewegung: 'fliegen',
+  },
+  {
     datum: '2026-10-17',
     titel: 'Mars-Rover Perseverance fährt Rekord',
     text: 'Der Roboter-Rover Perseverance ist jetzt mehr als 45 Kilometer über den Mars gefahren. So weit ist noch nie ein Fahrzeug auf einem anderen Himmelskörper gekommen. Den alten Rekord hielt sein Vorgänger Opportunity, der dafür viel länger gebraucht hat.',
