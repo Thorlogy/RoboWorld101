@@ -112,9 +112,11 @@ function drawBibliothek(f) {
     box(446, 246, 90, 114, '#a8763f', 1, 1.5);
     line(446, 300, 536, 300, INK, 2);
     text('ROBOTER', 491, 240, 11, Object.assign({ align: 'center', color: '#3b3d40' }, BB_MONO));
-    box(454, 262, 22, 34, '#3e6f9e', 1, 1.2); circle(465, 276, 5, '#f0b429', null); line(458, 290, 472, 290, '#f3f1ea', 1.5);
-    box(482, 260, 22, 36, '#5f9a4a', 1, 1.2); line(486, 270, 500, 270, '#f3f1ea', 1.5); line(486, 290, 500, 290, '#f3f1ea', 1.5);
-    box(510, 264, 20, 32, '#d9542b', 1, 1.2); line(514, 290, 526, 290, '#f3f1ea', 1.5);
+    box(451, 262, 18, 34, '#3e6f9e', 1, 1.2); circle(460, 276, 4, '#f0b429', null); line(454, 290, 466, 290, '#f3f1ea', 1.5);
+    box(472, 260, 18, 36, '#5f9a4a', 1, 1.2); line(475, 270, 487, 270, '#f3f1ea', 1.5); line(475, 290, 487, 290, '#f3f1ea', 1.5);
+    box(493, 264, 18, 32, '#d9542b', 1, 1.2); line(496, 290, 508, 290, '#f3f1ea', 1.5);
+    // Sachbuch „Roboter und KI“: steht vorn, R-101 leiht es aus
+    box(514, 258, 18, 38, '#f0b429', 1, 1.2); box(517, 264, 12, 10, '#23384d', 2, 1); circle(521, 269, 1.5, '#7fd3ff', null); circle(525, 269, 1.5, '#7fd3ff', null); line(517, 288, 529, 288, INK, 1.5);
     for (let i = 0; i < 3; i++) {
       const x = 454 + i * 26;
       box(x, 312, 22, 32, '#23384d', 2, 1.2); circle(x + 11, 326, 7, '#c3c7cb', INK, 1); circle(x + 11, 326, 2, '#23384d', null);
@@ -161,7 +163,7 @@ registerRoom({
       quelle: 'https://www.bibliothek.uni-wuerzburg.de/fileadmin/ub/pdf-Dateien/Pressemitteilungen/20220408_Start-Rueckgabe-und-Sortieranlage-ZB-final.pdf',
       box: () => [BBX + 186, BBY + 232, 50, 128] },
     { id: 'roboregal', name: 'Roboter-Ecke', bereich: 'Medien', aera: '1967 bis heute', typ: 'Regal mit Büchern und Filmen',
-      fakt: 'Hier stehen Bücher und Filme über Roboter: „Robbi, Tobbi und das Fliewatüüt“ von Boy Lornsen (Buch 1967, Fernsehserie 1972), „Der wilde Roboter“ von Peter Brown (Buch 2016, Film 2024) und der Film „WALL·E“ (2008) über einen Roboter, der Müll aufräumt.',
+      fakt: 'Hier stehen Bücher und Filme über Roboter: „Robbi, Tobbi und das Fliewatüüt“ von Boy Lornsen (Buch 1967, Fernsehserie 1972), „Der wilde Roboter“ von Peter Brown (Buch 2016, Film 2024) der Film „WALL·E“ (2008) über einen Roboter, der Müll aufräumt, und das Sachbuch „Roboter und KI“ aus der Kosmos-Reihe SchlauFUX von Thorsten Leimbach und Beate Jost (2025, ab 8 Jahren).',
       echt: 'Die Titel gibt es wirklich. Die Hüllen sind schlicht gezeichnet, Figuren aus Büchern und Filmen zeigen wir nicht.',
       note: 'Hier leiht sich R-101 ein Buch und einen Film für seine Botengänge aus.', color: '#a8763f',
       quelle: 'https://en.wikipedia.org/wiki/Robbi,_Tobbi_und_das_Fliewat%C3%BC%C3%BCt',
