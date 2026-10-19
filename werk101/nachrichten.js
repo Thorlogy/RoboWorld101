@@ -16,6 +16,14 @@
      werk       (optional) ID einer Figur in RoboWorld, die dazu passt */
 const NACHRICHTEN = [
   {
+    datum: '2026-10-19',
+    titel: 'Ein altes Handy wird zum Roboter-Gehirn',
+    text: 'Forschende in Los Angeles haben einen kleinen Roboter auf zwei Beinen gebaut, der knapp einen halben Meter groß ist. Sein Gehirn ist ein altes Handy: Mit der Kamera schaut er sich um, und das Handy hilft ihm, beim Laufen das Gleichgewicht zu halten. So kann er gehen und einem Menschen hinterherlaufen.',
+    stand: 'Forschung',
+    quellen: ['https://newatlas.com/robotics/ucla-scientists-android-phone-walking-robot-companion/', 'https://interestingengineering.com/ai-robotics/ulca-bipedal-robot-uses-phone-walk'],
+    figur: 'humanoid', hintergrund: 'labor', bewegung: 'laufen',
+  },
+  {
     datum: '2026-10-18',
     titel: 'Roboter fällt wie ein Ahornsamen und segelt los',
     text: 'In Singapur haben Forschende einen Roboter gebaut, der aus einem Flugzeug ins Wasser fallen darf. Beim Fallen dreht er sich wie ein Ahornsamen und landet darum sanft. Dann richtet er sich auf, und seine Flügel werden zu Segeln, mit denen der Wind ihn übers Wasser schiebt.',
