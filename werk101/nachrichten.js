@@ -16,6 +16,14 @@
      werk       (optional) ID einer Figur in RoboWorld, die dazu passt */
 const NACHRICHTEN = [
   {
+    datum: '2026-10-20',
+    titel: 'Mars-Rover übt das Herunterfahren von der Rampe',
+    text: 'Der europäische Mars-Rover Rosalind Franklin hat einen Zwilling auf der Erde. In Italien ist dieser Zwilling mehr als 20 Mal über Rampen von einer Landeplattform gefahren, auch wenn sie schief stand. Eine Vorrichtung an der Decke trug dabei einen Teil seines Gewichts, denn auf dem Mars ist alles leichter. Ab 2030 soll der echte Rover auf dem Mars fahren.',
+    stand: 'Test',
+    quellen: ['https://www.esa.int/Science_Exploration/Human_and_Robotic_Exploration/ExoMars_rover_twin_rehearses_first_drive', 'https://starlust.org/only-one-chance-esas-rosalind-franklin-rover-twin-navigates-mars-like-conditions-on-earth/'],
+    figur: 'rover', hintergrund: 'weltraum', bewegung: 'fahren', werk: 'marsrover',
+  },
+  {
     datum: '2026-10-19',
     titel: 'Ein altes Handy wird zum Roboter-Gehirn',
     text: 'Forschende in Los Angeles haben einen kleinen Roboter auf zwei Beinen gebaut, der knapp einen halben Meter groß ist. Sein Gehirn ist ein altes Handy: Mit der Kamera schaut er sich um, und das Handy hilft ihm, beim Laufen das Gleichgewicht zu halten. So kann er gehen und einem Menschen hinterherlaufen.',
