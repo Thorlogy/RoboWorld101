@@ -16,6 +16,14 @@
      werk       (optional) ID einer Figur in RoboWorld, die dazu passt */
 const NACHRICHTEN = [
   {
+    datum: '2026-10-23',
+    titel: 'Winzige Roboter springen mit echten Muskeln',
+    text: 'Forschende in Zürich haben Roboter gebaut, die nur etwa anderthalb Zentimeter lang sind. Sie bewegen sich mit echten Muskeln, die im Labor aus Zellen gewachsen sind, und einem weichen Gerüst aus Gel. Damit können sie springen, schwimmen, laufen und kleine Dinge greifen, aber bisher nur in einer besonderen Nährflüssigkeit.',
+    stand: 'Forschung',
+    quellen: ['https://ethz.ch/de/news-und-veranstaltungen/eth-news/news/2026/10/ein-kleiner-sprung-fuer-den-muskel-ein-grosser-schritt-fuer-die-robotik.html', 'https://www.swissinfo.ch/eng/research-frontiers/eth-research-team-creates-robots-with-real-muscles/92258465'],
+    figur: 'huepfer', hintergrund: 'labor', bewegung: 'huepfen',
+  },
+  {
     datum: '2026-10-22',
     titel: 'Roboter-Rover Idefix fliegt zum Marsmond Phobos',
     text: 'In Japan ist eine Rakete mit einer Raumsonde zum Mars gestartet. An Bord ist ein kleiner Roboter-Rover namens Idefix, den Fachleute aus Deutschland und Frankreich gebaut haben. Ende 2028 oder Anfang 2029 soll er auf dem Marsmond Phobos landen und den Boden untersuchen, und im Jahr 2031 bringt die Sonde Bodenproben zur Erde.',
