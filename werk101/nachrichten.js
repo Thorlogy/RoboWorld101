@@ -16,6 +16,14 @@
      werk       (optional) ID einer Figur in RoboWorld, die dazu passt */
 const NACHRICHTEN = [
   {
+    datum: '2026-10-24',
+    titel: 'Roboter VIPER soll auf dem Mond nach Wasser suchen',
+    text: 'Die Raumfahrtbehörde NASA bereitet einen Roboter-Rover namens VIPER für den Mond vor. Er soll im Jahr 2027 am Südpol des Mondes landen und mehr als 30 Kilometer weit fahren. Dort sucht er in Kratern, in die nie die Sonne scheint, nach gefrorenem Wasser. Gerade wird er in Houston in den USA noch ein letztes Mal getestet.',
+    stand: 'Test',
+    quellen: ['https://nasa.gov/missions/moon-base/nasa-provides-progress-update-on-moon-base-rovers', 'https://starlust.org/nasas-moon-base-update-these-vehicles-are-on-track-to-be-delivered-to-the-lunar-south-pole/'],
+    figur: 'rover', hintergrund: 'weltraum', bewegung: 'fahren',
+  },
+  {
     datum: '2026-10-23',
     titel: 'Winzige Roboter springen mit echten Muskeln',
     text: 'Forschende in Zürich haben Roboter gebaut, die nur etwa anderthalb Zentimeter lang sind. Sie bewegen sich mit echten Muskeln, die im Labor aus Zellen gewachsen sind, und einem weichen Gerüst aus Gel. Damit können sie springen, schwimmen, laufen und kleine Dinge greifen, aber bisher nur in einer besonderen Nährflüssigkeit.',
