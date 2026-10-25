@@ -16,6 +16,14 @@
      werk       (optional) ID einer Figur in RoboWorld, die dazu passt */
 const NACHRICHTEN = [
   {
+    datum: '2026-10-25',
+    titel: 'Laufroboter löst Riesen-Zauberwürfel mit den Füßen',
+    text: 'Forschende in Zürich haben einem Roboter mit vier Beinen beigebracht, einen riesigen Zauberwürfel zu lösen. Er hat keine Hände und benutzt dafür nur seine Füße: Mit einem Fuß hält er den Würfel fest, mit dem anderen dreht er eine Seite. Das schafft er ganz allein, ohne dass ein Mensch ihn steuert.',
+    stand: 'Forschung',
+    quellen: ['https://spectrum.ieee.org/video-friday-rubiks-cube-robot', 'https://www.techeblog.com/eth-zurich-anymal-robot-solves-rubiks-cube/'],
+    figur: 'vierbeiner', hintergrund: 'labor', bewegung: 'greifen', werk: 'zauberwuerfel',
+  },
+  {
     datum: '2026-10-24',
     titel: 'Roboter VIPER soll auf dem Mond nach Wasser suchen',
     text: 'Die Raumfahrtbehörde NASA bereitet einen Roboter-Rover namens VIPER für den Mond vor. Er soll im Jahr 2027 am Südpol des Mondes landen und mehr als 30 Kilometer weit fahren. Dort sucht er in Kratern, in die nie die Sonne scheint, nach gefrorenem Wasser. Gerade wird er in Houston in den USA noch ein letztes Mal getestet.',
