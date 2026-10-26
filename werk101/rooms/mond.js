@@ -4,17 +4,80 @@
    Querverweis: Hebel in der Satelliten-Werkstatt (Dach) und Rückflug-Hebel am Lander */
 const MBX = rx(roomOf('mond1').c), MBY = ry(roomOf('mond1').r);
 const MGX = rx(roomOf('mond2').c), MGY = ry(roomOf('mond2').r);
-const MOND_RECT = { x: MBX - 260, y: MGY - 260, w: RW + 520, h: MBY + RH - MGY + 420 };
+// Mondoberfläche reicht links und rechts weit über das Feld hinaus (MOND_SEITE), unten endet sie als runder Brocken
+const MOND_SEITE = 1100, MOND_HY = MBY + 296, MOND_TIEFE = 560;
+const MOND_L = MBX - MOND_SEITE, MOND_R = MBX + RW + MOND_SEITE;
+const MOND_RECT = { x: MOND_L - 120, y: MGY - 260, w: MOND_R - MOND_L + 240, h: MOND_HY + MOND_TIEFE - MGY + 380 };
+// Bergrücken am Horizont: feste Punkte, an den Feldrändern passend zur Zeichnung im Feld
+const MOND_RUECKEN = (() => {
+  const pts = [];
+  for (let x = MOND_L; x < MBX; x += 90) pts.push([x, MBY + 262 + rnd(x * 0.013) * 30]);
+  pts.push([MBX, MBY + 290]);
+  pts.push([MBX + RW, MBY + 286]);
+  for (let x = MBX + RW + 90; x <= MOND_R; x += 90) pts.push([x, MBY + 258 + rnd(x * 0.017) * 34]);
+  return pts;
+})();
+// Große Berge an den Enden (am echten Südpol gibt es hohe Kraterränder und Bergmassive)
+const MOND_BERGE = [[MOND_L + 120, 520, 170], [MOND_L + 560, 300, 70], [MOND_R - 700, 360, 90], [MOND_R - 220, 560, 190]];
+const MOND_KRATER = [
+  [MBX - 260, 40, 120, 22, true], [MBX - 720, 60, 64, 12, false], [MBX - 980, 26, 40, 8, false], [MBX - 470, 86, 30, 6, false],
+  [MBX + RW + 180, 70, 50, 10, false], [MBX + RW + 520, 34, 150, 26, true], [MBX + RW + 900, 80, 44, 9, false], [MBX + RW + 330, 92, 26, 5, false],
+];
 
-/* ---------- Kulisse: schwarzer Weltraum hinter beiden Feldern ---------- */
+/* ---------- Kulisse: schwarzer Weltraum und breite Mondoberfläche hinter beiden Feldern ---------- */
 function mondKulisse() {
-  const R = MOND_RECT;
-  const g = ctx.createLinearGradient(0, R.y + R.h - 160, 0, R.y + R.h);
-  ctx.fillStyle = '#07080d'; ctx.fillRect(R.x, R.y, R.w, R.h - 160);
-  g.addColorStop(0, '#07080d'); g.addColorStop(1, 'rgba(7,8,13,0)');
-  ctx.fillStyle = g; ctx.fillRect(R.x, R.y + R.h - 160, R.w, 160);
+  const R = MOND_RECT, F = 240, K = '7,8,13';
+  // Weltraum mit weichen Rändern, damit er im Erdhimmel nicht als Kasten erscheint
+  const x0 = R.x + F, y0 = R.y + F, x1 = R.x + R.w - F, y1 = R.y + R.h - F;
+  // viele ineinanderliegende abgerundete Flächen mit wenig Deckkraft: weicher Rand ohne Nähte
+  ctx.fillStyle = `rgba(${K},0.08)`;
+  for (let i = 0; i < 40; i++) { const d = i * F / 40; rrect(R.x + d, R.y + d, R.w - 2 * d, R.h - 2 * d, F - d); ctx.fill(); }
+  ctx.fillStyle = `rgb(${K})`; rrect(x0, y0, x1 - x0, y1 - y0, 0.01); ctx.fill();
   ctx.fillStyle = '#e8e6df';
-  for (let i = 0; i < 160; i++) { const s = 1 + (i % 3 === 0); ctx.fillRect(R.x + rnd(i * 3) * R.w, R.y + rnd(i * 3 + 1) * (R.h - 180), s, s); }
+  for (let i = 0; i < 260; i++) {
+    const s = 1 + (i % 3 === 0), x = x0 - 80 + rnd(i * 3) * (x1 - x0 + 160), y = y0 - 80 + rnd(i * 3 + 1) * (y1 - y0 + 80);
+    if (y < MOND_HY - 60 || x < MOND_L - 40 || x > MOND_R + 40) ctx.fillRect(x, y, s, s);
+  }
+  // Berge an den Enden
+  for (const [x, w, h] of MOND_BERGE) {
+    ctx.beginPath(); ctx.moveTo(x - w / 2, MOND_HY); ctx.lineTo(x - w * 0.18, MOND_HY - h); ctx.lineTo(x + w * 0.05, MOND_HY - h * 0.86); ctx.lineTo(x + w * 0.22, MOND_HY - h * 0.95); ctx.lineTo(x + w / 2, MOND_HY); ctx.closePath();
+    paint('#625f5a', INK, 1.5);
+    ctx.beginPath(); ctx.moveTo(x - w * 0.18, MOND_HY - h); ctx.lineTo(x - w * 0.04, MOND_HY - h * 0.55); ctx.lineTo(x - w / 2 + 10, MOND_HY); ctx.lineTo(x - w / 2, MOND_HY); ctx.closePath();
+    ctx.fillStyle = 'rgba(232,230,223,0.18)'; ctx.fill();
+  }
+  // Bergrücken
+  ctx.beginPath(); ctx.moveTo(MOND_L, MOND_HY + 4); for (const [x, y] of MOND_RUECKEN) ctx.lineTo(x, y); ctx.lineTo(MOND_R, MOND_HY + 4); ctx.closePath();
+  paint('#6b6964', null);
+  // Mondbrocken: oben flacher Boden, unten rund
+  ctx.beginPath(); ctx.moveTo(MOND_L, MOND_HY);
+  ctx.lineTo(MOND_R, MOND_HY);
+  ctx.ellipse((MOND_L + MOND_R) / 2, MOND_HY, (MOND_R - MOND_L) / 2, MOND_TIEFE, 0, 0, Math.PI);
+  ctx.closePath();
+  const gr = ctx.createLinearGradient(0, MOND_HY, 0, MOND_HY + MOND_TIEFE);
+  gr.addColorStop(0, '#9a968f'); gr.addColorStop(104 / MOND_TIEFE, '#7b7872'); gr.addColorStop(1, '#55534f');
+  ctx.fillStyle = gr; ctx.fill();
+  ctx.save(); ctx.clip();
+  // Krater auf der Oberfläche, zwei davon ewig im Schatten
+  for (const [x, dy, rx_, ry_, dunkel] of MOND_KRATER) {
+    const y = MOND_HY + dy;
+    ctx.beginPath(); ctx.ellipse(x, y, rx_, ry_, 0, 0, TAU); paint(dunkel ? '#16171c' : '#86837c', INK, dunkel ? 2 : 1.2);
+    ctx.beginPath(); ctx.ellipse(x, y - ry_ * 0.35, rx_, ry_ * 0.65, 0, Math.PI, TAU); ctx.strokeStyle = '#b5b1a9'; ctx.lineWidth = dunkel ? 2 : 1.2; ctx.stroke();
+  }
+  // kleine Krater und Steine
+  for (let i = 0; i < 90; i++) {
+    const x = MOND_L + rnd(i + 300) * (MOND_R - MOND_L), y = MOND_HY + 12 + rnd(i + 400) * 96;
+    if (x > MBX - 10 && x < MBX + RW + 10) continue;
+    if (i % 3) { ctx.beginPath(); ctx.ellipse(x, y, 3 + rnd(i) * 9, 1.5 + rnd(i) * 3, 0, 0, TAU); ctx.strokeStyle = 'rgba(42,39,35,0.25)'; ctx.lineWidth = 1; ctx.stroke(); }
+    else { ctx.beginPath(); ctx.ellipse(x, y, 4 + rnd(i + 7) * 5, 3 + rnd(i + 8) * 3, 0, Math.PI, TAU); paint('#8d8a84', INK, 1); }
+  }
+  // Krater im Inneren des Brockens (nur Andeutung)
+  for (let i = 0; i < 40; i++) {
+    const x = MOND_L + 80 + rnd(i + 600) * (MOND_R - MOND_L - 160), y = MOND_HY + 150 + rnd(i + 700) * (MOND_TIEFE - 160);
+    ctx.beginPath(); ctx.ellipse(x, y, 10 + rnd(i) * 40, 4 + rnd(i) * 12, 0, 0, TAU); ctx.fillStyle = 'rgba(42,39,35,0.12)'; ctx.fill();
+  }
+  ctx.restore();
+  ctx.beginPath(); ctx.ellipse((MOND_L + MOND_R) / 2, MOND_HY, (MOND_R - MOND_L) / 2, MOND_TIEFE, 0, 0, Math.PI); ctx.strokeStyle = INK; ctx.lineWidth = 2.5; ctx.stroke();
+  line(MOND_L, MOND_HY, MBX, MOND_HY, INK, 1.5); line(MBX + RW, MOND_HY, MOND_R, MOND_HY, INK, 1.5);
 }
 function sterne(seed, n, yMax) {
   ctx.fillStyle = '#e8e6df';
@@ -80,7 +143,7 @@ function drawLtv(x) {
 }
 
 function drawMondBasis(f) {
-  ctx.fillStyle = '#07080d'; ctx.fillRect(0, 0, RW, RH);
+  ctx.fillStyle = '#07080d'; ctx.fillRect(0, 0, RW, 300);
   sterne(11, 70, 260);
   // Erde tief am Horizont, halb beleuchtet
   withAlpha('erde', () => {
@@ -96,8 +159,8 @@ function drawMondBasis(f) {
   ctx.beginPath(); ctx.moveTo(0, 290); ctx.lineTo(70, 262); ctx.lineTo(150, 280); ctx.lineTo(260, 250); ctx.lineTo(360, 276); ctx.lineTo(470, 258); ctx.lineTo(640, 286); ctx.lineTo(640, 300); ctx.lineTo(0, 300); ctx.closePath();
   paint('#6b6964', null);
   withAlpha('ltv', () => drawLtv(ltvX(f)));
-  const gr = ctx.createLinearGradient(0, 296, 0, 400); gr.addColorStop(0, '#9a968f'); gr.addColorStop(1, '#7b7872');
-  ctx.fillStyle = gr; ctx.fillRect(0, 296, RW, 104); line(0, 296, RW, 296, INK, 1.5);
+  const gr = ctx.createLinearGradient(0, 296, 0, 296 + MOND_TIEFE); gr.addColorStop(0, '#9a968f'); gr.addColorStop(104 / MOND_TIEFE, '#7b7872'); gr.addColorStop(1, '#55534f');
+  ctx.fillStyle = gr; ctx.fillRect(0, 296, RW, RH + 8 - 296); line(-2, 296, RW + 2, 296, INK, 1.5);
   for (let i = 0; i < 26; i++) { ctx.beginPath(); ctx.ellipse(rnd(i + 40) * RW, 312 + rnd(i + 70) * 84, 3 + rnd(i) * 8, 1.5 + rnd(i) * 2.5, 0, 0, TAU); ctx.strokeStyle = 'rgba(42,39,35,0.25)'; ctx.lineWidth = 1; ctx.stroke(); }
   // Krater, in den nie die Sonne scheint
   ctx.beginPath(); ctx.ellipse(560, 372, 104, 22, 0, 0, TAU); paint('#16171c', INK, 2);
