@@ -101,9 +101,10 @@ function drawKranken(f) {
   line(404, 340, 404, 282, '#5d6064', 4); line(404, 284, 432, 284, '#5d6064', 4);
   withAlpha('exo', () => {
     const ph = TAU * f / 30, hip = { x: 454, y: 296 };
+    // Knie beugt sich nur, wenn das Bein nach vorn (links) schwingt; beim Aufsetzen läuft der Fuß mit dem Band nach hinten (FEHLER.md F01)
     for (const s of [1, -1]) {
       const a = 0.38 * Math.sin(ph) * s, knee = { x: hip.x + 22 * Math.sin(a), y: hip.y + 22 * Math.cos(a) };
-      const b = a + Math.max(0, 0.6 * Math.sin(ph + (s > 0 ? 1.4 : 1.4 + Math.PI))), foot = { x: knee.x + 22 * Math.sin(b), y: knee.y + 22 * Math.cos(b) };
+      const b = a + Math.max(0, 0.9 * Math.sin(ph + (s > 0 ? 1.4 + Math.PI : 1.4))), foot = { x: knee.x + 22 * Math.sin(b), y: knee.y + 22 * Math.cos(b) };
       limb(hip.x, hip.y, knee.x, knee.y, 7, s > 0 ? '#3d5a80' : '#2f4866'); limb(knee.x, knee.y, foot.x, foot.y, 6, s > 0 ? '#3d5a80' : '#2f4866');
       line(hip.x + 3, hip.y, knee.x + 3, knee.y, '#3b3d40', 3); line(knee.x + 3, knee.y, foot.x + 3, foot.y, '#3b3d40', 3);
       circle(knee.x + 3, knee.y, 3.5, '#e0662b', INK, 1.5);
