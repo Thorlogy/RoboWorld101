@@ -201,7 +201,7 @@ registerRoom({
       fakt: 'Servierroboter finden ihren Weg mit Laserscannern, Kameras oder Markierungen an der Decke. Viele Restaurants setzten sie ab 2020 ein, auch um in der Pandemie Kontakte zu verringern.',
       echt: 'Genau so: Der Gast nimmt sein Essen selbst vom Tablett und stellt das leere Geschirr wieder darauf.',
       note: 'Fährt zum Tisch, wartet, bis der Gast fertig ist, und bringt die leere Schale zurück.', color: '#23384d', quelle: 'https://en.wikipedia.org/wiki/Service_robot',
-      box: f => [KX + waiterX(heldF('kellner', f)) - 30, KY + 244, 60, 116] },
+      box: f => [KX + waiterX(f) - 30, KY + 244, 60, 116] },   // die Schutzfeld-Uhr rechnet engine.js schon um (FEHLER.md F08)
     { id: 'saug', name: 'Saugroboter', bereich: 'Haushalt', aera: 'seit 2001', typ: 'Bodenroboter mit Bürste',
       fakt: 'Der Electrolux Trilobite kam 2001 als einer der ersten Saugroboter in den Handel, ein Jahr später folgte der Roomba von iRobot. Socken und Kabel sind bis heute ihre häufigsten Gegner.',
       echt: 'Stimmt so: Socken und Kabel bringen Saugroboter oft zum Stehen. Neuere Geräte erkennen sie per Kamera und fahren drumherum.',

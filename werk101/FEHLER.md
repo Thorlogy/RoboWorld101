@@ -5,18 +5,19 @@ Vor jeder neuen Szene die Regeln unten lesen. Neue Fehler unten anhängen (näch
 
 ## Regeln (Kurzfassung)
 
-1. **Gelenke in Blickrichtung.** Knie knicken nach vorn, der Fuß bleibt hinter oder unter dem Knie, die Fußspitze zeigt in Blickrichtung. Kopf, Arme und Beine schauen in dieselbe Richtung. Laufbänder bewegen sich unter den Füßen *entgegen* der Blickrichtung. (F01)
-2. **Ein Schutzfeld hält alles an, was dazugehört.** Hat ein Roboter ein Schutzfeld (`SAFETY`), läuft er mit eigener Uhr (`heldF`). Alles, was er trägt, übergibt oder womit er zusammenarbeitet, nutzt *dieselbe* Uhr, auch seine Klickfläche (`box`). Nach dem Loslassen holt der Roboter mit doppeltem Tempo auf (`advanceHolds`). (F02)
+1. **Gelenke in Blickrichtung, Gang richtig herum.** Knie knicken nach vorn, der Fuß bleibt hinter oder unter dem Knie, die Fußspitze zeigt in Blickrichtung. Kopf, Arme und Beine schauen in dieselbe Richtung. Beim Gehen wird das Bein nur gebeugt und angehoben, während es *nach vorn* schwingt. Steht der Fuß, wandert er nach hinten, sonst sieht es aus wie ein Moonwalk. Laufbänder laufen unter den Füßen *entgegen* der Blickrichtung, im Tempo des stehenden Fußes. Prüfen: drei bis vier Einzelbilder nebeneinander ansehen. (F01)
+2. **Ein Schutzfeld hält alles an, was dazugehört.** Hat ein Roboter ein Schutzfeld (`SAFETY`), läuft er mit eigener Uhr (`heldF`). Alles, was er trägt, übergibt oder womit er zusammenarbeitet, nutzt *dieselbe* Uhr. Seine Klickfläche (`box`) bekommt die normale Uhr, denn `engine.js` rechnet sie schon selbst auf die Schutzfeld-Uhr um. Doppelt umgerechnet liegen Schutzfeld und Infokasten neben dem Roboter. Nach dem Loslassen holt der Roboter mit doppeltem Tempo auf (`advanceHolds`). (F02, F08)
 3. **Was man sieht, muss möglich sein.** Ein Raum mit Decke zeigt keinen offenen Himmel, und Flieger kommen nicht durch Wände. Gibt es Himmel, dann ist das Dach offen (`offenesDach` in `ROOMS`). Der Himmel ist dann der echte Himmel mit Tageszeit, Wetter und Wolken, kein eigener Verlauf. (F03)
 4. **Nichts wird an einer Feldgrenze halbiert.** Jedes Feld schneidet an seinem Rand ab. Was über den Rand fährt, fliegt oder läuft, braucht dort etwas, hinter dem es verschwinden kann: Tunnel, Haus, Tor, Startbox, Berg. Sonst bleibt es im Feld. Gilt auch für das Auftauchen am Anfang der Schleife. `tools/check.py` meldet solche Stellen als „Hinweis Feldrand“. Ist der Rand verdeckt, die Karte mit `rand: '<Grund>'` markieren. (F04, F07)
 5. **Schilder und Anzeigen nicht verdecken.** Nach dem Zeichnen prüfen, ob etwas, das später gezeichnet wird (Haus, Fahrzeug, Mast), über einem Text liegt. Texte vollständig im Bild und frei lesbar platzieren. (F05)
 6. **Zeichenreihenfolge = Tiefe.** Was im Bild hinten steht (Stelzen, Masten, Berge), wird *vor* den Robotern gezeichnet, auch wenn es aus einer anderen Datei kommt. Läufer (`registerRunner`) zeichnen in Ladereihenfolge der Skripte. Hintergrund nie in einer später geladenen Datei über fremde Szenen malen. (F06)
 7. **Am Schleifenende nichts aus dem Nichts.** Fahrzeuge, die eine Runde lang unterwegs sind, beginnen und enden verdeckt (Startbox, Tunnel) oder blenden weich ein und aus. (F07)
+8. **Nach jedem Ersetzen im Code sofort prüfen.** Mindestens `node -e "new Function(require('fs').readFileSync('<datei>','utf8'))"` und ein Bild der Szene. Ein Kommentar, der beim Ersetzen mitten in eine Zeile rutscht, schaltet den Rest der Zeile ab. (F08)
 
 ## Prüfen vor dem Vorschlag
 - `python3 tools/check.py <räume>`: keine JS-Fehler, Naht ok, **keine neuen Hinweise „Feldrand“**.
 - Bilder des Kontaktblatts ansehen: Gelenke, Blickrichtung, verdeckte Schilder.
-- Bei Schutzfeld-Robotern: einmal antippen, loslassen, prüfen, ob alles im Takt bleibt.
+- Bei Schutzfeld-Robotern: Maus auf den Roboter halten und prüfen, ob gelbes Schutzfeld und roter Rahmen genau um den Roboter liegen. Dann loslassen und prüfen, ob alles im Takt bleibt.
 - Auch auf dem Handy denken: Antippen löst das Schutzfeld aus.
 
 ---
@@ -61,6 +62,13 @@ Vor jeder neuen Szene die Regeln unten lesen. Neue Fehler unten anhängen (näch
 - **Ursache:** Die Fahrzeuge warteten rechts außerhalb der Wüste und fuhren über die Schnittkante ins Bild.
 - **Behoben:** Rechts steht jetzt eine Startbox (Zelt), aus der die Fahrzeuge nacheinander herausfahren. Am Ende jeder Runde blenden alle Fahrzeuge weich aus und am Anfang weich ein (`rooms/wueste.js`).
 - **Regel:** 4 und 7.
+
+## F08 · Nachbesserung zu F01 und F02 (26.10.2026, Nutzer)
+- **Gesehen:** Die Person auf dem Laufband läuft jetzt rückwärts („Moonwalk“). Schutzfeld und Infokasten des Kellners liegen neben dem Roboter.
+- **Ursache Laufband:** Das Knie wurde gebeugt, während der Fuß nach hinten wanderte, also in der Standphase statt in der Schwungphase.
+- **Ursache Kellner:** Bei F02 bekam die Klickfläche zusätzlich `heldF`. `engine.js` rechnet die Klickflächen aller Schutzfeld-Roboter aber schon selbst um, also war die Uhr doppelt verschoben.
+- **Behoben:** Beugung um eine halbe Schrittphase versetzt und etwas stärker, damit der Fuß sichtbar angehoben nach vorn schwingt (`rooms/kranken.js`). Die Klickfläche des Kellners nutzt wieder die normale Uhr (`rooms/kantine.js`). Bei der Nachbesserung schaltete ein Kommentar kurz eine halbe Codezeile ab. Der Prüflauf hat es gefunden, deshalb gibt es Regel 8.
+- **Regel:** 1, 2 und 8.
 
 ---
 
