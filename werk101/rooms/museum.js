@@ -3,6 +3,8 @@ const UX = rx(roomOf('museum').c), UY = ry(roomOf('museum').r);
 
 const beamX = f => 520 + 46 * Math.sin(TAU * f / 60);
 const turtleX = f => 520 + 46 * Math.sin(TAU * (f - 6) / 60);
+// Lunochod: Deckel mit Solarzellen an der Unterseite klappt auf (Mondtag) und wieder zu
+const lunoDeckel = f => (f < 10 ? 0 : f < 24 ? ease(seg(f, 10, 24)) : f < 40 ? 1 : f < 54 ? 1 - ease(seg(f, 40, 54)) : 0);
 const kempelenDoor = f => (f < 18 ? 0 : f < 24 ? ease(seg(f, 18, 24)) : f < 40 ? 1 : f < 46 ? 1 - ease(seg(f, 40, 46)) : 0);
 
 function plinth(x, w, label, y = 300) {
@@ -11,7 +13,7 @@ function plinth(x, w, label, y = 300) {
   text(label, x + w / 2, 346, 9.5, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center', color: '#f3f1ea' });
 }
 
-const MU_TICKER = ['1949 Schildkröten', '1961 Unimate', '1966 Shakey', '1973 WABOT-1', '1997 Sojourner', '1999 AIBO', '2000 ASIMO', '2002 Roomba', '2004 Spirit und Opportunity', '2008 NAO', '2012 Curiosity', '2013 Atlas', '2014 Pepper', '2019 Spot', '2021 Ingenuity', ''].join('  ·  ');
+const MU_TICKER = ['1949 Schildkröten', '1961 Unimate', '1966 Shakey', '1970 Lunochod', '1973 WABOT-1', '1997 Sojourner', '1999 AIBO', '2000 ASIMO', '2002 Roomba', '2004 Spirit und Opportunity', '2008 NAO', '2012 Curiosity', '2013 Atlas', '2014 Pepper', '2019 Spot', '2021 Ingenuity', ''].join('  ·  ');
 const MU_LAWS = [
   'Ein Roboter darf keinen Menschen verletzen und nicht zusehen, wie einem Menschen etwas passiert.',
   'Ein Roboter gehorcht den Menschen, außer er müsste dafür Gesetz 1 brechen.',
@@ -53,6 +55,24 @@ function drawMuseum(f) {
   });
   // Spots
   for (const x of [80, 200, 320, 420]) { line(x, 8, x, 22, INK, 2); ctx.fillStyle = 'rgba(255,244,200,0.28)'; ctx.beginPath(); ctx.moveTo(x - 6, 24); ctx.lineTo(x + 6, 24); ctx.lineTo(x + 40, 300); ctx.lineTo(x - 40, 300); ctx.closePath(); ctx.fill(); circle(x, 22, 5, '#3b3d40'); }
+
+  // Lunochod auf einem Wandregal: Wanne auf acht Rädern, Deckel mit Solarzellen, Antennen
+  withAlpha('lunochod', () => {
+    box(16, 150, 136, 8, '#a8763f', 1, 1.5); line(30, 158, 44, 176, INK, 2.5); line(138, 158, 124, 176, INK, 2.5);
+    box(40, 160, 88, 12, '#2a2723', 1, 1.2);
+    text('1970 LUNOCHOD', 84, 169, 8, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center', color: '#f3f1ea' });
+    for (const x of [36, 64, 102, 130]) { circle(x, 141, 9, '#5d6064'); circle(x, 141, 3, '#8a8f94', INK, 1); }
+    line(30, 136, 136, 136, INK, 3);
+    ctx.beginPath(); ctx.moveTo(30, 132); ctx.lineTo(138, 132); ctx.lineTo(130, 104); ctx.lineTo(38, 104); ctx.closePath(); paint('#b9bec2');
+    for (const x of [52, 84, 116]) line(x, 108, x, 128, '#8a8f94', 1.2);
+    box(136, 110, 10, 8, '#3b3d40', 1, 1); circle(146, 114, 2.5, '#7fd3ff', INK, 1);
+    line(46, 104, 40, 76, INK, 1.5); line(120, 104, 128, 82, INK, 1.5); circle(128, 81, 2, '#d6a521', INK, 1);
+    const d = lunoDeckel(f);
+    ctx.save(); ctx.translate(36, 102); ctx.rotate(-1.25 * d);
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.quadraticCurveTo(50, -18, 100, 0); ctx.closePath(); paint('#d6d9dc', INK, 2);
+    if (d > 0.25) { ctx.beginPath(); ctx.moveTo(4, 1); ctx.lineTo(96, 1); ctx.lineTo(96, 5); ctx.lineTo(4, 5); ctx.closePath(); paint('#23384d', INK, 1); }
+    ctx.restore();
+  });
 
   // Schachautomat von 1770: Kasten mit drei Türen und Schublade, Figur mit Pfeife
   withAlpha('schach', () => {
@@ -167,8 +187,14 @@ function drawMuseum(f) {
 
 registerRoom({
   key: 'museum', offset: 28, name: 'Museum der Robotik', level: 'Ebene 3',
-  hitOrder: ['schildkroete', 'kind', 'blech', 'schach', 'shakey', 'unimate', 'asimov', 'ruhmeshalle'],
+  hitOrder: ['schildkroete', 'kind', 'blech', 'lunochod', 'schach', 'shakey', 'unimate', 'asimov', 'ruhmeshalle'],
   robots: [
+    { id: 'lunochod', name: 'Lunochod 1', bereich: 'Geschichte', aera: '1970', typ: 'Erstes Fahrzeug auf dem Mond',
+      fakt: 'Am 17. November 1970 landete die sowjetische Sonde Luna 17 auf dem Mond und setzte Lunochod 1 ab. Der Rover hatte acht Räder mit je einem eigenen Motor und wurde von Menschen auf der Erde per Funk gelenkt. Er fuhr etwa 10,5 Kilometer und hielt fast ein Jahr durch, geplant waren drei Monate.',
+      echt: 'Echt. Im Museum steht hier ein Modell; das Original steht noch heute auf dem Mond. Sein Laser-Spiegel wird bis heute benutzt, um die Entfernung zum Mond zu messen.',
+      note: 'Klappt seinen Deckel auf. An der Unterseite sitzen die Solarzellen, nachts blieb er zu und hielt die Wärme drin.', color: '#b9bec2',
+      quelle: 'https://en.wikipedia.org/wiki/Lunokhod_1',
+      box: () => [UX + 16, UY + 60, 140, 116] },
     { id: 'asimov', name: 'Die drei Robotergesetze', bereich: 'Geschichte', aera: '1942', typ: 'Plakat: Regeln aus einer Geschichte',
       fakt: 'Der Schriftsteller Isaac Asimov hat sich 1942 für eine Kurzgeschichte drei Gesetze für Roboter ausgedacht. In seinen Büchern geht es oft gerade darum, wie die Gesetze zu Problemen führen, weil sie sich gegenseitig widersprechen.',
       echt: 'Ausgedacht. Kein echter Roboter hat diese Gesetze eingebaut, ein Roboter versteht Wörter wie „Schaden“ gar nicht. Echte Roboter werden mit Sicherheitsnormen, Schutzfeldern und Not-Aus-Knöpfen sicher gemacht.',

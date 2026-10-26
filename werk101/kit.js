@@ -132,6 +132,7 @@ const ROOMS = [
   // Mond: hoch über der Welt, erst nach dem Hebel in der Satelliten-Werkstatt sichtbar (state.mond)
   { r: -14, c: 1, name: 'Mond: Südpol-Basis', built: 'mond1', outdoor: true, mond: true },
   { r: -15, c: 1, name: 'Mond: Raumstation Gateway', built: 'mond2', outdoor: true, mond: true },
+  { r: -14, c: 2, name: 'Mond: Basis-Ausbau', built: 'mond3', outdoor: true, mond: true },
 ];
 const roomOf = key => ROOMS.find(x => x.built === key);
 // geheime Räume erscheinen erst nach dem Freischalten (state.secret)

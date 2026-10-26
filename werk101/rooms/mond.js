@@ -21,7 +21,7 @@ const MOND_RUECKEN = (() => {
 const MOND_BERGE = [[MOND_L + 120, 520, 170], [MOND_L + 560, 300, 70], [MOND_R - 700, 360, 90], [MOND_R - 220, 560, 190]];
 const MOND_KRATER = [
   [MBX - 260, 40, 120, 22, true], [MBX - 720, 60, 64, 12, false], [MBX - 980, 26, 40, 8, false], [MBX - 470, 86, 30, 6, false],
-  [MBX + RW + 180, 70, 50, 10, false], [MBX + RW + 520, 34, 150, 26, true], [MBX + RW + 900, 80, 44, 9, false], [MBX + RW + 330, 92, 26, 5, false],
+  [MBX + RW + 860, 40, 120, 22, true], [MBX + RW + 1040, 84, 44, 9, false],
 ];
 
 /* ---------- Kulisse: schwarzer Weltraum und breite Mondoberfläche hinter beiden Feldern ---------- */
@@ -67,6 +67,7 @@ function mondKulisse() {
   for (let i = 0; i < 90; i++) {
     const x = MOND_L + rnd(i + 300) * (MOND_R - MOND_L), y = MOND_HY + 12 + rnd(i + 400) * 96;
     if (x > MBX - 10 && x < MBX + RW + 10) continue;
+    if (x > MAX + 20 && x < MAX + 300 && y < MOND_HY + 40) continue;   // nicht unter dem Wohnmodul
     if (i % 3) { ctx.beginPath(); ctx.ellipse(x, y, 3 + rnd(i) * 9, 1.5 + rnd(i) * 3, 0, 0, TAU); ctx.strokeStyle = 'rgba(42,39,35,0.25)'; ctx.lineWidth = 1; ctx.stroke(); }
     else { ctx.beginPath(); ctx.ellipse(x, y, 4 + rnd(i + 7) * 5, 3 + rnd(i + 8) * 3, 0, Math.PI, TAU); paint('#8d8a84', INK, 1); }
   }
@@ -163,8 +164,8 @@ function drawMondBasis(f) {
   ctx.fillStyle = gr; ctx.fillRect(0, 296, RW, RH + 8 - 296); line(-2, 296, RW + 2, 296, INK, 1.5);
   for (let i = 0; i < 26; i++) { ctx.beginPath(); ctx.ellipse(rnd(i + 40) * RW, 312 + rnd(i + 70) * 84, 3 + rnd(i) * 8, 1.5 + rnd(i) * 2.5, 0, 0, TAU); ctx.strokeStyle = 'rgba(42,39,35,0.25)'; ctx.lineWidth = 1; ctx.stroke(); }
   // Krater, in den nie die Sonne scheint
-  ctx.beginPath(); ctx.ellipse(560, 372, 104, 22, 0, 0, TAU); paint('#16171c', INK, 2);
-  ctx.beginPath(); ctx.ellipse(560, 366, 104, 14, 0, Math.PI, TAU); ctx.strokeStyle = '#b5b1a9'; ctx.lineWidth = 2; ctx.stroke();
+  ctx.beginPath(); ctx.ellipse(546, 372, 90, 22, 0, 0, TAU); paint('#16171c', INK, 2);
+  ctx.beginPath(); ctx.ellipse(546, 366, 90, 14, 0, Math.PI, TAU); ctx.strokeStyle = '#b5b1a9'; ctx.lineWidth = 2; ctx.stroke();
   // Eis glitzert im Licht
   const l = viperLicht(f) * viperBohr(f);
   if (l > 0.3) for (let i = 0; i < 4; i++) { const sx = 530 + i * 18, sy = 372 + (i % 2) * 6; ctx.save(); ctx.globalAlpha = l * (0.5 + 0.5 * Math.sin(f + i)); line(sx - 3, sy, sx + 3, sy, '#bfe8ff', 1.5); line(sx, sy - 3, sx, sy + 3, '#bfe8ff', 1.5); ctx.restore(); }
@@ -295,6 +296,107 @@ registerRoom({
       note: 'Die meiste Zeit wäre niemand an Bord gewesen. Die Station sollte sich selbst überwachen.', color: '#d6a521',
       quelle: 'https://en.wikipedia.org/wiki/Lunar_Gateway',
       box: () => [MGX + 80, MGY + 66, 370, 276] },
+  ],
+});
+
+/* ---------- Mond: Basis-Ausbau (rechts neben der Südpol-Basis) ----------
+   Hauptfigur: Roboterarm auf dem Boden · Gag: hebt Kiste für Kiste vom Lander ins leere Wohnmodul, die Tür schluckt sie (Bild 8–54)
+   Das Feld malt keinen eigenen Himmel und Boden: Berge, Rücken und Boden kommen aus mondKulisse(), damit alles nahtlos weiterläuft. */
+const MAX = rx(roomOf('mond3').c), MAY = ry(roomOf('mond3').r);
+const MA_S = { x: 340, y: 250 }, MA_RUHE = { x: 420, y: 170 }, MA_PICK = { x: 540, y: 198 }, MA_HOCH = { x: 430, y: 130 }, MA_AB = { x: 306, y: 258 };
+const maZiel = f => (f < 8 ? mix(MA_RUHE, MA_PICK, ease(seg(f, 0, 8))) : f < 12 ? MA_PICK : f < 21 ? mix(MA_PICK, MA_HOCH, ease(seg(f, 12, 21))) : f < 30 ? mix(MA_HOCH, MA_AB, ease(seg(f, 21, 30))) : f < 34 ? MA_AB : f < 50 ? mix(MA_AB, MA_RUHE, ease(seg(f, 34, 50))) : MA_RUHE);
+// Kiste: auf dem Lander (vor Bild 12), am Arm (12–30), vor der Tür (30–38), rutscht hinein (38–48)
+// Ellbogen immer oben (ik2 knickt bei Zielen links vom Schultergelenk nach unten)
+function maEllbogen(S, W) {
+  const L = 130, dx = W.x - S.x, dy = W.y - S.y, d = clamp(Math.hypot(dx, dy), 10, 2 * L - 0.5);
+  const a = Math.atan2(dy, dx), b = Math.acos(clamp(d / (2 * L), -1, 1));
+  const e1 = { x: S.x + L * Math.cos(a - b), y: S.y + L * Math.sin(a - b) }, e2 = { x: S.x + L * Math.cos(a + b), y: S.y + L * Math.sin(a + b) };
+  return e1.y < e2.y ? e1 : e2;
+}
+const maKiste = f => (f < 12 ? null : f < 30 ? { x: maZiel(f).x, y: maZiel(f).y + 16 } : f < 38 ? { x: MA_AB.x, y: MA_AB.y + 16 } : f < 48 ? { x: lerp(MA_AB.x, 236, ease(seg(f, 38, 48))), y: MA_AB.y + 16 } : null);
+const maTuer = f => (f < 32 ? 0 : f < 38 ? ease(seg(f, 32, 38)) : f < 48 ? 1 : f < 54 ? 1 - ease(seg(f, 48, 54)) : 0);
+const maNachschub = f => (f < 44 ? 0 : f < 58 ? ease(seg(f, 44, 58)) : 1);
+
+function maKisteMalen(x, y) {
+  box(x - 18, y - 13, 36, 26, '#e6e3da', 2, 1.6);
+  ctx.fillStyle = '#d6a521'; ctx.fillRect(x - 17, y - 3, 34, 6); line(x - 18, y - 3, x + 18, y - 3, INK, 1); line(x - 18, y + 3, x + 18, y + 3, INK, 1);
+}
+function drawMondAusbau(f) {
+  text('BASIS', 40, 64, 40, { family: '"Saira Condensed", sans-serif', weight: 700, color: 'rgba(232,230,223,0.13)' });
+  // Solartürme in der Ferne, Kabel zum Wohnmodul
+  withAlpha('solarturm', () => {
+    for (const [x, top] of [[400, 96], [572, 120]]) {
+      line(x, 274, x, top, INK, 4); line(x, 274, x, top, '#b9bec2', 2);
+      box(x - 13, top - 4, 26, 112, '#23384d', 1, 1.5);
+      ctx.strokeStyle = '#3e6f9e'; ctx.lineWidth = 1; ctx.beginPath(); for (let k = 1; k < 7; k++) { ctx.moveTo(x - 13, top - 4 + k * 16); ctx.lineTo(x + 13, top - 4 + k * 16); } ctx.stroke();
+      box(x - 8, 270, 16, 6, '#8a8f94', 1, 1.2);
+      circle(x, top - 10, 2, f % 12 < 6 ? '#ff5a50' : '#5a1c1c', null);
+    }
+    ctx.strokeStyle = 'rgba(42,39,35,0.6)'; ctx.lineWidth = 1.5; ctx.beginPath();
+    ctx.moveTo(400, 276); ctx.quadraticCurveTo(320, 304, 250, 300); ctx.moveTo(572, 278); ctx.quadraticCurveTo(450, 312, 250, 302); ctx.stroke();
+  });
+  // Wohnmodul: liegender Zylinder auf Beinen, Luftschleuse rechts
+  withAlpha('wohnmodul', () => {
+    for (const x of [56, 120, 184, 236]) { line(x, 280, x - 6, 306, INK, 5); line(x, 280, x - 6, 306, '#b9bec2', 2.5); box(x - 14, 304, 16, 5, '#8a8f94', 1, 1); }
+    box(24, 196, 236, 88, '#eef0f0', 40, 2.2);
+    for (const x of [70, 120, 170]) { box(x - 12, 222, 24, 16, '#23384d', 4, 1.2); }
+    ctx.fillStyle = f % 30 < 24 ? 'rgba(255,230,150,0.9)' : 'rgba(255,230,150,0.5)'; ctx.fillRect(160, 225, 20, 10);   // nur ein Licht an: alles wird vorbereitet
+    line(40, 258, 244, 258, '#d6a521', 3);
+    text('WOHNMODUL', 120, 274, 10, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center', color: '#5d5a55' });
+    // Schleuse mit Tür, die nach oben gleitet
+    box(232, 214, 52, 76, '#d6d9dc', 6, 2);
+    ctx.fillStyle = '#16171c'; ctx.fillRect(244, 238, 30, 48);
+    const t = maTuer(f);
+    box(244, 238 - 44 * t, 30, 48, '#8a8f94', 2, 1.5);
+    line(259, 244 - 44 * t, 259, 280 - 44 * t, '#5d6064', 1.5);
+    box(250, 290, 26, 10, '#8a8f94', 1, 1.2);
+  });
+  // Kleiner Frachtlander mit Luke, aus der die nächste Kiste hochfährt
+  box(476, 224, 128, 14, '#d6d9dc', 2, 1.8);
+  for (const [a, b] of [[486, 470], [594, 612]]) { line(a, 236, b, 298, INK, 5); line(a, 236, b, 298, '#b9bec2', 2.5); box(b - 10, 296, 20, 5, '#8a8f94', 1, 1); }
+  box(500, 238, 80, 34, '#e6e3da', 3, 1.8); ctx.beginPath(); ctx.moveTo(522, 272); ctx.lineTo(558, 272); ctx.lineTo(564, 288); ctx.lineTo(516, 288); ctx.closePath(); paint('#5d6064');
+  ctx.save(); ctx.beginPath(); ctx.rect(470, 0, 160, 224); ctx.clip();
+  if (f < 12) maKisteMalen(MA_PICK.x, MA_PICK.y + 13);
+  else maKisteMalen(MA_PICK.x, MA_PICK.y + 13 + 26 * (1 - maNachschub(f)));
+  ctx.restore();
+  // Kiste unterwegs (am Ende in der Tür verschwunden)
+  const k = maKiste(f);
+  if (k) { ctx.save(); ctx.beginPath(); ctx.rect(244, 0, RW, RH); ctx.clip(); maKisteMalen(k.x, k.y); ctx.restore(); }
+  // Roboterarm auf einem Sockel
+  withAlpha('mondarm', () => {
+    box(318, 262, 44, 38, '#8a8f94', 3, 2); box(310, 296, 60, 8, '#5d6064', 2, 1.5);
+    const T = maZiel(f), E = maEllbogen(MA_S, T);
+    limb(MA_S.x, MA_S.y, E.x, E.y, 9, '#f3f1ea'); limb(E.x, E.y, T.x, T.y, 8, '#f3f1ea');
+    circle(MA_S.x, MA_S.y, 7, '#5d6064'); circle(E.x, E.y, 6, '#5d6064'); circle(T.x, T.y, 5, '#5d6064');
+    const zu = f >= 8 && f < 32;
+    line(T.x - 4, T.y, T.x - (zu ? 6 : 10), T.y + 10, INK, 2.5); line(T.x + 4, T.y, T.x + (zu ? 6 : 10), T.y + 10, INK, 2.5);
+    circle(352, 272, 2.5, f % 6 < 3 ? '#7fe08a' : '#2d5b33', null);
+  });
+}
+
+registerRoom({
+  key: 'mond3', name: 'Mond: Basis-Ausbau', level: 'Mond',
+  hitOrder: ['mondarm', 'wohnmodul', 'solarturm'],
+  draw: drawMondAusbau,
+  robots: [
+    { id: 'mondarm', name: 'Roboterarm auf dem Mondboden', bereich: 'Raumfahrt', aera: 'geplant', typ: 'Canadarm3 für die Mondbasis',
+      fakt: 'Der Roboterarm Canadarm3 aus Kanada war für die Station Gateway gebaut worden. Seit die NASA Gateway 2026 angehalten hat, wird er für den Mondboden umgeplant: Er soll Module von Landern abladen und die Basis warten.',
+      echt: 'So ist es geplant, aber noch nicht genau festgelegt. Wie der Arm auf dem Mond steht, ist hier ausgedacht: Er sitzt auf einem einfachen Sockel.',
+      note: 'Hebt Kiste für Kiste vom Lander und stellt sie vor die Tür des Wohnmoduls.', color: '#f3f1ea',
+      quelle: 'https://en.wikipedia.org/wiki/Canadarm3',
+      box: f => { const T = maZiel(f), E = maEllbogen(MA_S, T); const xs = [MA_S.x, E.x, T.x, 310, 370], ys = [MA_S.y, E.y, T.y, 304]; const x0 = Math.min(...xs) - 10, y0 = Math.min(...ys) - 10; return [MAX + x0, MAY + y0, Math.max(...xs) - x0 + 10, Math.max(...ys) - y0 + 10]; } },
+    { id: 'wohnmodul', name: 'Wohnmodul', bereich: 'Raumfahrt', aera: 'vor 2030', typ: 'Erstes Haus auf dem Mond',
+      fakt: 'Die NASA will vor 2030 ein erstes Wohnmodul auf den Mond bringen. Ab 2027 sollen dafür fast jeden Monat Lander Ausrüstung liefern. Roboter und ferngesteuerte Fahrzeuge bereiten alles vor, bevor Menschen kommen.',
+      echt: 'Wie das Wohnmodul aussehen wird, steht noch nicht fest. Hier ist es ein liegender Zylinder mit Schleuse, wie viele Entwürfe.',
+      note: 'Noch wohnt niemand hier. Nur ein Licht brennt, und die Tür öffnet sich für jede Kiste.', color: '#eef0f0',
+      quelle: 'https://starlust.org/nasa-pauses-gateway-lunar-space-station-for-artemis-shifts-focus-to-20-billion-moon-base/',
+      box: () => [MAX + 20, MAY + 192, 268, 116] },
+    { id: 'solarturm', name: 'Solartürme', bereich: 'Energie', aera: 'Ende der 2020er', typ: 'Senkrechte Solarzellen auf hohen Masten',
+      fakt: 'Am Südpol des Mondes steht die Sonne immer ganz flach. Liegende Solarzellen bekämen kaum Licht, und Berge werfen lange Schatten. Darum lässt die NASA Solartürme entwickeln: Die Zellen hängen senkrecht an einem Mast, der bis zu etwa 10 Meter hoch ausfährt.',
+      echt: 'Die Türme stehen hier weit hinten auf dem Bergrücken und sehen darum klein aus. Drei Firmen bauen Entwürfe; einer soll gegen Ende des Jahrzehnts am Südpol stehen.',
+      note: 'Fangen das flache Sonnenlicht ein und schicken den Strom per Kabel zum Wohnmodul.', color: '#23384d',
+      quelle: 'https://www.nasa.gov/news-release/three-companies-to-help-nasa-advance-solar-array-technology-for-moon',
+      box: () => [MAX + 380, MAY + 80, 210, 200] },
   ],
 });
 
