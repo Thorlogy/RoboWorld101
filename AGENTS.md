@@ -24,6 +24,7 @@ Lies vor jeder Änderung `werk101/STIL.md`. Dort stehen die Stilregeln und am En
 - Auskunft im Steuerfeld (`auskunft.js`) antwortet nur aus den Karten. Gute Karten mit klaren Sätzen machen also auch die Auskunft besser.
 - Eigene Figur R-101 in `avatar.js` (Botengänge in `AUFTRAEGE`, Knöpfe in `KNOEPFE`). Ereignisse zwischen Räumen über `WELT.emit/on`.
 - Geheime Felder: `secret: true` in `ROOMS`; sie sind erst nach `unlockSecret()` (dreimal am Notausgang im U-Bahn-Tunnel klopfen) sichtbar; noch einmal dreimal klopfen versteckt sie wieder (`lockSecret()`). Nicht in Tour oder Raumliste verraten.
+- Geheimer Mond: Hebel in der Satelliten-Werkstatt (`mondhebel`) teleportiert zu den Feldern `mond1`/`mond2` (`mond: true` in `ROOMS`, eigener Schalter `state.mond`, Code in `rooms/mond.js`); der Hebel am Lander bringt zurück.
 - Karten können `onSelect()` haben (z. B. ELIZA öffnet ein Chatfenster). Der ELIZA-Chat ist regelbasiert wie 1966 und muss kindgerecht bleiben.
 - Nach jeder Änderung die Version `?v=YYYYMMDDx` an allen Skripten in `index.html` hochzählen (Cache).
 

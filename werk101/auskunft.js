@@ -13,7 +13,7 @@ const AX_GLEICH = { gewonnen: 'gewinn', gewann: 'gewinn', gewinnt: 'gewinn', gew
 const axWoerter = t => avNorm(t).split(' ').filter(w => w && !AX_STOPP.has(w)).map(w => AX_GLEICH[w] || axStamm(w));
 const axTrifft = (frage, wort) => frage === wort || (frage.length >= 4 && wort.length >= 4 && (wort.startsWith(frage) || frage.startsWith(wort)));
 function axSaetze(t) { return (t || '').split(/(?<=[.!?])\s+/).filter(Boolean); }
-function axGeheim(r) { const o = ROOMS.find(x => x.built === r.room); return o && o.secret && !state.secret; }
+function axGeheim(r) { const o = ROOMS.find(x => x.built === r.room); return o && ((o.secret && !state.secret) || (o.mond && !state.mond)); }
 
 function axSuche(frage) {
   const terme = [...new Set(axWoerter(frage))];

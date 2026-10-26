@@ -42,6 +42,14 @@ function drawSatellit(f) {
     }
   });
 
+  // Unauffälliger Kasten mit Hebel an der Wand (führt zum Mond, siehe rooms/mond.js)
+  withAlpha('mondhebel', () => {
+    box(14, 296, 34, 44, '#8a8f94', 3, 1.5); box(20, 302, 22, 8, '#23384d', 1, 1);
+    ctx.beginPath(); ctx.arc(31, 306, 3, 0, TAU); ctx.fillStyle = state.mond ? '#7fd3ff' : '#efe9d6'; ctx.fill();
+    ctx.beginPath(); ctx.arc(32.5, 305, 2.6, 0, TAU); ctx.fillStyle = '#23384d'; ctx.fill();
+    line(31, 330, 22, 316, INK, 3); circle(22, 316, 4, '#d9542b', INK, 1.2);
+    box(24, 326, 14, 8, '#3b3d40', 1, 1);
+  });
   // Andock-Simulator: zwei Industrieroboter spielen nach, wie ein Wartungssatellit einen taumelnden Satelliten fängt
   box(470, 36, 150, 50, '#18263a', 3, 1.5);
   text('ANDOCK-SIMULATOR', 545, 54, 10, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center', color: '#9fc4d6' });
@@ -85,7 +93,7 @@ function drawSatellit(f) {
 
 registerRoom({
   key: 'satellit', name: 'Satelliten-Werkstatt', level: 'Dach',
-  hitOrder: ['astrobee', 'technik', 'andock', 'satellit'],
+  hitOrder: ['mondhebel', 'astrobee', 'technik', 'andock', 'satellit'],
   robots: [
     { id: 'andock', name: 'Andock-Simulator', bereich: 'Raumfahrt', aera: 'seit 2013', typ: 'Zwei Industrieroboter spielen Weltraum',
       fakt: 'Beim DLR in Oberpfaffenhofen halten zwei große Industrieroboter je ein Satellitenmodell und bewegen sie so, als schwebten sie im All. So wird geübt, wie ein Wartungssatellit mit einem Greifarm einen taumelnden, kaputten Satelliten fängt, um ihn zu reparieren oder aus der Umlaufbahn zu holen.',
@@ -105,6 +113,12 @@ registerRoom({
       note: 'Gleitet hin und her, ohne den Tisch zu berühren.', color: '#f3f1ea',
       quelle: 'https://en.wikipedia.org/wiki/Astrobee',
       box: () => [AX + 226, AY + 260, 104, 54] },
+    { id: 'mondhebel', name: 'Hebel an der Wand', bereich: 'Raumfahrt', aera: 'geheim', typ: 'Kleiner Kasten ohne Schild',
+      fakt: 'Von der Erde bis zum Mond sind es im Mittel rund 384.000 Kilometer. Die Astronauten von Apollo 11 brauchten 1969 etwa drei Tage für den Weg.',
+      echt: 'Erfunden. Teleportieren kann man Menschen und Roboter nicht. Dieser Hebel bringt dich trotzdem sofort zum Mond.',
+      note: 'Umlegen!', color: '#d9542b',
+      onSelect: () => window.mondReise && window.mondReise('mond1'),
+      box: () => [AX + 10, AY + 292, 42, 52] },
     { id: 'technik', name: 'Technikerin', bereich: 'Mensch', aera: 'Maßstab', typ: 'Mensch im Reinraumanzug',
       fakt: 'Im Reinraum tragen alle Overall, Haube und Mundschutz, damit kein Staub und kein Haar auf die empfindliche Technik fällt.',
       note: 'Überwacht den Test auf dem Tablet.', color: '#f3f1ea',

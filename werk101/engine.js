@@ -174,6 +174,7 @@ function drawRain(x0, y0, x1, y1) {
 // Abend und Regen: draußen abdunkeln, das Haus und alles unter der Erde bleibt hell
 function shadeOutside(x0, y0, x1, y1, color) {
   ctx.save(); ctx.beginPath(); ctx.rect(x0, y0, x1 - x0, Math.max(0, GROUND - y0)); for (const h of HOUSES) ctx.rect(h.x, h.y, h.w, h.h);
+  if (state.mond && typeof MOND_RECT !== 'undefined') ctx.rect(MOND_RECT.x, MOND_RECT.y, MOND_RECT.w, MOND_RECT.h);   // auf dem Mond gibt es keinen Erdabend
   ctx.fillStyle = color; ctx.fill('evenodd'); ctx.restore();
 }
 function glow(x, y, r, color) {
@@ -299,6 +300,7 @@ function draw() {
   const visible = (x, y, w, h) => x < vx1 && x + w > vx0 && y < vy1 && y + h > vy0;
 
   drawSurroundings(f);
+  if (state.mond && typeof mondKulisse === 'function' && visible(MOND_RECT.x, MOND_RECT.y, MOND_RECT.w, MOND_RECT.h)) mondKulisse();
   drawBuilding();
   drawCrane(f);
   for (let r = 0; r < ROWS; r++) for (let c = 0; c < 3; c++) {
@@ -420,6 +422,7 @@ function draw() {
     const [x, y, w, h] = sel.box(f);
     ctx.setLineDash([8, 6]); ctx.strokeStyle = '#d9542b'; ctx.lineWidth = 3 / Math.min(state.z, 1.5) ; ctx.strokeRect(x - 6, y - 6, w + 12, h + 12); ctx.setLineDash([]);
   }
+  if (typeof mondBlitz === 'function') mondBlitz();
 }
 
 /* ---------- Ansicht ---------- */
@@ -440,7 +443,7 @@ function fit(x, y, w, h, animate = true) {
   requestAnimationFrame(step);
 }
 // Hafen und See: auch die Unterwasserwelt und die hohen Kräne und Segel zeigen
-const fitRoom = (key, a) => { const o = roomOf(key); if (o.berg) return fit(rx(o.c) - 120, GROUND - 760, RW + 240, 820, a); if (o.wasser || /^sh/.test(o.built)) fit(rx(o.c) - 120, ry(o.r) - 260, RW + 240, 2 * RH + 300, a); else fit(rx(o.c) - 30, ry(o.r) - 40, RW + 60, RH + 80, a); };
+const fitRoom = (key, a) => { const o = roomOf(key); if (o.mond) return fit(rx(o.c) - 30, ry(o.r) - 40, RW + 60, RH + 80, a); if (o.berg) return fit(rx(o.c) - 120, GROUND - 760, RW + 240, 820, a); if (o.wasser || /^sh/.test(o.built)) fit(rx(o.c) - 120, ry(o.r) - 260, RW + 240, 2 * RH + 300, a); else fit(rx(o.c) - 30, ry(o.r) - 40, RW + 60, RH + 80, a); };
 const fitAll = a => { const c0 = Math.min(...ROOMS.map(o => o.c)), c1 = Math.max(...ROOMS.map(o => o.c)), xr = c1 >= 3 ? rx(c1) + RW + 40 : BW + 60; const yb = Math.max(BOTTOM, ...ROOMS.map(o => ry(o.r) + RH + WALL)); fit(rx(c0) - 40, TOP - 920, xr - rx(c0) + 40, yb - TOP + 940, a); };
 function zoomAt(factor, sx, sy) {
   const nz = clamp(state.z * factor, 0.06, 5);
@@ -530,8 +533,9 @@ const chipsEl = document.getElementById('chips'), listEl = document.getElementBy
 const FILTERS = ['Alle', 'Industrie', 'Service', 'Haushalt', 'Logistik', 'Medizin', 'Forschung', 'Inspektion', 'Geschichte', 'Raumfahrt', 'Mobilität', 'Landwirtschaft', 'Rettung', 'Unterwasser', 'Bildung', 'Medien', 'Umwelt', 'Energie', 'Bau', 'Rohstoffe'];
 const roomsEl = document.getElementById('rooms');
 // Räume nach Gegend gruppiert; die Liste ist eingeklappt und lässt sich durchsuchen
-const RAUM_GRUPPEN = ['Werk 101', 'Weitere Häuser', 'Draußen links', 'Draußen rechts', 'Unter der Erde'];
+const RAUM_GRUPPEN = ['Werk 101', 'Weitere Häuser', 'Draußen links', 'Draußen rechts', 'Unter der Erde', 'Weltraum'];
 function raumGruppe(o) {
+  if (o.mond) return 'Weltraum';
   if (o.haus) return 'Weitere Häuser';
   if (!o.outdoor) return 'Werk 101';
   if (/^graben/.test(o.built)) return 'Draußen rechts';
@@ -566,7 +570,7 @@ for (const id of ['raeume', 'bereiche']) {
   try { if (localStorage.getItem('rw101-' + id) === '1') d.open = true; } catch (e) {}
   d.addEventListener('toggle', () => { try { localStorage.setItem('rw101-' + id, d.open ? '1' : '0'); } catch (e) {} });
 }
-const OPEN_ROOMS = ROOMS.filter(o => !o.secret), OPEN_BUILT = BUILT.filter(d => !roomOf(d.key) || !roomOf(d.key).secret);
+const OPEN_ROOMS = ROOMS.filter(o => !o.secret && !o.mond), OPEN_BUILT = BUILT.filter(d => !roomOf(d.key) || (!roomOf(d.key).secret && !roomOf(d.key).mond));
 document.querySelector('.bar i').style.width = (OPEN_BUILT.length / OPEN_ROOMS.length * 100).toFixed(1) + '%';
 document.getElementById('progressText').textContent = OPEN_BUILT.length === OPEN_ROOMS.length ? `Alle ${OPEN_ROOMS.length} Räume gebaut. Unterwegs sind außerdem Lieferroboter, Fassadendrohne, Rohrpost und ein Paket vom Hafen bis in den Wohnbereich. Draußen: Straße, Park, Feld, Energiepark, Solarpark, Schulweg, U-Bahn mit Tunnel und eine Tunnelbaustelle. Rechts stehen die Schule 102, die Halle 103, eine Fabrik, in der das Licht aus ist, das Rechenzentrum und ganz rechts Haus 104 mit Imbiss und Pflege. Am Himmel fliegen Flugtaxis und Lieferdrohnen. Der Knopf „Datennetz“ zeigt, wie die Häuser Daten austauschen.` : `${OPEN_BUILT.length} von ${OPEN_ROOMS.length} Räumen gebaut. Der Rest ist Baustelle.`;
 FILTERS.forEach(name => {

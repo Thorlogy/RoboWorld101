@@ -129,10 +129,13 @@ const ROOMS = [
   { r: 8, c: 5, name: 'Tunnelbau: Bohrkopf', built: 'bohrkopf', outdoor: true },
   { r: 8, c: 6, name: 'Geheime Spielhalle', built: 'spielhalle', outdoor: true, secret: true },
   { r: 8, c: 7, name: 'Geheime Denkspiele', built: 'denkspiele', outdoor: true, secret: true },
+  // Mond: hoch über der Welt, erst nach dem Hebel in der Satelliten-Werkstatt sichtbar (state.mond)
+  { r: -14, c: 1, name: 'Mond: Südpol-Basis', built: 'mond1', outdoor: true, mond: true },
+  { r: -15, c: 1, name: 'Mond: Raumstation Gateway', built: 'mond2', outdoor: true, mond: true },
 ];
 const roomOf = key => ROOMS.find(x => x.built === key);
 // geheime Räume erscheinen erst nach dem Freischalten (state.secret)
-const isOpen = room => !room || !room.secret || state.secret;
+const isOpen = room => !room || ((!room.secret || state.secret) && (!room.mond || state.mond));
 
 /* ---------- Registrierung ----------
    registerRoom({ key, name, level, robots: [...], hitOrder: [ids, kleine zuerst], draw(f) })
@@ -260,7 +263,7 @@ function gear(x, y) {
 
 /* ---------- Zustand ---------- */
 const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const state = { f: 0, g: 0, room: 'kantine', playing: !reduce, filter: 'Alle', sel: null, hover: null, wetter: 'sonne', licht: false, secret: false, z: 1, ox: 0, oy: 0, dirty: true };
+const state = { f: 0, g: 0, room: 'kantine', playing: !reduce, filter: 'Alle', sel: null, hover: null, wetter: 'sonne', licht: false, secret: false, mond: false, z: 1, ox: 0, oy: 0, dirty: true };
 // Schutzfeld: Roboter mit Sicherheitssensoren halten an, wenn der Mauszeiger (oder Finger) zu nah kommt.
 // Jeder hält seine eigene Uhr an; danach läuft er von dort weiter.
 const SAFETY = { stapler: 60, kellner: 50, gehweg: 50, kehr: 50, jaeter: 70, cobot: 40, schrubber: 50, maximo: 60 };
