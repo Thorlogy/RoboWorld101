@@ -401,7 +401,7 @@ avBox.innerHTML = `
   <p class="hint" style="margin-top:8px">Pfeiltasten oder A/D fahren, ▲▼ am Aufzug, E drücken, G greifen und ablegen, F fragen. Klick ins Bild: R-101 fährt hin.</p>`;
 document.body.appendChild(avBox);
 const avSt = avBox.querySelector('.av-st'), avAuf = avBox.querySelector('.av-auf'), avTa = avBox.querySelector('textarea'), avSel = avBox.querySelector('select');
-ROOMS.filter(o => !o.secret && avWeg(o.r, rx(o.c) + RW / 2) !== null)
+ROOMS.filter(o => !o.secret && !o.mond && avWeg(o.r, rx(o.c) + RW / 2) !== null)
   .sort((a, b) => a.name.localeCompare(b.name, 'de')).forEach(o => { const op = document.createElement('option'); op.value = o.name; op.textContent = o.name; avSel.appendChild(op); });
 function avPanel() {
   const o = avRoomAt(AV.row, AV.x);

@@ -38,7 +38,7 @@ async def main(rooms):
         keys = rooms or await pg.evaluate('BUILT.map(d => d.key)')
         ok = True
         for key in keys:
-            rect = await pg.evaluate('''k => { state.playing = false; fitRoom(k, false); state.sel = null; state.filter = 'Alle';
+            rect = await pg.evaluate('''k => { state.playing = false; if (roomOf(k).mond) state.mond = true; fitRoom(k, false); state.sel = null; state.filter = 'Alle';
                 const o = roomOf(k); return { x: rx(o.c) * state.z + state.ox, y: ry(o.r) * state.z + state.oy, w: RW * state.z, h: RH * state.z }; }''', key)
             clip = {'x': round(rect['x']), 'y': round(rect['y']), 'width': round(rect['w']), 'height': round(rect['h'])}
             frames, texts = {}, {}

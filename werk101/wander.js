@@ -24,7 +24,7 @@ function wdWeg(r, x) {
   if (avHatAufzug(WD.row) && avHatAufzug(r) && tuer(hier) && tuer(ziel)) return [{ t: 'gehe', x: AV_DOOR - 30 }, { t: 'lift', r }, { t: 'gehe', x }];
   return null;
 }
-const WD_ZIELE = () => ROOMS.filter(o => isOpen(o) && !o.secret && avSegOf(o.r, rx(o.c) + RW / 2));
+const WD_ZIELE = () => ROOMS.filter(o => isOpen(o) && !o.secret && !o.mond && avSegOf(o.r, rx(o.c) + RW / 2));
 
 /* ---------- Aufzug (wartet, wenn R-101 ihn gerade braucht) ---------- */
 const _cabinY2 = cabinY;
