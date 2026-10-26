@@ -16,6 +16,14 @@
      werk       (optional) ID einer Figur in RoboWorld, die dazu passt */
 const NACHRICHTEN = [
   {
+    datum: '2026-10-26',
+    titel: 'Humanoider Roboter schiebt und trägt schwere Lasten',
+    text: 'Forschende in Südkorea haben einen Roboter gebaut, der wie ein Mensch auf zwei Beinen geht. Er kann beim Laufen Dinge schieben, die 35 Kilogramm wiegen, und Lasten von 20 Kilogramm hochheben. Mit seinen eigenen Kameras findet er Buchstaben-Klötze und stellt sie so hin, dass man den Namen seiner Hochschule lesen kann.',
+    stand: 'Forschung',
+    quellen: ['https://spectrum.ieee.org/video-friday-rubiks-cube-robot', 'https://www.techtimes.com/articles/329246/20261020/kaist-humanoid-pushes-objects-77-lbs-while-walking-no-external-cameras.htm'],
+    figur: 'humanoid', hintergrund: 'labor', bewegung: 'greifen',
+  },
+  {
     datum: '2026-10-25',
     titel: 'Laufroboter löst Riesen-Zauberwürfel mit den Füßen',
     text: 'Forschende in Zürich haben einem Roboter mit vier Beinen beigebracht, einen riesigen Zauberwürfel zu lösen. Er hat keine Hände und benutzt dafür nur seine Füße: Mit einem Fuß hält er den Würfel fest, mit dem anderen dreht er eine Seite. Das schafft er ganz allein, ohne dass ein Mensch ihn steuert.',
