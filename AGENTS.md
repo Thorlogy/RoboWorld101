@@ -3,6 +3,7 @@
 Dieses Repo enthält RoboWorld 101: eine animierte Welt voller echter Roboter, gezeichnet mit Canvas in reinem JavaScript, ohne Build-Schritt und ohne Abhängigkeiten. Live über GitHub Pages: https://thorlogy.github.io/RoboWorld101/ (leitet auf `/werk101/` weiter). Zielgruppe sind auch Kinder.
 
 Lies vor jeder Änderung `werk101/STIL.md`. Dort stehen die Stilregeln und am Ende ein Protokoll aller Ausbaustufen.
+Lies außerdem `werk101/FEHLER.md`: Dort stehen gemeldete Fehler und die Regeln, die sie künftig verhindern (Feldgrenzen, Schutzfeld-Uhr, Blickrichtung, Zeichenreihenfolge). Neue Fehler dort anhängen.
 
 ## Inhaltliche Regeln
 - Nur echte Roboter und Technik. Jede Figur bekommt eine Karte mit `fakt`, `echt` (was stimmt, was ist Spaß), `quelle` (Link) und einen Kindertext in `kinder.js`. Fakten vorher recherchieren, Unsicheres vorsichtig formulieren.
@@ -29,7 +30,7 @@ Lies vor jeder Änderung `werk101/STIL.md`. Dort stehen die Stilregeln und am En
 - Nach jeder Änderung die Version `?v=YYYYMMDDx` an allen Skripten in `index.html` hochzählen (Cache).
 
 ## Prüfen
-`python3 werk101/tools/check.py [raum …]` (Python mit Playwright und Pillow). Meldet JavaScript-Fehler, Sprünge an der Schleifennaht, Text über dem Rand, leere Klickflächen und Karten ohne `echt`. Die Meldung zu „energie“ an der Naht ist bekannt und harmlos. Geheime Räume prüft das Skript nur nach `state.secret = true`.
+`python3 werk101/tools/check.py [raum …]` (Python mit Playwright und Pillow). Meldet JavaScript-Fehler, Sprünge an der Schleifennaht, Text über dem Rand, leere Klickflächen, Karten ohne `echt` und Figuren, die an der Feldgrenze abgeschnitten werden („Hinweis Feldrand“, siehe FEHLER.md). Die Meldung zu „energie“ an der Naht ist bekannt und harmlos. Geheime Räume prüft das Skript nur nach `state.secret = true`.
 
 ## Veröffentlichen
 Push auf `main`. GitHub Pages baut die Seite in ein bis zwei Minuten neu.

@@ -114,7 +114,8 @@ registerRunner({
 });
 
 /* ---------- Lieferdrohne mit Seilwinde: Werk 101 → Feld ---------- */
-const NEST = { x: 520, y: TOP - 10 }, NEST_Y = NEST.y - 30, CRUISE = 190;
+// Nest auf dem Dach über dem Mars-Testgelände (über dem Drohnen-Landeplatz ist das Dach offen)
+const NEST = { x: rx(2) + 380, y: TOP - 10 }, NEST_Y = NEST.y - 30, CRUISE = 190;
 const FELD_X = rx(roomOf('feld').c) + 92, FELD_FOOT = ry(roomOf('feld').r) + 388, HOVER = FELD_FOOT - 280;
 function wingPos(g) {
   g %= RUN_P;

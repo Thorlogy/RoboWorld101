@@ -6,6 +6,8 @@ Aufruf: python3 tools/check.py [raum ...]   (ohne Angabe: alle fertigen Räume)
 - Schrift: Text, der im Raum beginnt und über den Rand hinausragt (Testschrift ist breiter als die echte, also Hinweis)
 - Klickflächen: Bereiche, in denen beim Ausblenden des Roboters nichts verschwindet
 - Karten: Roboter ohne Zeile „In echt“ (echt) – Menschen und Tiere ausgenommen
+- Feldrand: Figuren, die halb über den Rand ihres Feldes ragen und dort abgeschnitten werden (siehe FEHLER.md).
+  Ist der Rand verdeckt (Tunnel, Haus, Startbox), an der Karte rand: '<Grund>' eintragen, dann schweigt der Hinweis.
 """
 import asyncio, os, sys, io, statistics
 from playwright.async_api import async_playwright
@@ -81,6 +83,14 @@ async def main(rooms):
                 if worst is not None and worst < 1.0:
                     print(f'  Klickfläche fast leer: {r["id"]} (Abweichung {worst:.2f})')
             await pg.evaluate('() => { window.__hide = null; }')
+            # Feldgrenze (FEHLER.md F04, F07): Figuren, die halb über den Rand eines Feldes fahren, werden dort abgeschnitten
+            rand = await pg.evaluate('''k => { const o = roomOf(k), x0 = rx(o.c), x1 = x0 + RW, out = [];
+                for (const r of ROBOTS.filter(r => r.room === k && !r.rand)) for (let f = 0; f < 60; f += 3) {
+                  const [x, y, w] = r.box(f); if (w < 2 || x < -9000) continue;
+                  if (x < x1 && x + w > x0 && (x < x0 - 8 || x + w > x1 + 8)) { out.push([r.id, f]); break; } }
+                return out; }''', key)
+            for rid, f in rand:
+                print(f'  Hinweis Feldrand: {rid} ragt in Bild {f + 1} über den Feldrand und wird dort abgeschnitten (Tunnel, Tor oder Startbox davor?)')
             pick = [0, 14, 29, 44, 59]
             w, h = frames[0].size
             sheet = Image.new('RGB', (w, h * len(pick)), 'white')

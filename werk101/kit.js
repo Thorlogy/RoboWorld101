@@ -15,7 +15,7 @@ const BOTTOM = TOP + WALL + ROWS * (RH + WALL);
 const LEVELS = ['Dach', 'Ebene 5', 'Ebene 4', 'Ebene 3', 'Ebene 2', 'Ebene 1', 'EG', 'UG 1', 'UG 2'];
 
 const ROOMS = [
-  { r: 0, c: 0, name: 'Drohnen-Landeplatz', built: 'drohnen' },
+  { r: 0, c: 0, name: 'Drohnen-Landeplatz', built: 'drohnen', offenesDach: true },   // kein Dach darüber: Drohnen landen von oben
   { r: 0, c: 1, name: 'Satelliten-Werkstatt', built: 'satellit' },
   { r: 1, c: 0, name: 'Krankenstation', built: 'kranken' },
   { r: 1, c: 1, name: 'Labor', built: 'labor' },

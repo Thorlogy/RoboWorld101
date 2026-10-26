@@ -129,8 +129,10 @@ function stFischtreppe(g) {
     ctx.save(); ctx.translate(x, y); ctx.rotate(-0.7); ctx.beginPath(); ctx.ellipse(0, 0, 8, 3.5, 0, 0, TAU); paint('#9fc4d6', INK, 1); ctx.restore(); }
   withAlpha('fischzaehler', () => {
     const p = stTreppe(0); box(p.x - 4, p.y - 40, 24, 36, '#3b3d40', 2, 1.5); circle(p.x + 8, p.y - 28, 4, '#7fd3ff', INK, 1);
-    box(p.x + 30, p.y - 70, 92, 24, '#23384d', 1, 1.2);
-    text('FISCHE HEUTE: ' + (118 + stRunde() * 8 + Math.floor(g / 60)), p.x + 76, p.y - 54, 9, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center', color: '#7fe08a' });
+    // Anzeige über dem Zähler, links vom Krafthaus (vorher halb vom Krafthaus verdeckt)
+    line(p.x + 8, p.y - 40, p.x + 8, p.y - 82, INK, 1.5);
+    box(p.x - 50, p.y - 104, 104, 22, '#23384d', 1, 1.2);
+    text('FISCHE HEUTE: ' + (118 + stRunde() * 8 + Math.floor(g / 60)), p.x + 2, p.y - 89, 9, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center', color: '#7fe08a' });
   });
 }
 // Schneekappe: unten ausgefranst mit Rinnen, Schattenseite links bläulich (vorher in die Bergform clippen)
@@ -160,6 +162,13 @@ function stBild(g) {
   ctx.fillStyle = ab ? '#1e3550' : '#4f7f9c';
   ctx.beginPath(); ctx.moveTo(ST_XL, ST_WS); ctx.lineTo(ST_XD, ST_WS); for (let i = ST_BETT.length - 1; i >= 0; i--) ctx.lineTo(ST_BETT[i][0], ST_BETT[i][1]); ctx.closePath(); ctx.fill();
   text('STAUSEE', SEEX0 + 420, ST_WS + 70, 34, { family: '"Saira Condensed", sans-serif', weight: 700, color: 'rgba(230,245,255,0.3)' });
+  // Stelzen der Magnetbahn stehen im See: vor dem Wasser, aber hinter Bäumen und Tauchfahrzeug
+  for (let x = ST_XL + 60; x < ST_XD - 40; x += 210) {
+    const unten = stBettY(x);
+    ctx.fillStyle = ab ? '#424b66' : '#aab5b6'; ctx.fillRect(x, MG_Y + 32, 22, unten - MG_Y - 32);
+    ctx.strokeStyle = INK; ctx.lineWidth = 1.2; ctx.strokeRect(x, MG_Y + 32, 22, unten - MG_Y - 32);
+    ctx.fillStyle = ab ? 'rgba(30,53,80,0.55)' : 'rgba(79,127,156,0.55)'; ctx.fillRect(x, ST_WS, 22, unten - ST_WS);
+  }
   stHolzernte(g);
   // Tauchroboter an der Mauer (Sonar-Fächer)
   withAlpha('mauerrov', () => {
@@ -201,7 +210,7 @@ registerRunner({ room: 'kraftwerk', draw() {}, robot: { id: 'fischzaehler', name
   fakt: 'Vorbild ist der Riverwatcher aus Island. Schwimmt ein Fisch durch, tastet ihn ein Infrarot-Scanner ab, eine Kamera fotografiert ihn. Das Gerät zählt die Fische und erkennt, welche Art es ist.',
   echt: 'Echt. Die Fischtreppe hilft Fischen, an der Mauer vorbei flussaufwärts zu wandern.', note: 'Zählt den Fisch, der die Treppe hinaufspringt.',
   quelle: 'https://fishbio.com/projects/vaki-riverwatcher/',
-  box: () => { const p = stTreppe(0); return [p.x - 6, p.y - 72, 130, 70]; } } });
+  box: () => { const p = stTreppe(0); return [p.x - 52, p.y - 106, 108, 104]; } } });
 registerRunner({
   room: 'stausee2', draw(g) { stBild(g); },
   glow(g) { const k = stRunde(), b = stBarge(k, g); glow(b - 20, ST_WS - 40, 30, 'rgba(255,231,163,0.6)'); glow(ST_XD + 500, ST_GW - 100, 80, 'rgba(255,231,163,0.35)'); },

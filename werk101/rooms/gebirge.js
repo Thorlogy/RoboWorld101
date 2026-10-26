@@ -116,9 +116,7 @@ function bgMagnet(g) {
   // Stelzen links (Hang) und über dem See
   const st = (x, unten) => { ctx.fillStyle = ab ? '#424b66' : '#aab5b6'; ctx.fillRect(x, MG_Y + 32, 22, unten - MG_Y - 32); ctx.strokeStyle = INK; ctx.lineWidth = 1.2; ctx.strokeRect(x, MG_Y + 32, 22, unten - MG_Y - 32); };
   for (let x = BG_MLP - 160; x > BG_XL; x -= 120) st(x, bgOberY(x) + 4);
-  if (typeof stBettY === 'function') for (let x = ST_XL + 60; x < ST_XD - 40; x += 210) {
-    st(x, stBettY(x)); ctx.fillStyle = ab ? 'rgba(30,53,80,0.55)' : 'rgba(79,127,156,0.55)'; ctx.fillRect(x, ST_WS, 22, stBettY(x) - ST_WS);
-  }
+  // Stelzen im Stausee zeichnet stausee.js selbst (hinter Bäumen und Tauchfahrzeug), sonst verdecken sie den Holzernter
   // Fahrweg und Zug nur in den Bereichen zeichnen, die Berg und See sonst verdecken
   ctx.save(); ctx.beginPath();
   ctx.rect(BG_XL - 20, MG_Y - 80, BG_MLP - BG_XL + 20, 120); ctx.rect(BG_MLP, y0, BG_P - BG_MLP, y1 - y0); ctx.rect(BG_P, MG_Y - 80, ST_XD - BG_P, 112);

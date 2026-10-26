@@ -28,9 +28,11 @@ function drawStrasse(f) {
   const green = f >= 20 && f < 40;
   box(392, 230, 6, 116, '#3b3d40'); box(384, 220, 22, 34, '#2a2723', 3, 1.2);
   circle(395, 230, 4, green ? '#4a1a1a' : '#ff3b30', null); circle(395, 244, 4, green ? '#7fe08a' : '#1f3a24', null);
-  box(40, 160, 5, 186, '#3b3d40'); line(42, 162, 70, 152, '#3b3d40', 4); box(62, 148, 22, 8, '#fff3c4', 2, 1.2);
+  box(120, 160, 5, 186, '#3b3d40'); line(122, 162, 150, 152, '#3b3d40', 4); box(142, 148, 22, 8, '#fff3c4', 2, 1.2);
   text('STRASSE', 470, 270, 34, { family: '"Saira Condensed", sans-serif', weight: 700, color: 'rgba(42,39,35,0.15)' });
 
+  // Alles, was links herkommt, taucht aus dem Tunnel auf: hinter der Tunnelwand (x < 56) wird nichts gezeichnet
+  ctx.save(); ctx.beginPath(); ctx.rect(56, -200, RW, RH + 400); ctx.clip();
   withAlpha('taxi2', () => {
     ctx.save(); ctx.translate(taxiX(f), 336); ctx.scale(0.86, 0.86); car(0, 0, '#f3f1ea', { sensors: true, stripe: '#ffd23f' }); ctx.restore();
     if (f >= 22 && f < 38) { box(taxiX(f) - 34, 194, 68, 16, '#2a2723', 3, 1); text('WARTE', taxiX(f), 206, 9, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center', color: '#7fe08a' }); }
@@ -48,14 +50,18 @@ function drawStrasse(f) {
     line(x - 20, 354, x - 20, 322, INK, 1.5);
     ctx.beginPath(); ctx.moveTo(x - 20, 322); ctx.lineTo(x - 34, 327); ctx.lineTo(x - 20, 332); ctx.closePath(); paint('#d9542b', INK, 1.5);
   });
+  ctx.restore();
+  // Tunnelportal: Straße und Gehweg führen unter dem Park hindurch
+  ctx.fillStyle = '#16171c'; ctx.fillRect(0, 236, 56, 164);
+  const tg = ctx.createLinearGradient(56, 0, 30, 0); tg.addColorStop(0, 'rgba(22,23,28,0)'); tg.addColorStop(1, 'rgba(22,23,28,1)');
+  ctx.fillStyle = tg; ctx.fillRect(30, 236, 26, 164);
+  box(0, 206, 64, 32, '#9a968c', 0, 2); ctx.beginPath(); ctx.moveTo(64, 238); ctx.lineTo(64, 400); ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.stroke();
+  text('TUNNEL', 32, 227, 10, { family: '"IBM Plex Mono", monospace', weight: 500, align: 'center', color: '#2a2723' });
 }
 
 /* ---------- Park: autonomer Shuttlebus öffnet die Tür noch einmal (Bild 34–48), Kehrmaschine auf dem Weg ---------- */
-function shuttleX(f) {
-  if (f < 12) return lerp(-180, 300, ease(seg(f, 0, 12)));
-  if (f < 52) return 300;
-  return lerp(300, 840, ease(seg(f, 52, 60)));
-}
+// Der Bus steht die ganze Runde an der Haltestelle. Früher fuhr er über die Feldgrenzen hinaus und wurde dort halbiert (FEHLER.md, F04).
+const shuttleX = f => 300;
 const doorOpen = f => Math.max(f >= 14 && f < 34 ? Math.min(1, seg(f, 14, 18)) - seg(f, 30, 34) : 0, f >= 40 && f < 52 ? Math.min(1, seg(f, 40, 43)) - seg(f, 48, 52) : 0);
 function guest1(f) { if (f < 14) return { x: lerp(-30, 190, seg(f, 0, 14)), v: true }; if (f < 20) return { x: 190, v: true }; if (f < 28) return { x: lerp(190, 340, seg(f, 20, 28)), v: true, alpha: 1 - seg(f, 25, 28) }; return { v: false }; }
 function guest2(f) { if (f < 30) return { v: false }; if (f < 44) return { x: lerp(-30, 280, seg(f, 30, 44)), v: true, run: true }; if (f < 48) return { x: lerp(280, 340, seg(f, 44, 48)), v: true, alpha: 1 - seg(f, 45, 48) }; return { v: false }; }
@@ -133,27 +139,27 @@ registerRoom({
   key: 'strasse', name: 'Straße', level: 'Außengelände',
   hitOrder: ['passant', 'gehweg', 'taxi2'],
   robots: [
-    { id: 'taxi2', name: 'Robotaxi im Verkehr', bereich: 'Mobilität', aera: 'seit den 2010ern', typ: 'Fahrerloses Auto',
+    { id: 'taxi2', rand: 'kommt aus dem Tunnel, fährt hinter das Haus', name: 'Robotaxi im Verkehr', bereich: 'Mobilität', aera: 'seit den 2010ern', typ: 'Fahrerloses Auto',
       fakt: 'Robotaxis erkennen Fußgänger mit Kameras, Radar und Laserscannern auch im Dunkeln. Nähert sich jemand dem Zebrastreifen, bremst das Auto und wartet, bis die Person die Fahrbahn verlassen hat.',
       echt: 'Realistisch. In Deutschland fahren Robotaxis bisher nur in Tests, meist mit einer Sicherheitsperson an Bord.',
       note: 'Wartet am Zebrastreifen geduldig, bis der Fußgänger drüben ist.', color: '#f3f1ea',
       quelle: 'https://en.wikipedia.org/wiki/Robotaxi',
       box: f => [STX + taxiX(f) - 138, STY + 222, 276, 118] },
-    { id: 'gehweg', name: 'Lieferroboter auf dem Gehweg', bereich: 'Logistik', aera: 'seit den 2010ern', typ: 'Sechsrädriger Lieferroboter',
+    { id: 'gehweg', rand: 'kommt hinter dem Haus hervor, fährt in den Tunnel', name: 'Lieferroboter auf dem Gehweg', bereich: 'Logistik', aera: 'seit den 2010ern', typ: 'Sechsrädriger Lieferroboter',
       fakt: 'Kleine Lieferroboter fahren im Schritttempo über Gehwege und bringen Pakete oder Essen. Der Paketdienst Hermes hat solche Roboter auch in Hamburg getestet.',
       echt: 'Realistisch. Ampeln und Bordsteine sind für sie die schwierigsten Stellen.',
       note: 'Kommt aus der Eingangshalle und fährt die Straße entlang.', color: '#f2f0ea',
       quelle: 'https://en.wikipedia.org/wiki/Starship_Technologies',
       box: f => [STX + walkBotX(f) - 30, STY + 320, 60, 70] },
-    { id: 'passant', name: 'Fußgänger', bereich: 'Mensch', aera: 'Maßstab', typ: 'Mensch',
+    { id: 'passant', rand: 'kommt aus dem Tunnel, geht hinter das Haus', name: 'Fußgänger', bereich: 'Mensch', aera: 'Maßstab', typ: 'Mensch',
       fakt: 'Geht bei Grün über den Zebrastreifen.', note: 'Schaut trotzdem nach links und rechts. Richtig so.', color: '#3d7f8f',
       box: f => { const w = walker(f); return [STX + w.x - 22, STY + w.foot - 124 * w.s, 44, 124 * w.s]; } },
   ],
   draw: drawStrasse,
   glow(f) {
-    glow(73, 156, 70, 'rgba(255,224,150,0.75)'); glow(395, f >= 20 && f < 40 ? 244 : 230, 18, f >= 20 && f < 40 ? 'rgba(127,224,138,0.9)' : 'rgba(255,80,60,0.9)');
-    const x = taxiX(f); ctx.save(); ctx.globalAlpha = 0.5; ctx.fillStyle = '#fff3c4'; ctx.beginPath(); ctx.moveTo(x + 134, 298); ctx.lineTo(x + 280, 284); ctx.lineTo(x + 280, 330); ctx.closePath(); ctx.fill(); ctx.restore();
-    glow(x + 134, 300, 14, 'rgba(255,243,196,0.95)');
+    glow(153, 156, 70, 'rgba(255,224,150,0.75)'); glow(395, f >= 20 && f < 40 ? 244 : 230, 18, f >= 20 && f < 40 ? 'rgba(127,224,138,0.9)' : 'rgba(255,80,60,0.9)');
+    const x = taxiX(f); ctx.save(); ctx.beginPath(); ctx.rect(56, -200, RW, RH + 400); ctx.clip(); ctx.globalAlpha = 0.5; ctx.fillStyle = '#fff3c4'; ctx.beginPath(); ctx.moveTo(x + 134, 298); ctx.lineTo(x + 280, 284); ctx.lineTo(x + 280, 330); ctx.closePath(); ctx.fill(); ctx.restore();
+    if (x + 134 > 56) glow(x + 134, 300, 14, 'rgba(255,243,196,0.95)');
   },
 });
 registerRoom({
