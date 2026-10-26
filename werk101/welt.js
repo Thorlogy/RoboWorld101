@@ -97,6 +97,7 @@ function wolken() {
 function draussenClip(x0, y0, x1, y1, bisY) {
   ctx.beginPath(); ctx.rect(x0, y0, x1 - x0, Math.max(0, bisY - y0));
   for (const h of HOUSES) ctx.rect(h.x, h.y, h.w, h.h);
+  for (const o of ROOMS) if (o.offenesDach) ctx.rect(rx(o.c), TOP - 140, RW, ry(o.r) + 344 - TOP + 140);   // offenes Dach: Schnee fällt hinein
   ctx.clip('evenodd');
 }
 function wetterEffekte(x0, y0, x1, y1) {
@@ -126,7 +127,10 @@ function wetterEffekte(x0, y0, x1, y1) {
     ctx.restore();
     ctx.fillStyle = '#f4f6f6';
     for (const o of ROOMS) if (o.outdoor && o.r === 6 && isOpen(o) && !o.berg && !o.wasser) ctx.fillRect(rx(o.c), ry(6) + 380, RW, 6);
-    // Dächer: Schneekappe mit Überhang und Eiszapfen
+    // Dächer: Schneekappe mit Überhang und Eiszapfen (nicht über Räumen mit offenem Dach)
+    ctx.save(); ctx.beginPath(); ctx.rect(x0, y0, x1 - x0, y1 - y0);
+    for (const o of ROOMS) if (o.offenesDach) ctx.rect(rx(o.c), TOP - 60, RW, ry(o.r) - TOP + 60);
+    ctx.clip('evenodd');
     HOUSES.forEach((h, i) => {
       const y = h.y + ([126, 106, 46, 56, 46][i] ?? 46);
       ctx.beginPath(); ctx.moveTo(h.x - 2, y + 8); ctx.quadraticCurveTo(h.x - 6, y - 4, h.x + 14, y - 6); ctx.lineTo(h.x + h.w - 14, y - 6); ctx.quadraticCurveTo(h.x + h.w + 6, y - 4, h.x + h.w + 2, y + 8); ctx.closePath();
@@ -134,6 +138,7 @@ function wetterEffekte(x0, y0, x1, y1) {
       ctx.fillStyle = 'rgba(214,234,246,0.95)';
       for (let x = h.x + 10; x < h.x + h.w - 10; x += 34) { const l = 8 + ((x * 13) % 11); ctx.beginPath(); ctx.moveTo(x - 3, y + 6); ctx.lineTo(x, y + 6 + l); ctx.lineTo(x + 3, y + 6); ctx.closePath(); ctx.fill(); }
     });
+    ctx.restore();
     // Schneemann in der ersten breiten Lücke (Gag)
     const lu = typeof UG_LUECKEN !== 'undefined' && UG_LUECKEN && UG_LUECKEN.find(([a, b]) => b - a > 160);
     if (lu) {
@@ -212,7 +217,7 @@ function rundumleuchte(x, y) {
 }
 function raumOverlay(def, room) {
   const key = def.key, aussen = room.outdoor;
-  if (!aussen) {
+  if (!aussen && !room.offenesDach) {
     if (istNacht()) { ctx.fillStyle = istZu(key) ? 'rgba(12,18,44,0.5)' : 'rgba(12,18,44,0.16)'; ctx.fillRect(0, 0, RW, RH); }
     else if (WELT.phase === 'abend' && istZu(key)) { ctx.fillStyle = 'rgba(12,18,44,0.32)'; ctx.fillRect(0, 0, RW, RH); }
     else if (WELT.phase === 'morgen') { ctx.fillStyle = 'rgba(255,190,120,0.06)'; ctx.fillRect(0, 0, RW, RH); }

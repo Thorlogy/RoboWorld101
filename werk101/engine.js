@@ -13,7 +13,8 @@ function updateHolds() {
     if (near !== h.held) { h.held = near; state.dirty = true; }
   }
 }
-function advanceHolds(d) { for (const id in HOLD) if (HOLD[id].held) HOLD[id].off += d; }
+// Gehaltene Roboter bleiben stehen; danach holen sie mit doppeltem Tempo auf, bis sie wieder im Takt mit ihrem Raum sind
+function advanceHolds(d) { for (const id in HOLD) { const h = HOLD[id]; if (h.held) h.off += d; else if (h.off > 0) h.off = Math.max(0, h.off - d); } }
 function drawHolds() {
   for (const id in HOLD) {
     if (!HOLD[id].held || !byId[id]) continue;
@@ -161,7 +162,9 @@ const WETTER = ['sonne', 'wolken', 'regen', 'gewitter', 'nebel', 'schnee'];
 // Regen: schräge Striche überall draußen oberhalb des Bodens; Dichte folgt dem Bildschirm, nicht der Welt
 function drawRain(x0, y0, x1, y1) {
   const step = 46 / Math.min(1, state.z), len = 18, t = state.g * 9;
-  ctx.save(); ctx.beginPath(); ctx.rect(x0, y0, x1 - x0, y1 - y0); for (const h of HOUSES) ctx.rect(h.x, h.y, h.w, h.h); ctx.clip('evenodd');
+  ctx.save(); ctx.beginPath(); ctx.rect(x0, y0, x1 - x0, y1 - y0); for (const h of HOUSES) ctx.rect(h.x, h.y, h.w, h.h);
+  for (const o of ROOMS) if (o.offenesDach) ctx.rect(rx(o.c), TOP - 140, RW, ry(o.r) + 344 - TOP + 140);   // offenes Dach: Regen fällt hinein
+  ctx.clip('evenodd');
   ctx.strokeStyle = 'rgba(220,232,240,0.55)'; ctx.lineWidth = 1.4 / Math.min(1, state.z); ctx.beginPath();
   const ya = Math.max(y0, -4000), yb = Math.min(y1, GROUND);
   for (let x = Math.floor(x0 / step) * step; x < x1; x += step) for (let y = Math.floor(ya / step) * step; y < yb; y += step) {
@@ -211,14 +214,24 @@ function drawSurroundings(f) {
   }
 }
 function drawBuilding() {
-  ctx.fillStyle = '#7d7972'; ctx.fillRect(0, TOP, BW, BOTTOM - TOP);
-  ctx.strokeStyle = INK; ctx.lineWidth = 3; ctx.strokeRect(0, TOP, BW, BOTTOM - TOP);
-  // Dachkante und Schriftzug
-  ctx.fillStyle = '#5f5b55'; ctx.fillRect(-12, TOP - 10, BW + 24, 14);
-  for (const x of [60, 330]) line(x, TOP - 10, x, TOP - 70, INK, 4);
-  box(30, TOP - 128, 340, 66, '#2a2723');
-  text('WERK 101', 200, TOP - 78, 52, { family: '"Saira Condensed", sans-serif', weight: 700, align: 'center', color: '#f3efe4' });
-  ctx.fillStyle = '#d9542b'; ctx.fillRect(30, TOP - 128, 14, 66);
+  // Räume mit offenem Dach (Drohnen-Landeplatz) bleiben ausgespart: dort scheint der echte Himmel mit Wolken und Sternen durch
+  const offen = ROOMS.filter(o => o.offenesDach && o.c >= 0 && o.c < 3).map(o => ({ x0: rx(o.c), x1: rx(o.c) + RW, y1: ry(o.r) + RH }));
+  ctx.beginPath(); ctx.rect(0, TOP, BW, BOTTOM - TOP);
+  for (const o of offen) ctx.rect(o.x0, TOP, o.x1 - o.x0, o.y1 - TOP);
+  ctx.fillStyle = '#7d7972'; ctx.fill('evenodd');
+  // Umriss und Dachkante, jeweils mit Lücke über dem offenen Dach
+  ctx.strokeStyle = INK; ctx.lineWidth = 3; ctx.beginPath();
+  ctx.moveTo(0, TOP); ctx.lineTo(0, BOTTOM); ctx.lineTo(BW, BOTTOM); ctx.lineTo(BW, TOP);
+  let x = BW; for (const o of [...offen].sort((a, b) => b.x0 - a.x0)) { ctx.lineTo(o.x1, TOP); ctx.moveTo(o.x0, TOP); x = o.x0; } ctx.lineTo(0, TOP); ctx.stroke();
+  ctx.fillStyle = '#5f5b55';
+  let sx0 = -12; for (const o of [...offen].sort((a, b) => a.x0 - b.x0)) { ctx.fillRect(sx0, TOP - 10, o.x0 - sx0, 14); sx0 = o.x1; } ctx.fillRect(sx0, TOP - 10, BW + 12 - sx0, 14);
+  for (const o of offen) { line(o.x0, TOP - 10, o.x0, TOP + 4, INK, 2); line(o.x1, TOP - 10, o.x1, TOP + 4, INK, 2); }
+  // Schriftzug (steht über der Satelliten-Werkstatt, weil über dem Drohnen-Landeplatz kein Dach ist)
+  const sx = rx(1) + 14;
+  for (const xx of [sx + 30, sx + 300]) line(xx, TOP - 10, xx, TOP - 70, INK, 4);
+  box(sx, TOP - 128, 340, 66, '#2a2723');
+  text('WERK 101', sx + 170, TOP - 78, 52, { family: '"Saira Condensed", sans-serif', weight: 700, align: 'center', color: '#f3efe4' });
+  ctx.fillStyle = '#d9542b'; ctx.fillRect(sx, TOP - 128, 14, 66);
 }
 function drawCrane(f) {
   const cx = 1180, base = TOP - 10, topY = base - 300;
@@ -306,13 +319,15 @@ function draw() {
   for (let r = 0; r < ROWS; r++) for (let c = 0; c < 3; c++) {
     const x = rx(c), y = ry(r);
     if (!visible(x, y, RW, RH)) continue;
-    const room = ROOMS.find(o => o.r === r && o.c === c);
-    ctx.save(); ctx.beginPath(); ctx.rect(x, y, RW, RH); ctx.clip(); ctx.translate(x, y);
+    const room = ROOMS.find(o => o.r === r && o.c === c), offen = room && room.offenesDach, hoch = offen ? 420 : 0;
+    ctx.save(); ctx.beginPath(); ctx.rect(x, y - hoch, RW, RH + hoch); ctx.clip(); ctx.translate(x, y);
     if (!room) drawEmpty(r);
     else if (BUILT.find(d => d.key === room.built)) BUILT.find(d => d.key === room.built).draw(f);
     else drawSite(room, f);
     ctx.restore();
-    ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.strokeRect(x, y, RW, RH);
+    ctx.strokeStyle = INK; ctx.lineWidth = 2;
+    if (offen) { ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y + RH); ctx.lineTo(x + RW, y + RH); ctx.lineTo(x + RW, y); ctx.stroke(); }
+    else ctx.strokeRect(x, y, RW, RH);
   }
   // Außengelände: Räume links neben dem Haus, ohne Wände und Decke
   for (const room of ROOMS) {

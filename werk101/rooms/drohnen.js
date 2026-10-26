@@ -6,19 +6,18 @@ function deliveryDrone(f) {
   if (f < 20) return { x: 200, y: 240 };
   return { x: lerp(200, 260, seg(f, 20, 36)), y: lerp(240, -60, ease(seg(f, 20, 36))) };
 }
+// Möwe und Verfolger kommen und gehen durch das offene Dach (nicht durch die Wände, FEHLER.md F03)
 function gull(f) {
   if (f < 16) return null;
-  if (f < 22) return { x: lerp(-40, 200, seg(f, 16, 22)), y: lerp(160, 340, ease(seg(f, 16, 22))), carry: false, dir: 1 };
-  if (f < 36) return { x: lerp(200, 700, seg(f, 22, 36)), y: lerp(340, 110, ease(seg(f, 22, 36))), carry: true, dir: 1 };
-  if (f < 44) return null;
-  if (f < 58) return { x: lerp(700, -60, seg(f, 44, 58)), y: 60 + 10 * Math.sin(f), carry: true, dir: -1 };
+  if (f < 22) return { x: lerp(40, 200, seg(f, 16, 22)), y: lerp(-440, 340, ease(seg(f, 16, 22))), carry: false, dir: 1 };
+  if (f < 36) return { x: lerp(200, 560, seg(f, 22, 36)), y: lerp(340, -460, ease(seg(f, 22, 36))), carry: true, dir: 1 };
   return null;
 }
 function scout(f) {
   if (f < 24) return { x: 80, y: 352 };
-  if (f < 40) return { x: lerp(80, 720, ease(seg(f, 24, 40))), y: lerp(352, 120, ease(seg(f, 24, 32))) };
-  if (f < 44) return { x: 760, y: 80 };
-  if (f < 56) return { x: lerp(720, 80, ease(seg(f, 44, 56))), y: lerp(90, 352, ease(seg(f, 48, 56))) };
+  if (f < 40) return { x: lerp(80, 580, ease(seg(f, 24, 40))), y: lerp(352, -460, ease(seg(f, 24, 38))) };
+  if (f < 44) return { x: 580, y: -460 };
+  if (f < 56) return { x: lerp(580, 80, ease(seg(f, 44, 56))), y: lerp(-460, 352, ease(seg(f, 44, 56))) };
   return { x: 80, y: 352 };
 }
 function fireDrone(f) {
@@ -48,10 +47,8 @@ function bird(x, y, carry, dir, f) {
 }
 
 function drawDrohnen(f) {
-  const sky = ctx.createLinearGradient(0, 0, 0, 360);
-  sky.addColorStop(0, '#9fbfca'); sky.addColorStop(1, '#dfe6e1');
-  ctx.fillStyle = sky; ctx.fillRect(0, 0, RW, RH);
-  ctx.fillStyle = '#b8c9cc';
+  // Offenes Dach: kein eigener Himmel, das Haus spart diesen Raum aus (drawBuilding), der echte Himmel scheint durch
+  ctx.fillStyle = silhouetteFarbe();
   for (const [x, h] of [[0, 90], [60, 140], [150, 70], [320, 120], [390, 80], [600, 110]]) ctx.fillRect(x, 330 - h, 56, h);
   text('DACH', 24, 70, 46, { family: '"Saira Condensed", sans-serif', weight: 700, color: 'rgba(42,39,35,0.13)' });
   // Dachfläche, Brüstung, Landefeld

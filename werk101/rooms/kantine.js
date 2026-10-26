@@ -37,7 +37,9 @@ function bowl(x, y, full, s = 1) {
   if (full) noodles(x, y - 9, 0.55 * s);
 }
 function vacX(f) { return 452 + 20 * Math.sin(TAU * f / 60); }
-function drawKantine(f) {
+// Der Kellner hat ein Schutzfeld (eigene Uhr). Küche, Schale und Gast laufen mit seiner Uhr, damit nichts ohne ihn weiterfliegt.
+function drawKantine(f0) {
+  const f = heldF('kellner', f0);
   // Wand
   ctx.fillStyle = '#ebe5d6'; ctx.fillRect(0, 0, RW, RH);
   ctx.fillStyle = '#d6dfe2'; ctx.fillRect(0, 170, RW, 190);
@@ -66,7 +68,7 @@ function drawKantine(f) {
   // Uhr: Zeiger macht eine Runde pro Durchlauf
   circle(430, 76, 22, '#f7f5ef');
   for (let i = 0; i < 12; i++) { const a = i / 12 * TAU; line(430 + 17 * Math.cos(a), 76 + 17 * Math.sin(a), 430 + 20 * Math.cos(a), 76 + 20 * Math.sin(a), INK, 1.5); }
-  const ha = TAU * f / 60 - Math.PI / 2;
+  const ha = TAU * f0 / 60 - Math.PI / 2;
   line(430, 76, 430 + 16 * Math.cos(ha), 76 + 16 * Math.sin(ha), '#d9542b', 2);
   line(430, 76, 430, 64, INK, 2.5); circle(430, 76, 2.5, INK, null);
   // Lampe
@@ -120,7 +122,7 @@ function drawKantine(f) {
 
   // Saugroboter mit Socke
   withAlpha('saug', () => {
-    const sx = vacX(f), pull = sx - 17 - 414;
+    const sx = vacX(f0), pull = sx - 17 - 414;
     const sag = Math.max(0, 40 - pull) * 0.35;
     ctx.beginPath(); ctx.moveTo(412, 357); ctx.quadraticCurveTo((412 + sx - 17) / 2, 357 + sag, sx - 17, 355);
     ctx.strokeStyle = INK; ctx.lineWidth = Math.max(3, 10 - pull * 0.09); ctx.lineCap = 'round'; ctx.stroke();
@@ -128,8 +130,8 @@ function drawKantine(f) {
     ctx.setLineDash([3, 4]); ctx.strokeStyle = '#f3efe4'; ctx.lineWidth = Math.max(1, 5 - pull * 0.08); ctx.stroke(); ctx.setLineDash([]);
     box(sx - 17, 347, 34, 12, '#2e3033', 5);
     box(sx - 9, 344, 18, 5, '#4a4d52', 2);
-    circle(sx + 9, 353, 2, f % 10 < 5 ? '#7fe08a' : '#2d5b33', null);
-    if (f > 11 && f < 20) { line(sx + 22, 344, sx + 28, 340, INK, 1.5); line(sx + 23, 351, sx + 30, 351, INK, 1.5); }
+    circle(sx + 9, 353, 2, f0 % 10 < 5 ? '#7fe08a' : '#2d5b33', null);
+    if (f0 > 11 && f0 < 20) { line(sx + 22, 344, sx + 28, 340, INK, 1.5); line(sx + 23, 351, sx + 30, 351, INK, 1.5); }
   });
 
   // Gast
@@ -151,7 +153,7 @@ function drawKantine(f) {
   if (bs) { ctx.save(); ctx.globalAlpha = alphaOf('kellner'); bowl(bs.p.x, bs.p.y, bs.full, bs.eat == null ? 1 : Math.max(0.2, bs.eat)); ctx.restore(); }
 
   // Kellnerroboter
-  heldDraw('kellner', f, f => {
+  withAlpha('kellner', () => {
     const wx = waiterX(f);
     circle(wx - 14, 356, 4, '#2d2f33'); circle(wx + 14, 356, 4, '#2d2f33');
     box(wx - 24, 328, 48, 26, '#f1efe9', 8);
@@ -199,7 +201,7 @@ registerRoom({
       fakt: 'Servierroboter finden ihren Weg mit Laserscannern, Kameras oder Markierungen an der Decke. Viele Restaurants setzten sie ab 2020 ein, auch um in der Pandemie Kontakte zu verringern.',
       echt: 'Genau so: Der Gast nimmt sein Essen selbst vom Tablett und stellt das leere Geschirr wieder darauf.',
       note: 'Fährt zum Tisch, wartet, bis der Gast fertig ist, und bringt die leere Schale zurück.', color: '#23384d', quelle: 'https://en.wikipedia.org/wiki/Service_robot',
-      box: f => [KX + waiterX(f) - 30, KY + 244, 60, 116] },
+      box: f => [KX + waiterX(heldF('kellner', f)) - 30, KY + 244, 60, 116] },
     { id: 'saug', name: 'Saugroboter', bereich: 'Haushalt', aera: 'seit 2001', typ: 'Bodenroboter mit Bürste',
       fakt: 'Der Electrolux Trilobite kam 2001 als einer der ersten Saugroboter in den Handel, ein Jahr später folgte der Roomba von iRobot. Socken und Kabel sind bis heute ihre häufigsten Gegner.',
       echt: 'Stimmt so: Socken und Kabel bringen Saugroboter oft zum Stehen. Neuere Geräte erkennen sie per Kamera und fahren drumherum.',

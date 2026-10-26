@@ -122,7 +122,8 @@ function wuBild(g) {
   text('ZIEL', WU_ZIEL, WU_G - 232, 22, { family: '"Saira Condensed", sans-serif', weight: 700, align: 'center', color: nacht ? '#c9ccc8' : '#2a2723' });
   text('WÜSTE', WU_X0 + 1900, WU_G - 360, 60, { family: '"Saira Condensed", sans-serif', weight: 700, color: 'rgba(255,255,255,0.22)' });
 
-  // Fahrzeuge
+  // Fahrzeuge: kommen aus der Startbox rechts (FEHLER.md, F07) und blenden am Rundenende weich aus
+  ctx.save(); ctx.globalAlpha *= Math.min(seg(g, 0, 8), 1 - seg(g, 464, 479));
   if (jahr === 2004) {
     withAlpha('ghostrider', () => { const p = wuGhost(g); ctx.save(); ctx.translate(0, WU_G); ctx.scale(1, 1 - 0.62 * p.kipp); ctx.translate(0, -WU_G); wuZeichne(() => wuGhostBild(), p.x); ctx.restore(); });
     withAlpha('sandstorm', () => {
@@ -149,6 +150,16 @@ function wuBild(g) {
     }
   }
   ctx.restore();
+  // Startbox: Zelt am rechten Rand, aus dem die Fahrzeuge nacheinander herausfahren
+  const bx0 = WU_X1 - 96;
+  ctx.fillStyle = nacht ? '#3a3a4a' : '#e9e4d6'; ctx.fillRect(bx0, WU_G - 250, WU_X1 - bx0 + 40, 250);
+  ctx.strokeStyle = nacht ? '#22222e' : '#c9c1aa'; ctx.lineWidth = 2; ctx.beginPath();
+  for (let y = WU_G - 220; y < WU_G; y += 30) { ctx.moveTo(bx0, y); ctx.lineTo(WU_X1 + 40, y); } ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(bx0 - 12, WU_G - 250); ctx.lineTo(WU_X1 + 40, WU_G - 250); ctx.lineTo(WU_X1 + 40, WU_G - 280); ctx.lineTo(bx0 + 30, WU_G - 280); ctx.closePath(); paint('#d9342b', INK, 2);
+  line(bx0, WU_G - 250, bx0, WU_G, INK, 2.5);
+  ctx.fillStyle = 'rgba(22,23,28,0.55)'; ctx.fillRect(bx0, WU_G - 250, 10, 250);
+  text('STARTBOX', bx0 + 50, WU_G - 120, 16, { family: '"Saira Condensed", sans-serif', weight: 700, align: 'center', color: nacht ? '#c9ccc8' : '#5d5a55' });
+  ctx.restore();   // Ende des Wüsten-Ausschnitts
   // weicher Übergang: Sandboden läuft links ins Gras und rechts ins Gebirge aus
   const bodenFarbe = nacht ? '90,86,108' : ab ? '168,128,106' : '230,204,152';
   for (const [x0, x1] of [[WU_X0, WU_X0 - 360], [WU_X1, WU_X1 + 360]]) {

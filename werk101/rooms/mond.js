@@ -12,8 +12,7 @@ const MOND_RECT = { x: MOND_L - 120, y: MGY - 260, w: MOND_R - MOND_L + 240, h: 
 const MOND_RUECKEN = (() => {
   const pts = [];
   for (let x = MOND_L; x < MBX; x += 90) pts.push([x, MBY + 262 + rnd(x * 0.013) * 30]);
-  pts.push([MBX, MBY + 290]);
-  pts.push([MBX + RW, MBY + 286]);
+  for (const [x, y] of [[0, 290], [70, 262], [150, 280], [260, 250], [360, 276], [470, 258], [640, 286]]) pts.push([MBX + x, MBY + y]);
   for (let x = MBX + RW + 90; x <= MOND_R; x += 90) pts.push([x, MBY + 258 + rnd(x * 0.017) * 34]);
   return pts;
 })();
@@ -23,6 +22,15 @@ const MOND_KRATER = [
   [MBX - 260, 40, 120, 22, true], [MBX - 720, 60, 64, 12, false], [MBX - 980, 26, 40, 8, false], [MBX - 470, 86, 30, 6, false],
   [MBX + RW + 860, 40, 120, 22, true], [MBX + RW + 1040, 84, 44, 9, false],
 ];
+
+function mondBerg(x, w, h) {
+  ctx.beginPath(); ctx.moveTo(x - w / 2, MOND_HY); ctx.lineTo(x - w * 0.18, MOND_HY - h); ctx.lineTo(x + w * 0.05, MOND_HY - h * 0.86); ctx.lineTo(x + w * 0.22, MOND_HY - h * 0.95); ctx.lineTo(x + w / 2, MOND_HY); ctx.closePath();
+  paint('#625f5a', INK, 1.5);
+  ctx.beginPath(); ctx.moveTo(x - w * 0.18, MOND_HY - h); ctx.lineTo(x - w * 0.04, MOND_HY - h * 0.55); ctx.lineTo(x - w / 2 + 10, MOND_HY); ctx.lineTo(x - w / 2, MOND_HY); ctx.closePath();
+  ctx.fillStyle = 'rgba(232,230,223,0.18)'; ctx.fill();
+}
+// Mondauto in Weltkoordinaten, eine Fahrt pro 40 Sekunden (state.g), von Berg zu Berg
+const ltvWX = g => lerp(MOND_R - 220, MOND_L + 120, g / 480);
 
 /* ---------- Kulisse: schwarzer Weltraum und breite Mondoberfläche hinter beiden Feldern ---------- */
 function mondKulisse() {
@@ -39,15 +47,23 @@ function mondKulisse() {
     if (y < MOND_HY - 60 || x < MOND_L - 40 || x > MOND_R + 40) ctx.fillRect(x, y, s, s);
   }
   // Berge an den Enden
-  for (const [x, w, h] of MOND_BERGE) {
-    ctx.beginPath(); ctx.moveTo(x - w / 2, MOND_HY); ctx.lineTo(x - w * 0.18, MOND_HY - h); ctx.lineTo(x + w * 0.05, MOND_HY - h * 0.86); ctx.lineTo(x + w * 0.22, MOND_HY - h * 0.95); ctx.lineTo(x + w / 2, MOND_HY); ctx.closePath();
-    paint('#625f5a', INK, 1.5);
-    ctx.beginPath(); ctx.moveTo(x - w * 0.18, MOND_HY - h); ctx.lineTo(x - w * 0.04, MOND_HY - h * 0.55); ctx.lineTo(x - w / 2 + 10, MOND_HY); ctx.lineTo(x - w / 2, MOND_HY); ctx.closePath();
-    ctx.fillStyle = 'rgba(232,230,223,0.18)'; ctx.fill();
-  }
+  for (const b of MOND_BERGE) mondBerg(...b);
+  // Erde tief am Horizont, halb beleuchtet (hinter dem Bergrücken)
+  withAlpha('erde', () => {
+    const ex = MBX + 560, ey = MBY + 268;
+    circle(ex, ey, 24, '#3e6f9e', null);
+    ctx.save(); ctx.beginPath(); ctx.arc(ex, ey, 24, 0, TAU); ctx.clip();
+    ctx.fillStyle = '#7fae6a'; ctx.beginPath(); ctx.ellipse(ex - 8, ey - 6, 9, 6, 0.4, 0, TAU); ctx.fill();
+    ctx.fillStyle = '#f3f1ea'; ctx.beginPath(); ctx.ellipse(ex + 6, ey - 16, 10, 3, 0, 0, TAU); ctx.fill();
+    ctx.fillStyle = 'rgba(7,8,13,0.7)'; ctx.fillRect(ex, ey - 28, 30, 60);
+    ctx.restore();
+  });
   // Bergrücken
   ctx.beginPath(); ctx.moveTo(MOND_L, MOND_HY + 4); for (const [x, y] of MOND_RUECKEN) ctx.lineTo(x, y); ctx.lineTo(MOND_R, MOND_HY + 4); ctx.closePath();
   paint('#6b6964', null);
+  // Mondauto fährt über die ganze Breite und verschwindet an beiden Enden hinter den großen Bergen (FEHLER.md F04)
+  withAlpha('ltv', () => { ctx.save(); ctx.translate(0, MBY); drawLtv(ltvWX(state.g)); ctx.restore(); });
+  mondBerg(...MOND_BERGE[0]); mondBerg(...MOND_BERGE[3]);
   // Mondbrocken: oben flacher Boden, unten rund
   ctx.beginPath(); ctx.moveTo(MOND_L, MOND_HY);
   ctx.lineTo(MOND_R, MOND_HY);
@@ -78,7 +94,7 @@ function mondKulisse() {
   }
   ctx.restore();
   ctx.beginPath(); ctx.ellipse((MOND_L + MOND_R) / 2, MOND_HY, (MOND_R - MOND_L) / 2, MOND_TIEFE, 0, 0, Math.PI); ctx.strokeStyle = INK; ctx.lineWidth = 2.5; ctx.stroke();
-  line(MOND_L, MOND_HY, MBX, MOND_HY, INK, 1.5); line(MBX + RW, MOND_HY, MOND_R, MOND_HY, INK, 1.5);
+  line(MOND_L, MOND_HY, MOND_R, MOND_HY, INK, 1.5);
 }
 function sterne(seed, n, yMax) {
   ctx.fillStyle = '#e8e6df';
@@ -91,7 +107,6 @@ const viperX = f => (f < 18 ? lerp(250, 400, ease(seg(f, 0, 18))) : f < 40 ? 400
 const viperBohr = f => (f < 22 ? 0 : f < 28 ? ease(seg(f, 22, 28)) : f < 34 ? 1 : f < 40 ? 1 - ease(seg(f, 34, 40)) : 0);
 const viperLicht = f => (f < 14 ? 0 : f < 18 ? seg(f, 14, 18) : f < 42 ? 1 : f < 46 ? 1 - seg(f, 42, 46) : 0);
 // Mondauto weit hinten: fährt einmal pro Schleife quer durchs Bild
-const ltvX = f => lerp(700, -120, f / 60);
 
 function drawViper(x, f) {
   const y = 352, l = viperLicht(f);
@@ -144,24 +159,8 @@ function drawLtv(x) {
 }
 
 function drawMondBasis(f) {
-  ctx.fillStyle = '#07080d'; ctx.fillRect(0, 0, RW, 300);
-  sterne(11, 70, 260);
-  // Erde tief am Horizont, halb beleuchtet
-  withAlpha('erde', () => {
-    circle(560, 268, 24, '#3e6f9e', null);
-    ctx.save(); ctx.beginPath(); ctx.arc(560, 268, 24, 0, TAU); ctx.clip();
-    ctx.fillStyle = '#7fae6a'; ctx.beginPath(); ctx.ellipse(552, 262, 9, 6, 0.4, 0, TAU); ctx.fill();
-    ctx.fillStyle = '#f3f1ea'; ctx.beginPath(); ctx.ellipse(566, 252, 10, 3, 0, 0, TAU); ctx.fill();
-    ctx.fillStyle = 'rgba(7,8,13,0.7)'; ctx.fillRect(560, 240, 30, 60);
-    ctx.restore();
-  });
+  // Himmel, Sterne, Erde, Bergrücken, Mondauto und Boden kommen aus mondKulisse(), damit alles über die Feldgrenzen weiterläuft
   text('SÜDPOL', 250, 64, 40, { family: '"Saira Condensed", sans-serif', weight: 700, color: 'rgba(232,230,223,0.13)' });
-  // Bergrücken in der Ferne, dann der Boden
-  ctx.beginPath(); ctx.moveTo(0, 290); ctx.lineTo(70, 262); ctx.lineTo(150, 280); ctx.lineTo(260, 250); ctx.lineTo(360, 276); ctx.lineTo(470, 258); ctx.lineTo(640, 286); ctx.lineTo(640, 300); ctx.lineTo(0, 300); ctx.closePath();
-  paint('#6b6964', null);
-  withAlpha('ltv', () => drawLtv(ltvX(f)));
-  const gr = ctx.createLinearGradient(0, 296, 0, 296 + MOND_TIEFE); gr.addColorStop(0, '#9a968f'); gr.addColorStop(104 / MOND_TIEFE, '#7b7872'); gr.addColorStop(1, '#55534f');
-  ctx.fillStyle = gr; ctx.fillRect(0, 296, RW, RH + 8 - 296); line(-2, 296, RW + 2, 296, INK, 1.5);
   for (let i = 0; i < 26; i++) { ctx.beginPath(); ctx.ellipse(rnd(i + 40) * RW, 312 + rnd(i + 70) * 84, 3 + rnd(i) * 8, 1.5 + rnd(i) * 2.5, 0, 0, TAU); ctx.strokeStyle = 'rgba(42,39,35,0.25)'; ctx.lineWidth = 1; ctx.stroke(); }
   // Krater, in den nie die Sonne scheint
   ctx.beginPath(); ctx.ellipse(546, 372, 90, 22, 0, 0, TAU); paint('#16171c', INK, 2);
@@ -182,7 +181,7 @@ function drawMondBasis(f) {
 
 /* ---------- Mond: Raumstation Gateway ---------- */
 // Frachter: nähert sich (0–20), wird gefangen (20–28), angesetzt (28–42), bleibt (42–48), wird losgelassen und treibt zurück (48–60)
-const FR_START = { x: 620, y: 132 }, FR_FANG = { x: 520, y: 150 }, FR_DOCK = { x: 480, y: 204 };
+const FR_START = { x: 580, y: 132 }, FR_FANG = { x: 520, y: 150 }, FR_DOCK = { x: 480, y: 204 };
 const frachter = f => (f < 20 ? mix(FR_START, FR_FANG, ease(seg(f, 0, 20))) : f < 28 ? FR_FANG : f < 42 ? mix(FR_FANG, FR_DOCK, ease(seg(f, 28, 42))) : f < 48 ? FR_DOCK : mix(FR_DOCK, FR_START, ease(seg(f, 48, 60))));
 const armZiel = f => { const p = frachter(f); if (f >= 20 && f < 52) return { x: p.x - 30, y: p.y - 18 }; const ruhe = { x: 400, y: 118 }; return f < 20 ? mix(ruhe, { x: FR_FANG.x - 30, y: FR_FANG.y - 18 }, ease(seg(f, 10, 20))) : mix({ x: FR_START.x - 30, y: FR_START.y - 18 }, ruhe, ease(seg(f, 52, 60))); };
 
@@ -251,7 +250,8 @@ registerRoom({
       echt: 'Noch in Entwicklung. Es fährt hier weit hinten und ist darum so klein. Ein Funkbefehl von der Erde braucht gut eine Sekunde, bis er am Mond ankommt.',
       note: 'Fährt ohne Fahrer am Horizont entlang, gesteuert von der Erde.', color: '#d6d9dc',
       quelle: 'https://www.nasa.gov/missions/moon-base/nasa-provides-progress-update-on-moon-base-rovers/',
-      box: f => [MBX + ltvX(f) - 30, MBY + 258, 60, 42] },
+      rand: 'fährt über die ganze Mondoberfläche und verschwindet hinter den Bergen',
+      box: () => { const x = ltvWX(state.g); return [x - 30, MBY + 258, 60, 42]; } },
     { id: 'mondlander', name: 'Frachtlander', bereich: 'Raumfahrt', aera: 'ab 2027', typ: 'Landefähre ohne Besatzung',
       fakt: 'VIPER fliegt mit dem Mondlander Blue Moon Mark 1 der Firma Blue Origin zum Mond. Solche Lander landen ganz ohne Menschen an Bord und bringen Fracht und Rover zur Mondoberfläche.',
       echt: 'Der Lander ist viel höher als das Bild, darum sieht man nur seinen unteren Teil. Wie der Rover genau herunterfährt, ist hier vereinfacht.',
@@ -263,7 +263,7 @@ registerRoom({
       echt: 'Stimmt. Die Erde ist hier größer gezeichnet, als man sie vom Mond aus sehen würde.',
       note: 'Von hier aus ist sie nur ein kleiner Ball über den Bergen.', color: '#3e6f9e',
       quelle: 'https://svs.gsfc.nasa.gov/4944',
-      box: () => [MBX + 532, MBY + 240, 56, 56] },
+      box: () => [MBX + 532, MBY + 240, 56, 56] },   // Erde wird in mondKulisse() gezeichnet
     { id: 'mondzurueck', name: 'Hebel für den Rückflug', bereich: 'Raumfahrt', aera: 'geheim', typ: 'Hebel am Lander',
       fakt: 'Von der Erde bis zum Mond sind es im Mittel rund 384.000 Kilometer. Die Astronauten von Apollo 11 brauchten 1969 etwa drei Tage für den Weg.',
       echt: 'Erfunden. Teleportieren kann man Menschen und Roboter nicht. Wer den Hebel umlegt, ist aber trotzdem sofort wieder in der Satelliten-Werkstatt.',

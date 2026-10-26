@@ -96,18 +96,18 @@ function drawKranken(f) {
   box(400, 340, 96, 20, '#3b3d40', 3);
   const off = (f * 2) % 12;
   ctx.strokeStyle = '#8a8f94'; ctx.lineWidth = 1.5; ctx.beginPath();
-  for (let x = 404 + 12 - off; x < 494; x += 12) { ctx.moveTo(x, 341); ctx.lineTo(x, 345); }
+  for (let x = 404 + off; x < 494; x += 12) { ctx.moveTo(x, 341); ctx.lineTo(x, 345); }
   ctx.stroke();
   line(404, 340, 404, 282, '#5d6064', 4); line(404, 284, 432, 284, '#5d6064', 4);
   withAlpha('exo', () => {
     const ph = TAU * f / 30, hip = { x: 454, y: 296 };
     for (const s of [1, -1]) {
       const a = 0.38 * Math.sin(ph) * s, knee = { x: hip.x + 22 * Math.sin(a), y: hip.y + 22 * Math.cos(a) };
-      const b = a - Math.max(0, 0.6 * Math.sin(ph + (s > 0 ? 1.4 : 1.4 + Math.PI))), foot = { x: knee.x + 22 * Math.sin(b), y: knee.y + 22 * Math.cos(b) };
+      const b = a + Math.max(0, 0.6 * Math.sin(ph + (s > 0 ? 1.4 : 1.4 + Math.PI))), foot = { x: knee.x + 22 * Math.sin(b), y: knee.y + 22 * Math.cos(b) };
       limb(hip.x, hip.y, knee.x, knee.y, 7, s > 0 ? '#3d5a80' : '#2f4866'); limb(knee.x, knee.y, foot.x, foot.y, 6, s > 0 ? '#3d5a80' : '#2f4866');
       line(hip.x + 3, hip.y, knee.x + 3, knee.y, '#3b3d40', 3); line(knee.x + 3, knee.y, foot.x + 3, foot.y, '#3b3d40', 3);
       circle(knee.x + 3, knee.y, 3.5, '#e0662b', INK, 1.5);
-      box(foot.x - 4, foot.y - 2, 14, 5, INK, 2);
+      box(foot.x - 10, foot.y - 2, 14, 5, INK, 2);   // Blick nach links: Fußspitze nach links
     }
     circle(hip.x + 3, hip.y, 4, '#e0662b', INK, 1.5);
     limb(hip.x, hip.y, 452, 262, 17, '#d9a43a');
