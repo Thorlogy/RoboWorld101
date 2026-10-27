@@ -16,6 +16,14 @@
      werk       (optional) ID einer Figur in RoboWorld, die dazu passt */
 const NACHRICHTEN = [
   {
+    datum: '2026-10-27',
+    titel: 'Ein Trainingsraum für 100 Roboter',
+    text: 'In München hat eine Universität einen großen Trainingsraum für Roboter eröffnet, eine Art Turnhalle zum Lernen. Dort üben zuerst etwa 100 Roboter in 48 kleinen Übungsplätzen. Sie lernen zum Beispiel, Kartons zu falten, Teile zusammenzustecken und Werkzeuge zu benutzen.',
+    stand: 'Forschung',
+    quellen: ['https://www.tum.de/en/news-and-events/all-news/press-releases/details/making-robots-smarter', 'https://automationspraxis.industrie.de/ki/neura-und-tum-eroeffnen-robogym-fuer-physical-ai/'],
+    figur: 'humanoid', hintergrund: 'labor', bewegung: 'greifen',
+  },
+  {
     datum: '2026-10-26',
     titel: 'Humanoider Roboter schiebt und trägt schwere Lasten',
     text: 'Forschende in Südkorea haben einen Roboter gebaut, der wie ein Mensch auf zwei Beinen geht. Er kann beim Laufen Dinge schieben, die 35 Kilogramm wiegen, und Lasten von 20 Kilogramm hochheben. Mit seinen eigenen Kameras findet er Buchstaben-Klötze und stellt sie so hin, dass man den Namen seiner Hochschule lesen kann.',
