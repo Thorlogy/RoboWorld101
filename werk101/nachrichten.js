@@ -16,6 +16,14 @@
      werk       (optional) ID einer Figur in RoboWorld, die dazu passt */
 const NACHRICHTEN = [
   {
+    datum: '2026-10-29',
+    titel: 'Renn-Drohne fliegt schneller als Weltmeister',
+    text: 'Forschende aus Delft in den Niederlanden haben einer Renn-Drohne beigebracht, ganz allein durch eine Strecke mit Toren zu fliegen. Sie schaut dabei nur mit einer einzigen Kamera nach vorn und wird bis zu 100 Kilometer pro Stunde schnell. Bei einem Rennen war sie schneller als drei frühere Weltmeister, die ihre Drohnen selbst steuerten.',
+    stand: 'Forschung',
+    quellen: ['https://t3n.de/news/drohne-schneller-als-die-weltmeister-1768866/', 'https://www.tudelft.nl/en/2026/tu-delft/the-science-behind-worlds-fastest-autonomous-racing-drone', 'https://www.livescience.com/technology/robotics/the-worlds-fastest-ai-powered-racing-drone-outflies-the-best-human-drone-pilots'],
+    figur: 'drohne', hintergrund: 'labor', bewegung: 'fliegen',
+  },
+  {
     datum: '2026-10-28',
     titel: 'Flug-Roboter Dragonfly übt seinen ersten Flug',
     text: 'Die Raumfahrtbehörde NASA baut einen fliegenden Roboter namens Dragonfly, das heißt Libelle. Er soll ab 2028 zum Titan reisen, einem Mond des Planeten Saturn, und dort im Jahr 2034 ankommen. In einem Labor in den USA hat sein Computer jetzt den ersten Flug geübt: über Sanddünen fliegen, einen sicheren Landeplatz suchen und ganz allein landen.',
