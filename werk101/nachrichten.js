@@ -16,6 +16,14 @@
      werk       (optional) ID einer Figur in RoboWorld, die dazu passt */
 const NACHRICHTEN = [
   {
+    datum: '2026-10-28',
+    titel: 'Flug-Roboter Dragonfly übt seinen ersten Flug',
+    text: 'Die Raumfahrtbehörde NASA baut einen fliegenden Roboter namens Dragonfly, das heißt Libelle. Er soll ab 2028 zum Titan reisen, einem Mond des Planeten Saturn, und dort im Jahr 2034 ankommen. In einem Labor in den USA hat sein Computer jetzt den ersten Flug geübt: über Sanddünen fliegen, einen sicheren Landeplatz suchen und ganz allein landen.',
+    stand: 'Test',
+    quellen: ['https://science.nasa.gov/blogs/dragonfly/2026/10/23/nasas-dragonfly-completes-first-simulated-flight/', 'https://actualidadaeroespacial.com/el-dron-dragonfly-de-la-nasa-completo-su-primer-vuelo-simulado/'],
+    figur: 'drohne', hintergrund: 'weltraum', bewegung: 'fliegen',
+  },
+  {
     datum: '2026-10-27',
     titel: 'Ein Trainingsraum für 100 Roboter',
     text: 'In München hat eine Universität einen großen Trainingsraum für Roboter eröffnet, eine Art Turnhalle zum Lernen. Dort üben zuerst etwa 100 Roboter in 48 kleinen Übungsplätzen. Sie lernen zum Beispiel, Kartons zu falten, Teile zusammenzustecken und Werkzeuge zu benutzen.',
