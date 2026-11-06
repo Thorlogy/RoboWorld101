@@ -16,6 +16,22 @@
      werk       (optional) ID einer Figur in RoboWorld, die dazu passt */
 const NACHRICHTEN = [
   {
+    datum: '2026-11-02',
+    titel: 'Winzige Algen bewegen einen weichen Roboterarm',
+    text: 'Forschende aus Delft in den Niederlanden haben einen weichen Greifarm gebaut, der ohne Batterie und ohne Motor auskommt. Er ist nur etwa zwei Zentimeter lang, liegt im Wasser, und auf ihm wachsen winzige grüne Algen. Scheint Licht auf die Algen, biegt sich der Arm und hält zum Beispiel einen kleinen Gummiring fest, im Dunkeln lässt er ihn wieder los.',
+    stand: 'Forschung',
+    quellen: ['https://t3n.de/news/soft-robotics-algen-roboter-ohne-strom-1769747/', 'https://www.tudelft.nl/en/2026/tnw/soft-robot-arm-powered-by-algae'],
+    figur: 'arm', hintergrund: 'labor', bewegung: 'greifen',
+  },
+  {
+    datum: '2026-10-30',
+    titel: 'Käfer-Roboter gehorcht dem Finger',
+    text: 'Forschende aus Südkorea, den USA und Singapur haben einen weichen Roboter gebaut, der aussieht wie ein Käfer. Er hat künstliche Muskeln, die sich zusammenziehen, wenn sie warm werden, und Greifzangen wie die Kiefer eines Käfers. Ein Mensch trägt einen kleinen Sensor am Finger: Je nachdem, wie er den Finger beugt, läuft der Roboter los, biegt ab oder packt etwas und trägt es weg.',
+    stand: 'Forschung',
+    quellen: ['https://newatlas.com/robotics/beetlebot-robotic-beetle/', 'https://www.electronicsforu.com/news/bend-a-finger-and-this-beetle-shaped-robot-walks-and-grips', 'https://biz.heraldcorp.com/article/10900385'],
+    figur: 'vierbeiner', hintergrund: 'labor', bewegung: 'greifen',
+  },
+  {
     datum: '2026-10-29',
     titel: 'Renn-Drohne fliegt schneller als Weltmeister',
     text: 'Forschende aus Delft in den Niederlanden haben einer Renn-Drohne beigebracht, ganz allein durch eine Strecke mit Toren zu fliegen. Sie schaut dabei nur mit einer einzigen Kamera nach vorn und wird bis zu 100 Kilometer pro Stunde schnell. Bei einem Rennen war sie schneller als drei frühere Weltmeister, die ihre Drohnen selbst steuerten.',
