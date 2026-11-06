@@ -16,6 +16,14 @@
      werk       (optional) ID einer Figur in RoboWorld, die dazu passt */
 const NACHRICHTEN = [
   {
+    datum: '2026-11-06',
+    titel: 'Roboter-Motte lässt sich einen Licht-Fühler wachsen',
+    text: 'Forschende aus Estland und Italien haben einen Roboter gebaut, der aussieht wie eine Motte. Durch seinen durchsichtigen Körper fließen in feinen Adern etwa drei Milliliter künstliches Blut. Wird er mit UV-Licht beleuchtet, wächst an dieser Stelle ein neuer Licht-Fühler, und danach blinkt der Roboter oder schlägt mit den Flügeln, sobald UV-Licht auf ihn fällt.',
+    stand: 'Forschung',
+    quellen: ['https://newatlas.com/robotics/tartu-iit-robot-moth-artificial-blood-uv-sensor', 'https://interestingengineering.com/ai-robotics/moth-robot-creates-sensor-under-uv-light'],
+    figur: 'drohne', hintergrund: 'labor', bewegung: 'stehen',
+  },
+  {
     datum: '2026-11-02',
     titel: 'Winzige Algen bewegen einen weichen Roboterarm',
     text: 'Forschende aus Delft in den Niederlanden haben einen weichen Greifarm gebaut, der ohne Batterie und ohne Motor auskommt. Er ist nur etwa zwei Zentimeter lang, liegt im Wasser, und auf ihm wachsen winzige grüne Algen. Scheint Licht auf die Algen, biegt sich der Arm und hält zum Beispiel einen kleinen Gummiring fest, im Dunkeln lässt er ihn wieder los.',
