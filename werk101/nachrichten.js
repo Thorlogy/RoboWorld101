@@ -16,6 +16,14 @@
      werk       (optional) ID einer Figur in RoboWorld, die dazu passt */
 const NACHRICHTEN = [
   {
+    datum: '2026-11-07',
+    titel: 'Hüpf-Drohne bekommt einen neuen Fuß für Sand und Eis',
+    text: 'Forschende aus Kanada und Hongkong haben eine kleine Drohne gebaut, die auf einem einzigen federnden Bein hüpft, statt die ganze Zeit zu fliegen. Das spart viel Energie. Jetzt hat sie einen breiteren Fuß mit kurzen Spikes bekommen: Damit sinkt sie im Sand nicht ein und rutscht auf Eis nicht weg.',
+    stand: 'Forschung',
+    quellen: ['https://newatlas.com/robotics/hopcopter-hopping-robot-flexible-foot-pad/', 'https://www.mie.utoronto.ca/a-new-flexible-foot-pad-enables-this-one-legged-hopping-robot-to-go-where-few-robots-have-gone-before/'],
+    figur: 'huepfer', hintergrund: 'eis', bewegung: 'huepfen',
+  },
+  {
     datum: '2026-11-06',
     titel: 'Roboter-Motte lässt sich einen Licht-Fühler wachsen',
     text: 'Forschende aus Estland und Italien haben einen Roboter gebaut, der aussieht wie eine Motte. Durch seinen durchsichtigen Körper fließen in feinen Adern etwa drei Milliliter künstliches Blut. Wird er mit UV-Licht beleuchtet, wächst an dieser Stelle ein neuer Licht-Fühler, und danach blinkt der Roboter oder schlägt mit den Flügeln, sobald UV-Licht auf ihn fällt.',
