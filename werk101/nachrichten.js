@@ -16,6 +16,14 @@
      werk       (optional) ID einer Figur in RoboWorld, die dazu passt */
 const NACHRICHTEN = [
   {
+    datum: '2026-11-08',
+    titel: 'Roboter hielt Schornstein für ein Eichhörnchen',
+    text: 'Forschende an der Universität MIT in den USA haben Robotern beigebracht, Fehler in ihrem Gedächtnis zu finden. Ein Roboter hatte aus der Ferne einen grauen Schornstein auf einem Dach für ein Eichhörnchen gehalten. Jetzt merkt er, wenn er unsicher ist, schaut sich das Ding von anderen Seiten noch einmal an und verbessert dann seine Beschreibung.',
+    stand: 'Forschung',
+    quellen: ['https://news.mit.edu/2026/clearing-up-robot-fuzzy-memory-1105', 'https://kchcomunicacion.com/2026/11/05/nuevo-sistema-del-mit-robots-detectan-y-corrigen-sus-errores-de-memoria/'],
+    figur: 'rover', hintergrund: 'stadt', bewegung: 'fahren',
+  },
+  {
     datum: '2026-11-07',
     titel: 'Hüpf-Drohne bekommt einen neuen Fuß für Sand und Eis',
     text: 'Forschende aus Kanada und Hongkong haben eine kleine Drohne gebaut, die auf einem einzigen federnden Bein hüpft, statt die ganze Zeit zu fliegen. Das spart viel Energie. Jetzt hat sie einen breiteren Fuß mit kurzen Spikes bekommen: Damit sinkt sie im Sand nicht ein und rutscht auf Eis nicht weg.',
