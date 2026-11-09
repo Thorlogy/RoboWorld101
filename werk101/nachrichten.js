@@ -16,6 +16,14 @@
      werk       (optional) ID einer Figur in RoboWorld, die dazu passt */
 const NACHRICHTEN = [
   {
+    datum: '2026-11-09',
+    titel: 'Roboter steigen um die Wette auf einen Berg',
+    text: 'In China sind Roboter um die Wette einen berühmten Berg hinaufgestiegen, den Taishan. Der Weg dorthin hat mehr als 3.000 Stufen aus Stein. Am schnellsten war ein Roboter mit vier Beinen, der wie ein Hund aussieht: Er brauchte 43 Minuten und 41 Sekunden. Andere Roboter trugen empfindliche Sachen wie Eier und Wassermelonen nach oben.',
+    stand: 'Test',
+    quellen: ['https://newatlas.com/ai-humanoids/watch-robot-dogs-climb-giant-mountain/', 'https://www.cbsnews.com/news/robots-race-china-mountain-eggs-watermelons/', 'https://www.news.at/technik/testlauf-beladene-roboter-erkletterten-heiligen-berg-in-china'],
+    figur: 'vierbeiner', hintergrund: 'feld', bewegung: 'laufen',
+  },
+  {
     datum: '2026-11-08',
     titel: 'Roboter hielt Schornstein für ein Eichhörnchen',
     text: 'Forschende an der Universität MIT in den USA haben Robotern beigebracht, Fehler in ihrem Gedächtnis zu finden. Ein Roboter hatte aus der Ferne einen grauen Schornstein auf einem Dach für ein Eichhörnchen gehalten. Jetzt merkt er, wenn er unsicher ist, schaut sich das Ding von anderen Seiten noch einmal an und verbessert dann seine Beschreibung.',
