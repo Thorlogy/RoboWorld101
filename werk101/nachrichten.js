@@ -16,6 +16,14 @@
      werk       (optional) ID einer Figur in RoboWorld, die dazu passt */
 const NACHRICHTEN = [
   {
+    datum: '2026-11-12',
+    titel: 'Computer-Helfer schreiben Programme für Roboter',
+    text: 'Forschende einer Universität in Kalifornien in den USA haben eine neue Idee. Statt dass Menschen einem Roboter eine Aufgabe viele Male vormachen, schreiben Computer-Helfer das Programm für den Roboterarm: ein Ding finden, richtig greifen und den Greifer bewegen, ohne irgendwo anzustoßen. Jedes Programm wird zuerst in einer nachgebauten Computer-Welt ausprobiert und so lange verbessert, bis es gut klappt.',
+    stand: 'Forschung',
+    quellen: ['https://spectrum.ieee.org/agentic-robotics', 'https://www.eurekalert.org/news-releases/1150884'],
+    figur: 'arm', hintergrund: 'labor', bewegung: 'greifen',
+  },
+  {
     datum: '2026-11-11',
     titel: 'Roboterarm lernt mitzudenken',
     text: 'Forschende in den USA bringen einem Roboterarm bei, bei Anweisungen mitzudenken. Trägt er eine Kaffeetasse und hört: „Verschütte nichts auf den Laptop!“, passt er auch beim Handy daneben auf, weil beides empfindlich ist. Dafür braucht er nur etwa fünf Sekunden. Bisher üben die Forschenden das allerdings nur am Computer in einer nachgebauten Welt.',
