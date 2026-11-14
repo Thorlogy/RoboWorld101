@@ -16,6 +16,14 @@
      werk       (optional) ID einer Figur in RoboWorld, die dazu passt */
 const NACHRICHTEN = [
   {
+    datum: '2026-11-14',
+    titel: 'Ein Roboter-Frosch schwimmt mit Licht',
+    text: 'Forschende der Universität Aarhus in Dänemark haben einen kleinen, flachen Frosch aus einem 3D-Drucker gebaut. An seinen Hinterbeinen sitzen sechs künstliche Muskeln. Leuchtet eine Lampe auf ihn, werden die Muskeln warm, ziehen sich zusammen und der Frosch paddelt los, ganz ohne Motor und Batterie. In einem Versuch schwamm er so in knapp zwei Minuten acht Zentimeter weit.',
+    stand: 'Forschung',
+    quellen: ['https://newatlas.com/technology/3d-printed-frog-swims-powered-by-light', 'https://chem.au.dk/en/the-department/news-and-events/single/artikel/forskere-har-3d-printet-en-svoemmende-froe-med-seks-kunstige-muskler'],
+    figur: 'tauchroboter', hintergrund: 'labor', bewegung: 'schwimmen',
+  },
+  {
     datum: '2026-11-12',
     titel: 'Computer-Helfer schreiben Programme für Roboter',
     text: 'Forschende einer Universität in Kalifornien in den USA haben eine neue Idee. Statt dass Menschen einem Roboter eine Aufgabe viele Male vormachen, schreiben Computer-Helfer das Programm für den Roboterarm: ein Ding finden, richtig greifen und den Greifer bewegen, ohne irgendwo anzustoßen. Jedes Programm wird zuerst in einer nachgebauten Computer-Welt ausprobiert und so lange verbessert, bis es gut klappt.',
