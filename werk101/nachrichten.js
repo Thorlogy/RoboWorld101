@@ -16,6 +16,14 @@
      werk       (optional) ID einer Figur in RoboWorld, die dazu passt */
 const NACHRICHTEN = [
   {
+    datum: '2026-11-16',
+    titel: 'Neuer Mond-Rover aus Ersatzteilen vom Mars',
+    text: 'Die Raumfahrtbehörde NASA plant einen neuen Roboter-Rover für den Mond. Er heißt PROMISE, das ist Englisch und bedeutet Versprechen. Gebaut wird er vor allem aus Ersatzteilen und Test-Modellen der Mars-Rover Curiosity und Perseverance. Später soll er am Südpol des Mondes die Gegend erkunden und Karten davon machen.',
+    stand: 'Forschung',
+    quellen: ['https://spectrum.ieee.org/video-friday-moon-rover-promise', 'https://www.cfpublic.org/space/2026-11-10/nasa-finds-promise-old-equipment-moon-rover'],
+    figur: 'rover', hintergrund: 'weltraum', bewegung: 'fahren', werk: 'marsrover',
+  },
+  {
     datum: '2026-11-15',
     titel: 'Roboter wie Elefantenrüssel halten sich aneinander fest',
     text: 'Forschende in Colorado in den USA haben Roboter gebaut, die sich biegen können wie ein Elefantenrüssel. Sie haben keine Gelenke, sondern Stäbe und gespannte Seile, und können damit Dinge umschlingen und tragen. Mit Greifern an beiden Enden halten sie sich aneinander fest und bilden Ketten und Ringe, und zwei von ihnen können sich schon ganz allein finden und verbinden.',
