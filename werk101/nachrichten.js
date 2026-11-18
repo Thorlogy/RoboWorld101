@@ -16,6 +16,14 @@
      werk       (optional) ID einer Figur in RoboWorld, die dazu passt */
 const NACHRICHTEN = [
   {
+    datum: '2026-11-18',
+    titel: 'Roboter-Labor hält Tiefsee-Mikroben am Leben',
+    text: 'Forschende in England haben ein Labor mit Roboter-Werkzeugen gebaut. Es untersucht winzige Lebewesen aus 1.300 Metern Meerestiefe, die an der Oberfläche sonst sterben, weil der starke Wasserdruck fehlt. Im Labor bleibt der Druck erhalten, eine schlaue Kamera erkennt die Mikroben und Roboter-Werkzeuge sammeln sie ein. So blieben 34 verschiedene Mikroben bis zu 180 Tage lang am Leben.',
+    stand: 'Forschung',
+    quellen: ['https://www.manchester.ac.uk/about/news/robotic-technology-helps-unlock-the-hidden-microbial-world-of-the-deep-sea/', 'https://www.iflscience.com/freaky-deep-sea-microbes-that-usually-die-at-the-surface-have-been-kept-alive-in-a-lab-for-180-days-85202'],
+    figur: 'arm', hintergrund: 'meer', bewegung: 'greifen',
+  },
+  {
     datum: '2026-11-16',
     titel: 'Neuer Mond-Rover aus Ersatzteilen vom Mars',
     text: 'Die Raumfahrtbehörde NASA plant einen neuen Roboter-Rover für den Mond. Er heißt PROMISE, das ist Englisch und bedeutet Versprechen. Gebaut wird er vor allem aus Ersatzteilen und Test-Modellen der Mars-Rover Curiosity und Perseverance. Später soll er am Südpol des Mondes die Gegend erkunden und Karten davon machen.',
