@@ -16,6 +16,14 @@
      werk       (optional) ID einer Figur in RoboWorld, die dazu passt */
 const NACHRICHTEN = [
   {
+    datum: '2026-11-20',
+    titel: 'Winziger Flug-Roboter landet auf einer Sonnenblume',
+    text: 'Forschende in der Nähe von Boston in den USA haben einen fliegenden Roboter gebaut, der leichter ist als eine Büroklammer. Er schlägt mit Flügeln wie ein Insekt und hat seine eigenen Sensoren und einen winzigen Computer an Bord. Damit findet er allein seinen Weg und ist schon sicher auf einer Sonnenblume gelandet, seinen Strom bekommt er aber noch über ein Kabel.',
+    stand: 'Forschung',
+    quellen: ['https://news.mit.edu/2026/featherweight-flying-robot-carries-its-own-sensors-and-computers-1118', 'https://www.tech360.tv/tiny-flying-robot-packs-own-brain'],
+    figur: 'drohne', hintergrund: 'feld', bewegung: 'fliegen',
+  },
+  {
     datum: '2026-11-19',
     titel: 'Weicher Roboter rennt nur mit Luft',
     text: 'Forschende in San Diego in den USA haben einen weichen Roboter mit sechs Beinen gebaut, der ganz ohne Strom und Computer läuft. Ein 3D-Drucker druckt ihn in einem Stück, und Luft, die durch kleine Kammern und Schläuche strömt, bewegt seine Beine. Er schafft bis zu 4,72 Meter pro Sekunde, mehr als 100-mal so schnell wie sein Vorgänger, und kann sogar schwimmen, hängt bisher aber noch an einem Schlauch mit Druckluft.',
