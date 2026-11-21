@@ -16,6 +16,14 @@
      werk       (optional) ID einer Figur in RoboWorld, die dazu passt */
 const NACHRICHTEN = [
   {
+    datum: '2026-11-21',
+    titel: 'Drohne macht sich schmal und schlüpft durch enge Lücken',
+    text: 'Forschende aus Norwegen, der Schweiz und Deutschland haben eine Drohne mit zwei weichen Seitenarmen gebaut. Stößt sie an den Rand einer engen Öffnung, klappen die Arme ganz von allein ein, ohne eigenen Motor. So wird die Drohne von 31 auf 14 Zentimeter schmal und fliegt durch eine Lücke, die nur 15 Zentimeter breit ist.',
+    stand: 'Forschung',
+    quellen: ['https://spectrum.ieee.org/video-friday-morphing-robots-quadrotor', 'https://www.techeblog.com/quadrotor-drone-tight-spaces-autonomous-robots-lab/', 'https://arxiv.org/abs/2611.09272'],
+    figur: 'drohne', hintergrund: 'labor', bewegung: 'fliegen',
+  },
+  {
     datum: '2026-11-20',
     titel: 'Winziger Flug-Roboter landet auf einer Sonnenblume',
     text: 'Forschende in der Nähe von Boston in den USA haben einen fliegenden Roboter gebaut, der leichter ist als eine Büroklammer. Er schlägt mit Flügeln wie ein Insekt und hat seine eigenen Sensoren und einen winzigen Computer an Bord. Damit findet er allein seinen Weg und ist schon sicher auf einer Sonnenblume gelandet, seinen Strom bekommt er aber noch über ein Kabel.',
