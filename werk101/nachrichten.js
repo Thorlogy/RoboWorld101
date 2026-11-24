@@ -16,6 +16,14 @@
      werk       (optional) ID einer Figur in RoboWorld, die dazu passt */
 const NACHRICHTEN = [
   {
+    datum: '2026-11-24',
+    titel: 'Künstliche Muskeln spielen Klavier',
+    text: 'Forschende der Universität von Pennsylvania in den USA haben weiche, künstliche Muskeln gebaut. In jedem Muskel steckt ein hauchdünner Draht aus Kupfer: Er macht den Muskel warm, damit er sich zusammenzieht, und spürt gleichzeitig, wie weit er sich schon bewegt hat. So kann ein Roboterfinger Klaviertasten drücken und ein künstliches Auge genau dorthin schauen, wo es hinsehen soll.',
+    stand: 'Forschung',
+    quellen: ['https://www.engineering.upenn.edu/stories/artificial-muscles-give-robots-precise-control/', 'https://www.popsci.com/technology/artificial-muscles-humanoid-robot-play-piano/'],
+    figur: 'arm', hintergrund: 'labor', bewegung: 'greifen',
+  },
+  {
     datum: '2026-11-21',
     titel: 'Drohne macht sich schmal und schlüpft durch enge Lücken',
     text: 'Forschende aus Norwegen, der Schweiz und Deutschland haben eine Drohne mit zwei weichen Seitenarmen gebaut. Stößt sie an den Rand einer engen Öffnung, klappen die Arme ganz von allein ein, ohne eigenen Motor. So wird die Drohne von 31 auf 14 Zentimeter schmal und fliegt durch eine Lücke, die nur 15 Zentimeter breit ist.',
