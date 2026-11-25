@@ -16,6 +16,14 @@
      werk       (optional) ID einer Figur in RoboWorld, die dazu passt */
 const NACHRICHTEN = [
   {
+    datum: '2026-11-25',
+    titel: 'Roboterarm merkt, wenn er etwas nicht kann',
+    text: 'Forschende in München bringen einem Roboterarm bei, immer neue Handgriffe zu lernen, ohne die alten zu vergessen. Für jeden neuen Handgriff bekommt sein Computer-Gehirn ein kleines Zusatzteil, fast wie ein neues Kapitel in einem Buch. Und wenn er nicht sicher ist, ob er eine Aufgabe schafft, hält er einfach an und lässt sich von einem Menschen zeigen, wie es geht.',
+    stand: 'Forschung',
+    quellen: ['https://www.tum.de/aktuelles/alle-meldungen/pressemitteilungen/details/der-selbstreflektierte-roboter-erkennt-seine-grenzen', 'https://www.nanowerk.com/news2/robotics/newsid=70659.php', 'https://www.scinexx.de/news/technik/roboter-lernen-neue-handgriffe-ohne-alte-zu-vergessen/'],
+    figur: 'arm', hintergrund: 'labor', bewegung: 'greifen',
+  },
+  {
     datum: '2026-11-24',
     titel: 'Künstliche Muskeln spielen Klavier',
     text: 'Forschende der Universität von Pennsylvania in den USA haben weiche, künstliche Muskeln gebaut. In jedem Muskel steckt ein hauchdünner Draht aus Kupfer: Er macht den Muskel warm, damit er sich zusammenzieht, und spürt gleichzeitig, wie weit er sich schon bewegt hat. So kann ein Roboterfinger Klaviertasten drücken und ein künstliches Auge genau dorthin schauen, wo es hinsehen soll.',
