@@ -16,6 +16,14 @@
      werk       (optional) ID einer Figur in RoboWorld, die dazu passt */
 const NACHRICHTEN = [
   {
+    datum: '2026-11-28',
+    titel: 'Roboterhand aus dem 3D-Drucker',
+    text: 'Forschende in den USA haben eine Roboterhand gebaut, deren Gelenke und Knöchel aus einem 3D-Drucker kommen. Bewegt wird sie von kleinen Motoren, wie man sie aus dem Modellbau kennt, und man steuert sie am Computer, indem man die Bewegung einfach mit der Maus hinzieht. Geht der Strom aus, kehren die Finger von selbst in ihre Ruhestellung zurück, und im Team hat sogar ein Schüler mitgebaut.',
+    stand: 'Forschung',
+    quellen: ['https://news.njit.edu/njit-professors-low-tech-hospital-stint-leads-high-tech-robotic-hand', 'https://interestingengineering.com/ai-robotics/njit-phd-hand-low-cost-robotic-hand', 'https://arxiv.org/pdf/2610.29030'],
+    figur: 'arm', hintergrund: 'labor', bewegung: 'greifen',
+  },
+  {
     datum: '2026-11-25',
     titel: 'Roboterarm merkt, wenn er etwas nicht kann',
     text: 'Forschende in München bringen einem Roboterarm bei, immer neue Handgriffe zu lernen, ohne die alten zu vergessen. Für jeden neuen Handgriff bekommt sein Computer-Gehirn ein kleines Zusatzteil, fast wie ein neues Kapitel in einem Buch. Und wenn er nicht sicher ist, ob er eine Aufgabe schafft, hält er einfach an und lässt sich von einem Menschen zeigen, wie es geht.',
